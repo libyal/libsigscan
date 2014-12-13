@@ -1,0 +1,21 @@
+TODO:
+* add debug print functions
+* complete libsigscan_skip_table_build
+* add missing comments in include header
+
+* signature table
+  - add support for unbound/bound offsets
+  - add support for ignore list
+
+20141212
+* worked on initial version
+
+20141208
+* worked on initial version
+
+20141116
+* worked on initial version
+
+20141115
+* Initial version based on dfvfs scanner and libexe
+

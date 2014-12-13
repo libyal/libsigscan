@@ -1,0 +1,14 @@
+libsigscan is a library for binary signature scanning.
+
+Project information:
+* Status: experimental
+* Licence: LGPLv3+
+
+Planned:
+* Python 2 and 3 support
+* Multi-threading support
+
+For more information see:
+* Project documentation: https://github.com/libyal/libsigscan/wiki/Home
+* How to build from source: https://github.com/libyal/libsigscan/wiki/Building
+
