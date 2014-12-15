@@ -4,8 +4,13 @@ Project information:
 * Status: experimental
 * Licence: LGPLv3+
 
+Work in progress:
+* initial release library
+* initial release Python bindings
+* initial release sigscan
+
 Planned:
-* Python 2 and 3 support
+* Python 3 support
 * Multi-threading support
 
 For more information see:

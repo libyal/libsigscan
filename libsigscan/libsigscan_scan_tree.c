@@ -177,8 +177,9 @@ int libsigscan_scan_tree_build_node(
 	libsigscan_pattern_weights_t *similarity_weights = NULL;
 	static char *function                            = "libsigscan_scan_tree_build_node";
 	off64_t pattern_offset                           = 0;
+	uint8_t byte_value                               = 0;
 	int byte_value_index                             = 0;
-	int byte_value_weigth                            = 0;
+	int byte_value_weight                            = 0;
 	int number_of_byte_values                        = 0;
 	int number_of_pattern_offsets                    = 0;
 	int number_of_signatures                         = 0;
@@ -314,7 +315,7 @@ int libsigscan_scan_tree_build_node(
 /* TODO fill scan tree node */
 
 	if( libsigscan_pattern_weights_free(
-	     &value_weights,
+	     &byte_value_weights,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -355,10 +356,10 @@ int libsigscan_scan_tree_build_node(
 	return( 1 );
 
 on_error:
-	if( value_weights != NULL )
+	if( byte_value_weights != NULL )
 	{
 		libsigscan_pattern_weights_free(
-		 &value_weights,
+		 &byte_value_weights,
 		 NULL );
 	}
 	if( similarity_weights != NULL )
