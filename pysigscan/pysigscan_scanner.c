@@ -252,13 +252,23 @@ void pysigscan_scanner_free(
 
 		return;
 	}
-	ob_type = Py_TYPE( pysigscan_scanner );
+	if( pysigscan_scanner->scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner - missing libsigscan scanner.",
+		 function );
+
+		return;
+	}
+	ob_type = Py_TYPE(
+	           pysigscan_scanner );
 
 	if( ob_type == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scanner - missing ob_type.",
+		 "%s: missing ob_type.",
 		 function );
 
 		return;
@@ -267,16 +277,7 @@ void pysigscan_scanner_free(
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scanner - invalid ob_type - missing tp_free.",
-		 function );
-
-		return;
-	}
-	if( pysigscan_scanner->scanner == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid scanner - missing libsigscan scanner.",
+		 "%s: invalid ob_type - missing tp_free.",
 		 function );
 
 		return;
