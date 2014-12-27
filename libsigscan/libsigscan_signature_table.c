@@ -269,17 +269,96 @@ int libsigscan_signature_table_fill(
 	return( 1 );
 }
 
+/* Retrieves the number of byte value groups
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_table_get_number_of_byte_value_groups(
+     libsigscan_signature_table_t *signature_table,
+     int *number_of_byte_value_groups,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_table_get_number_of_byte_value_groups";
+
+	if( signature_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature table.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_get_number_of_elements(
+	     signature_table->byte_value_groups_list,
+	     number_of_byte_value_groups,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of byte value groups.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves a specific byte value group
  * Returns 1 if successful, 0 if no such value or -1 on error
  */
-int libsigscan_signature_table_get_byte_value_group(
+int libsigscan_signature_table_get_byte_value_group_by_index(
+     libsigscan_signature_table_t *signature_table,
+     int byte_value_group_index,
+     libsigscan_byte_value_group_t **byte_value_group,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_table_get_byte_value_group_by_index";
+
+	if( signature_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature table.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_get_element_by_index(
+	     signature_table->byte_value_groups_list,
+	     byte_value_group_index,
+	     (intptr_t **) byte_value_group,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve byte value group: %d.",
+		 function,
+		 byte_value_group_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific byte value group by offset
+ * Returns 1 if successful, 0 if no such value or -1 on error
+ */
+int libsigscan_signature_table_get_byte_value_group_by_offset(
      libsigscan_signature_table_t *signature_table,
      off64_t pattern_offset,
      libsigscan_byte_value_group_t **byte_value_group,
      libcerror_error_t **error )
 {
 	libcdata_list_element_t *list_element = NULL;
-	static char *function                 = "libsigscan_signature_table_get_byte_value_group";
+	static char *function                 = "libsigscan_signature_table_get_byte_value_group_by_offset";
 	int result                            = 0;
 
 	if( signature_table == NULL )
@@ -398,7 +477,7 @@ int libsigscan_signature_table_insert_signature(
 
 		return( -1 );
 	}
-	result = libsigscan_signature_table_get_byte_value_group(
+	result = libsigscan_signature_table_get_byte_value_group_by_offset(
 	          signature_table,
 	          pattern_offset,
 	          &byte_value_group,
@@ -410,8 +489,9 @@ int libsigscan_signature_table_insert_signature(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve byte value group.",
-		 function );
+		 "%s: unable to retrieve byte value group for pattern offset: %" PRIi64 ".",
+		 function,
+		 pattern_offset );
 
 		return( -1 );
 	}
@@ -511,13 +591,13 @@ int libsigscan_signature_table_get_number_of_signatures(
 /* Retrieves a specific signature
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_signature_table_get_signature(
+int libsigscan_signature_table_get_signature_by_index(
      libsigscan_signature_table_t *signature_table,
      int signature_index,
      libsigscan_signature_t **signature,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_table_get_signature";
+	static char *function = "libsigscan_signature_table_get_signature_by_index";
 
 	if( signature_table == NULL )
 	{

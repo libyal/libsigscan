@@ -50,8 +50,39 @@ int libsigscan_scan_tree_free(
      libsigscan_scan_tree_t **scan_tree,
      libcerror_error_t **error );
 
+int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     off64_t *pattern_offset,
+     libcerror_error_t **error );
+
+int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_pattern_weights_t *occurrence_weights,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     off64_t *pattern_offset,
+     libcerror_error_t **error );
+
+int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_pattern_weights_t *similarity_weights,
+     libsigscan_pattern_weights_t *occurrence_weights,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     off64_t *pattern_offset,
+     libcerror_error_t **error );
+
+int libsigscan_scan_tree_get_most_significant_pattern_offset(
+     libsigscan_scan_tree_t *scan_tree,
+     libcdata_array_t *signatures_array,
+     libsigscan_pattern_weights_t *similarity_weights,
+     libsigscan_pattern_weights_t *occurrence_weights,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     off64_t *pattern_offset,
+     libcerror_error_t **error );
+
 int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
+     libcdata_array_t *signatures_array,
      libsigscan_signature_table_t *signature_table,
      libcdata_tree_node_t **tree_node,
      libcerror_error_t **error );

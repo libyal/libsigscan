@@ -231,8 +231,8 @@ int libsigscan_signature_set(
 		signature->pattern      = NULL;
 		signature->pattern_size = 0;
 	}
-	signature->identifier = (uint8_t *) memory_allocate(
-	                                     sizeof( uint8_t ) * identifier_size );
+	signature->identifier = (char *) memory_allocate(
+	                                  sizeof( char ) * identifier_size );
 
 	if( signature->identifier == NULL )
 	{

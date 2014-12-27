@@ -77,7 +77,18 @@ int libsigscan_signature_table_fill(
      libcdata_array_t *signatures_array,
      libcerror_error_t **error );
 
-int libsigscan_signature_table_get_byte_value_group(
+int libsigscan_signature_table_get_number_of_byte_value_groups(
+     libsigscan_signature_table_t *signature_table,
+     int *number_of_byte_value_groups,
+     libcerror_error_t **error );
+
+int libsigscan_signature_table_get_byte_value_group_by_index(
+     libsigscan_signature_table_t *signature_table,
+     int byte_value_group_index,
+     libsigscan_byte_value_group_t **byte_value_group,
+     libcerror_error_t **error );
+
+int libsigscan_signature_table_get_byte_value_group_by_offset(
      libsigscan_signature_table_t *signature_table,
      off64_t pattern_offset,
      libsigscan_byte_value_group_t **byte_value_group,
@@ -95,7 +106,7 @@ int libsigscan_signature_table_get_number_of_signatures(
      int *number_of_signatures,
      libcerror_error_t **error );
 
-int libsigscan_signature_table_get_signature(
+int libsigscan_signature_table_get_signature_by_index(
      libsigscan_signature_table_t *signature_table,
      int signature_index,
      libsigscan_signature_t **signature,
