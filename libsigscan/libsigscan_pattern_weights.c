@@ -308,6 +308,74 @@ int libsigscan_pattern_weights_set_weight(
 	return( 1 );
 }
 
+/* Retrieves the largest weight
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_pattern_weights_get_largest_weight(
+     libsigscan_pattern_weights_t *pattern_weights,
+     int *largest_weight,
+     libcerror_error_t **error )
+{
+	libcdata_list_element_t *list_element   = NULL;
+	libsigscan_offset_group_t *offset_group = NULL;
+	static char *function                   = "libsigscan_pattern_weights_get_largest_weight";
+
+	if( pattern_weights == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid pattern weights.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_get_last_element(
+	     pattern_weights->weight_groups_list,
+	     &list_element,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve last list element.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_element_get_value(
+	     list_element,
+	     (intptr_t **) &offset_group,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve last offset group.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsigscan_offset_group_get_weight(
+	     offset_group,
+	     largest_weight,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve last offset group weight.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves a specific offset group
  * Returns 1 if successful, 0 if no such value or -1 on error
  */

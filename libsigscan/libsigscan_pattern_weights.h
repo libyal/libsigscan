@@ -45,10 +45,6 @@ struct libsigscan_pattern_weights
 	/* The weight (per offset) groups list
 	 */
 	libcdata_list_t *weight_groups_list;
-
-	/* The largest weight
-	 */
-	int largest_weight;
 };
 
 int libsigscan_pattern_weights_initialize(
@@ -69,6 +65,11 @@ int libsigscan_pattern_weights_set_weight(
      libsigscan_pattern_weights_t *pattern_weights,
      off64_t pattern_offset,
      int weight,
+     libcerror_error_t **error );
+
+int libsigscan_pattern_weights_get_largest_weight(
+     libsigscan_pattern_weights_t *pattern_weights,
+     int *largest_weight,
      libcerror_error_t **error );
 
 int libsigscan_pattern_weights_get_offset_group(

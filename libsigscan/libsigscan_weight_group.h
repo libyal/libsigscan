@@ -68,6 +68,11 @@ int libsigscan_weight_group_add_weight(
      int weight,
      libcerror_error_t **error );
 
+int libsigscan_weight_group_get_weight(
+     libsigscan_weight_group_t *weight_group,
+     int *weight,
+     libcerror_error_t **error );
+
 int libsigscan_weight_group_set_weight(
      libsigscan_weight_group_t *weight_group,
      int weight,

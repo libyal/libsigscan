@@ -237,7 +237,44 @@ int libsigscan_weight_group_add_weight(
 	return( 1 );
 }
 
-/* Sets a weight in the weight group
+/* Retrieves the weight
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_weight_group_get_weight(
+     libsigscan_weight_group_t *weight_group,
+     int *weight,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_weight_group_get_weight";
+
+	if( weight_group == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid weight group.",
+		 function );
+
+		return( -1 );
+	}
+	if( weight == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid weight.",
+		 function );
+
+		return( -1 );
+	}
+	*weight = weight_group->weight;
+
+	return( 1 );
+}
+
+/* Sets the weight
  * Returns 1 if successful or -1 on error
  */
 int libsigscan_weight_group_set_weight(

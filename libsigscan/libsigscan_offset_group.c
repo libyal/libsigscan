@@ -240,6 +240,43 @@ int libsigscan_offset_group_compare(
 	return( LIBCDATA_COMPARE_EQUAL );
 }
 
+/* Retrieves the weight
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_offset_group_get_weight(
+     libsigscan_offset_group_t *offset_group,
+     int *weight,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_offset_group_get_weight";
+
+	if( offset_group == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid offset group.",
+		 function );
+
+		return( -1 );
+	}
+	if( weight == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid weight.",
+		 function );
+
+		return( -1 );
+	}
+	*weight = offset_group->weight;
+
+	return( 1 );
+}
+
 /* Retrieves the number of offsets
  * Returns 1 if successful or -1 on error
  */

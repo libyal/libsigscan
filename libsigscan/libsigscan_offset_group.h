@@ -59,6 +59,11 @@ int libsigscan_offset_group_compare(
      libsigscan_offset_group_t *second_offset_group,
      libcerror_error_t **error );
 
+int libsigscan_offset_group_get_weight(
+     libsigscan_offset_group_t *offset_group,
+     int *weight,
+     libcerror_error_t **error );
+
 int libsigscan_offset_group_get_number_of_offsets(
      libsigscan_offset_group_t *offset_group,
      int *number_of_offsets,

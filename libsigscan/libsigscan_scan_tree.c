@@ -25,6 +25,7 @@
 #include "libsigscan_byte_value_group.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_offset_group.h"
 #include "libsigscan_pattern_weights.h"
 #include "libsigscan_scan_tree.h"
 #include "libsigscan_signature_group.h"
@@ -175,7 +176,18 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
      off64_t *pattern_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_scan_tree_get_pattern_offset_by_similarity_weights";
+	libsigscan_offset_group_t *offset_group = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	static char *function                   = "libsigscan_scan_tree_get_pattern_offset_by_similarity_weights";
+	off64_t similarity_offset               = 0;
+	int byte_value_weight                   = 0;
+	int largest_byte_value_weight           = 0;
+	int largest_occurrence_weight           = 0;
+	int largest_weight                      = 0;
+	int number_of_offsets                   = 0;
+	int occurrence_weight                   = 0;
+	int offset_index                        = 0;
+	int result                              = 1;
 
 	if( scan_tree == NULL )
 	{
@@ -199,11 +211,258 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 
 		return( -1 );
 	}
-/* TODO
- */
-	*pattern_offset = 0;
+	if( libsigscan_pattern_weights_get_largest_weight(
+	     similarity_weights,
+	     &largest_weight,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve largest similarity weight.",
+		 function );
 
-	return( 1 );
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: largest similarity weight: %d\n",
+		 function,
+		 largest_weight );
+	}
+#endif
+	if( largest_weight > 0 )
+	{
+		if( libsigscan_pattern_weights_get_offset_group(
+		     similarity_weights,
+		     largest_weight,
+		     &offset_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+		if( libsigscan_offset_group_get_number_of_offsets(
+		     offset_group,
+		     &number_of_offsets,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of offsets in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+	if( number_of_offsets == 0 )
+	{
+		/* No similarity offset fall back on the occurence weights.
+		 */
+		result = libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
+		          scan_tree,
+		          occurrence_weights,
+		          byte_value_weights,
+		          pattern_offset,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset based on occurrence weights.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	else if( number_of_offsets == 1 )
+	{
+		if( libsigscan_offset_group_get_offset_by_index(
+		     offset_group,
+		     0,
+		     pattern_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset: 0 in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+	else
+	{
+		for( offset_index = 0;
+		     offset_index < number_of_offsets;
+		     offset_index++ )
+		{
+			if( libsigscan_offset_group_get_offset_by_index(
+			     offset_group,
+			     offset_index,
+			     &similarity_offset,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve pattern offset: %d in offsets group for weight: %d.",
+				 function,
+				 offset_index,
+				 largest_weight );
+
+				return( -1 );
+			}
+			if( libsigscan_pattern_weights_get_weight_group(
+			     occurrence_weights,
+			     similarity_offset,
+			     &weight_group,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve weight group for offset: %" PRIi64 ".",
+				 function,
+				 similarity_offset );
+
+				return( -1 );
+			}
+			if( libsigscan_weight_group_get_weight(
+			     weight_group,
+			     &occurrence_weight,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve weight of weight group for offset: %" PRIi64 ".",
+				 function,
+				 similarity_offset );
+
+				return( -1 );
+			}
+			if( ( largest_occurrence_weight > 0 )
+			 && ( occurrence_weight == largest_occurrence_weight ) )
+			{
+				if( libsigscan_pattern_weights_get_weight_group(
+				     byte_value_weights,
+				     similarity_offset,
+				     &weight_group,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve weight group for offset: %" PRIi64 ".",
+					 function,
+					 similarity_offset );
+
+					return( -1 );
+				}
+				if( libsigscan_weight_group_get_weight(
+				     weight_group,
+				     &byte_value_weight,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve weight of weight group for offset: %" PRIi64 ".",
+					 function,
+					 similarity_offset );
+
+					return( -1 );
+				}
+				if( byte_value_weight > largest_byte_value_weight )
+				{
+					largest_occurrence_weight = 0;
+				}
+			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			else if( libcnotify_verbose != 0 )
+			{
+				byte_value_weight = 0;
+			}
+#endif
+			if( ( offset_index == 0 )
+			 || ( occurrence_weight > largest_occurrence_weight ) )
+			{
+				largest_occurrence_weight = occurrence_weight;
+				*pattern_offset           = similarity_offset;
+
+				if( libsigscan_pattern_weights_get_weight_group(
+				     byte_value_weights,
+				     similarity_offset,
+				     &weight_group,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve weight group for offset: %" PRIi64 ".",
+					 function,
+					 similarity_offset );
+
+					return( -1 );
+				}
+				if( libsigscan_weight_group_get_weight(
+				     weight_group,
+				     &largest_byte_value_weight,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve weight of weight group for offset: %" PRIi64 ".",
+					 function,
+					 similarity_offset );
+
+					return( -1 );
+				}
+			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: similarity offset: %" PRIi64 " occurrence weight: %d, byte value weight: %d (largest occurrence weight: %d, largest byte value weight: %d)\n",
+				 function,
+				 similarity_offset,
+				 occurrence_weight,
+				 byte_value_weight,
+				 largest_occurrence_weight,
+				 largest_byte_value_weight );
+			}
+#endif
+		}
+	}
+	return( result );
 }
 
 /* Determines the (most significant) pattern offset based on the occurrence weights
@@ -216,7 +475,16 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
      off64_t *pattern_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights";
+	libsigscan_offset_group_t *offset_group = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	static char *function                   = "libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights";
+	off64_t occurrence_offset               = 0;
+	int byte_value_weight                   = 0;
+	int largest_byte_value_weight           = 0;
+	int largest_weight                      = 0;
+	int number_of_offsets                   = 0;
+	int offset_index                        = 0;
+	int result                              = 1;
 
 	if( scan_tree == NULL )
 	{
@@ -240,11 +508,178 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 
 		return( -1 );
 	}
-/* TODO
-*/
-	*pattern_offset = 0;
+	if( libsigscan_pattern_weights_get_largest_weight(
+	     occurrence_weights,
+	     &largest_weight,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve largest occurrence weight.",
+		 function );
 
-	return( 1 );
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: largest occurrence weight: %d\n",
+		 function,
+		 largest_weight );
+	}
+#endif
+	if( largest_weight > 0 )
+	{
+		if( libsigscan_pattern_weights_get_offset_group(
+		     occurrence_weights,
+		     largest_weight,
+		     &offset_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+		if( libsigscan_offset_group_get_number_of_offsets(
+		     offset_group,
+		     &number_of_offsets,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of offsets in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+	if( number_of_offsets == 0 )
+	{
+		/* No occurrnece offset fall back on the byte value weights.
+		 */
+		result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
+		          scan_tree,
+		          byte_value_weights,
+		          pattern_offset,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset based on byte value weights.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	else if( number_of_offsets == 1 )
+	{
+		if( libsigscan_offset_group_get_offset_by_index(
+		     offset_group,
+		     0,
+		     pattern_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset: 0 in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+	else
+	{
+		for( offset_index = 0;
+		     offset_index < number_of_offsets;
+		     offset_index++ )
+		{
+			if( libsigscan_offset_group_get_offset_by_index(
+			     offset_group,
+			     offset_index,
+			     &occurrence_offset,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve pattern offset: %d in offsets group for weight: %d.",
+				 function,
+				 offset_index,
+				 largest_weight );
+
+				return( -1 );
+			}
+			if( libsigscan_pattern_weights_get_weight_group(
+			     byte_value_weights,
+			     occurrence_offset,
+			     &weight_group,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve weight group for offset: %" PRIi64 ".",
+				 function,
+				 occurrence_offset );
+
+				return( -1 );
+			}
+			if( libsigscan_weight_group_get_weight(
+			     weight_group,
+			     &byte_value_weight,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve weight of weight group for offset: %" PRIi64 ".",
+				 function,
+				 occurrence_offset );
+
+				return( -1 );
+			}
+			if( ( offset_index == 0 )
+			 || ( byte_value_weight > largest_byte_value_weight ) )
+			{
+				largest_byte_value_weight = byte_value_weight;
+				*pattern_offset           = occurrence_offset;
+			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: occurrence offset: %" PRIi64 " byte value weight: %d (largest byte value weight: %d)\n",
+				 function,
+				 occurrence_offset,
+				 byte_value_weight,
+				 largest_byte_value_weight );
+			}
+#endif
+		}
+	}
+	return( result );
 }
 
 /* Determines the (most significant) pattern offset based on the byte value weights
@@ -256,8 +691,11 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
      off64_t *pattern_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights";
-	int result            = 0;
+	libsigscan_offset_group_t *offset_group = NULL;
+	static char *function                   = "libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights";
+	int largest_weight                      = 0;
+	int number_of_offsets                   = 0;
+	int result                              = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -281,10 +719,101 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 
 		return( -1 );
 	}
-/* TODO
-*/
-	*pattern_offset = 0;
+	if( libsigscan_pattern_weights_get_largest_weight(
+	     byte_value_weights,
+	     &largest_weight,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve largest byte value weight.",
+		 function );
 
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: largest byte value weight: %d\n",
+		 function,
+		 largest_weight );
+	}
+#endif
+	if( largest_weight > 0 )
+	{
+		if( libsigscan_pattern_weights_get_offset_group(
+		     byte_value_weights,
+		     largest_weight,
+		     &offset_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+		if( libsigscan_offset_group_get_number_of_offsets(
+		     offset_group,
+		     &number_of_offsets,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of offsets in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: largest byte value weight: %d\n",
+		 function,
+		 largest_weight );
+	}
+#endif
+	if( number_of_offsets > 0 )
+	{
+		result = libsigscan_offset_group_get_offset_by_index(
+		          offset_group,
+		          0,
+		          pattern_offset,
+		          error );
+
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset: 0 in offsets group for weight: %d.",
+			 function,
+			 largest_weight );
+
+			return( -1 );
+		}
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	else if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: no byte value offsets found.\n",
+		 function );
+	}
+#endif
 	return( result );
 }
 
@@ -345,7 +874,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve number most significant pattern offset based on byte value weights.",
+				 "%s: unable to retrieve most significant pattern offset based on byte value weights.",
 				 function );
 
 				return( -1 );
@@ -364,7 +893,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve number most significant pattern offset based on occurrence weights.",
+				 "%s: unable to retrieve most significant pattern offset based on occurrence weights.",
 				 function );
 
 				return( -1 );
@@ -384,7 +913,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve number most significant pattern offset based on similarity weights.",
+				 "%s: unable to retrieve most significant pattern offset based on similarity weights.",
 				 function );
 
 				return( -1 );
@@ -648,7 +1177,7 @@ int libsigscan_scan_tree_build_node(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number most significant pattern offset.",
+		 "%s: unable to retrieve most significant pattern offset.",
 		 function );
 
 		goto on_error;
