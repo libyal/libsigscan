@@ -19,17 +19,32 @@ TESTS_PYSIGSCAN =
 endif
 
 TESTS = \
+	test_scanner.sh \
 	test_sigscan.sh \
 	$(TESTS_PYSIGSCAN)
 
 check_SCRIPTS = \
+	test_scanner.sh \
 	test_sigscan.sh \
 	test_runner.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
-check_PROGRAMS =
+check_PROGRAMS = \
+	sigscan_test_scanner
+
+sigscan_test_scanner_SOURCES = \
+	sigscan_test_libcerror.h \
+	sigscan_test_libcstring.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_scanner.c \
+	sigscan_test_unused.h
+
+sigscan_test_scanner_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
