@@ -29,6 +29,7 @@
 #include "libsigscan_libbfio.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_scan_tree.h"
 #include "libsigscan_types.h"
 
 #if defined( __cplusplus )
@@ -43,9 +44,9 @@ struct libsigscan_internal_scanner
 	 */
 	libcdata_array_t *signatures_array;
 
-	/* Value to indicate if the scan tree was initialized
+	/* The scan tree
 	 */
-	int scan_tree_initialized;
+	libsigscan_scan_tree_t *scan_tree;
 
 	/* Value to indicate if abort was signalled
 	 */
@@ -78,12 +79,12 @@ int libsigscan_scanner_add_signature(
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_start_scan(
+int libsigscan_scanner_scan_start(
      libsigscan_scanner_t *scanner,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_stop_scan(
+int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
      libcerror_error_t **error );
 

@@ -94,6 +94,19 @@ int libsigscan_signature_table_initialize(
 
 		return( -1 );
 	}
+	if( libcdata_list_initialize(
+	     &( ( *signature_table )->byte_value_groups_list ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create byte values groups list.",
+		 function );
+
+		goto on_error;
+	}
 	( *signature_table )->smallest_offset = -1;
 	( *signature_table )->largest_offset  = -1;
 
@@ -118,6 +131,7 @@ int libsigscan_signature_table_free(
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_signature_table_free";
+	int result            = 1;
 
 	if( signature_table == NULL )
 	{
@@ -134,12 +148,26 @@ int libsigscan_signature_table_free(
 	{
 		/* The signatures_array is references and freed somewhere else
 		 */
+		if( libcdata_list_free(
+		     &( ( *signature_table )->byte_value_groups_list ),
+		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_byte_value_group_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free byte value groups list.",
+			 function );
+
+			result = -1;
+		}
 		memory_free(
 		 *signature_table );
 
 		*signature_table = NULL;
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Fill the signature table
@@ -329,7 +357,7 @@ int libsigscan_signature_table_get_byte_value_group_by_index(
 
 		return( -1 );
 	}
-	if( libcdata_list_get_element_by_index(
+	if( libcdata_list_get_value_by_index(
 	     signature_table->byte_value_groups_list,
 	     byte_value_group_index,
 	     (intptr_t **) byte_value_group,

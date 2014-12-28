@@ -190,12 +190,12 @@ int libsigscan_scanner_add_signature(
      libsigscan_error_t **error );
 
 LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_start_scan(
+int libsigscan_scanner_scan_strart(
      libsigscan_scanner_t *scanner,
      libsigscan_error_t **error );
 
 LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_stop_scan(
+int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
      libsigscan_error_t **error );
 

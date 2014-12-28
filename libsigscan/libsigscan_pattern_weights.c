@@ -309,7 +309,7 @@ int libsigscan_pattern_weights_set_weight(
 }
 
 /* Retrieves the largest weight
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libsigscan_pattern_weights_get_largest_weight(
      libsigscan_pattern_weights_t *pattern_weights,
@@ -344,6 +344,10 @@ int libsigscan_pattern_weights_get_largest_weight(
 		 function );
 
 		return( -1 );
+	}
+	if( list_element == NULL )
+	{
+		return( 0 );
 	}
 	if( libcdata_list_element_get_value(
 	     list_element,

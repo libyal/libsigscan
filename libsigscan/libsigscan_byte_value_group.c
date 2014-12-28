@@ -470,7 +470,7 @@ int libsigscan_byte_value_group_get_signature_group_by_index(
 
 		return( -1 );
 	}
-	if( libcdata_list_get_element_by_index(
+	if( libcdata_list_get_value_by_index(
 	     byte_value_group->signature_groups_list,
 	     signature_group_index,
 	     (intptr_t **) signature_group,

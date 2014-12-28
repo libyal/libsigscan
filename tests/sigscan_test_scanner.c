@@ -32,6 +32,31 @@
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_unused.h"
 
+/* Define to make qcow_test_seek generate verbose output
+#define SIGSCAN_TEST_SCANNER_VERBOSE
+ */
+
+typedef struct sigscan_signature sigscan_signature_t;
+
+struct sigscan_signature
+{
+	/* The identifier
+	 */
+	char *identifier;
+
+	/* The pattern offset
+	 */
+	off64_t pattern_offset;
+
+	/* The pattern
+	 */
+	uint8_t *pattern;
+
+	/* The pattern size
+	 */
+	size_t pattern_size;
+};
+
 /* Tests initializing the scanner
  * Make sure the value scanner is referencing, is set to NULL
  * Returns 1 if successful, 0 if not or -1 on error
@@ -116,6 +141,263 @@ int sigscan_test_scanner_initialize(
 	return( 1 );
 }
 
+/* Tests scanning data
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int sigscan_test_scanner_scan(
+     void )
+{
+	libcerror_error_t *error       = NULL;
+	libsigscan_scanner_t *scanner  = NULL;
+	sigscan_signature_t *signature = NULL;
+	static char *function          = "sigscan_test_scanner_scan";
+	size_t identifier_size         = 0;
+	int expected_result            = 0;
+	int result                     = 0;
+	int signatures_index           = 0;
+
+	uint8_t _7z_pattern[] = {
+		'7', 'z', 0xbc, 0xaf, 0x27, 0x1c };
+
+	uint8_t esedb_pattern[] = {
+		0xef, 0xcd, 0xab, 0x89 };
+
+	uint8_t evt_pattern[] = {
+		0x30, 0x00, 0x00, 0x00, 'L', 'f', 'L', 'e', 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 };
+
+	uint8_t evtx_pattern[] = {
+		'E', 'l', 'f', 'F', 'i', 'l', 'e', 0x00 };
+
+	uint8_t ewf_e01_pattern[] = {
+		'E', 'V', 'F', 0x09, 0x0d, 0x0a, 0xff, 0x00 };
+
+	uint8_t ewf_l01_pattern[] = {
+		'L', 'V', 'F', 0x09, 0x0d, 0x0a, 0xff, 0x00 };
+
+	uint8_t lnk_pattern[] = {
+		0x4c, 0x00, 0x00, 0x00, 0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x46 };
+
+	uint8_t msiecf_pattern[] = {
+		'C', 'l', 'i', 'e', 'n', 't', ' ', 'U', 'r', 'l', 'C', 'a', 'c', 'h', 'e', ' ',
+		'M', 'M', 'F', ' ', 'V', 'e', 'r', ' ' };
+
+	uint8_t nk2_pattern[] = {
+		0x0d, 0xf0, 0xad, 0xba, 0xa0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 };
+
+	uint8_t olecf_pattern[] = {
+		0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1 };
+
+	uint8_t olecf_beta_pattern[] = {
+		0x0e, 0x11, 0xfc, 0x0d, 0xd0, 0xcf, 0x11, 0x0e };
+
+	uint8_t pff_pattern[] = {
+		'!', 'B', 'D', 'N' };
+
+	uint8_t qcow_pattern[] = {
+		'Q', 'F', 'I', 0xfb };
+
+	uint8_t rar_pattern[] = {
+		'R', 'a', 'r', '!', 0x1a, 0x07, 0x00 };
+
+	uint8_t regf_pattern[] = {
+		'r', 'e', 'g', 'f' };
+
+	uint8_t wtcdb_cache_pattern[] = {
+		'C', 'M', 'M', 'M' };
+
+	uint8_t wtcdb_index_pattern[] = {
+		'I', 'M', 'M', 'M' };
+
+/* TODO zip patterns */
+
+	sigscan_signature_t signatures[] = {
+		{ "7z",			0, _7z_pattern,			6 },
+		{ "esedb",		4, esedb_pattern,		4 },
+		{ "evt",		0, evt_pattern,			16 },
+		{ "evtx",		0, evtx_pattern,		8 },
+		{ "ewf_e01",		0, ewf_e01_pattern,		8 },
+		{ "ewf_l01",		0, ewf_l01_pattern,		8 },
+		{ "lnk",		0, lnk_pattern,			20 },
+		{ "msiecf",		0, msiecf_pattern,		24 },
+		{ "nk2",		0, nk2_pattern,			12 },
+		{ "olecf",		0, olecf_pattern,		8 },
+		{ "olecf_beta",		0, olecf_beta_pattern,		8 },
+		{ "pff",		0, pff_pattern,			4 },
+		{ "qcow",		0, qcow_pattern,		4 },
+		{ "rar",		0, rar_pattern,			7 },
+		{ "regf",		0, regf_pattern,		4 },
+		{ "wtcdb_cache",	0, wtcdb_cache_pattern,		4 },
+		{ "wtcdb_index",	0, wtcdb_index_pattern,		4 },
+		{ NULL,			0, NULL, 			0 },
+	};
+
+	/* Random data
+	 */
+	uint8_t test_data1[] = {
+		0x01, 0xfa, 0xe0, 0xbe, 0x99, 0x8e, 0xdb, 0x70, 0xea, 0xcc, 0x6b, 0xae, 0x2f, 0xf5, 0xa2, 0xe4 };
+
+	/* Boundary scan test data
+	 */
+	uint8_t test_data2_part1[] = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 'P', 'K' };
+	uint8_t test_data2_part2[] = {
+		0x07, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 'Z' };
+
+	if( libsigscan_scanner_initialize(
+	     &scanner,
+	     &error ) != 1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scanner.",
+		 function );
+
+		goto on_error;
+	}
+	fprintf(
+	 stdout,
+	 "Testing scan\t" );
+
+	signature = &( signatures[ signatures_index++ ] );
+
+	while( signature->identifier != NULL )
+	{
+		identifier_size = 1 + libcstring_narrow_string_length(
+		                       signature->identifier );
+
+		if( libsigscan_scanner_add_signature(
+		     scanner,
+		     signature->identifier,
+		     identifier_size,
+		     signature->pattern_offset,
+		     signature->pattern,
+		     signature->pattern_size,
+		     &error ) != 1 )
+		{
+			libcerror_error_set(
+			 &error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append signature: %s.",
+			 function,
+			 signature->identifier );
+
+			goto on_error;
+		}
+		signature = &( signatures[ signatures_index++ ] );
+	}
+	if( libsigscan_scanner_scan_start(
+	     scanner,
+	     &error ) != 1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to start scan.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_buffer(
+	     scanner,
+	     lnk_pattern,
+	     20,
+	     &error ) != 1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to scan buffer.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_stop(
+	     scanner,
+	     &error ) != 1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to stop scan.",
+		 function );
+
+		goto on_error;
+	}
+/* TODO */
+	if( result != expected_result )
+	{
+		fprintf(
+		 stdout,
+		 "(FAIL)" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "(PASS)" );
+	}
+	fprintf(
+	 stdout,
+	 "\n" );
+
+	if( libsigscan_scanner_free(
+	     &scanner,
+	     &error ) == -1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free scanner.",
+		 function );
+
+		goto on_error;
+	}
+	if( error != NULL )
+	{
+		if( result != 1 )
+		{
+			libsigscan_error_backtrace_fprint(
+			 error,
+			 stderr );
+		}
+		libsigscan_error_free(
+		 &error );
+	}
+	if( result != expected_result )
+	{
+		return( 0 );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libcerror_error_free(
+		 &error );
+	}
+	if( scanner != NULL )
+	{
+		libsigscan_scanner_free(
+		 &scanner,
+		 NULL );
+	}
+	return( -1 );
+}
+
 /* The main program
  */
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -136,6 +418,13 @@ int main( int argc, char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 
 		return( EXIT_FAILURE );
 	}
+#if defined( HAVE_DEBUG_OUTPUT ) && defined( SIGSCAN_TEST_SCANNER_VERBOSE )
+	libsigscan_notify_set_verbose(
+	 1 );
+	libsigscan_notify_set_stream(
+	 stderr,
+	 NULL );
+#endif
 	/* Initialization tests
 	 */
 	scanner = NULL;
@@ -171,6 +460,16 @@ int main( int argc, char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 		fprintf(
 		 stderr,
 		 "Unable to test initialize.\n" );
+
+		return( EXIT_FAILURE );
+	}
+	/* Scan tests
+	 */
+	if( sigscan_test_scanner_scan() != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test scan.\n" );
 
 		return( EXIT_FAILURE );
 	}

@@ -41,7 +41,7 @@ struct libsigscan_signature_table
 {
 	/* The byte value groups list sorted by offset and byte value
 	 */
-	libcdata_array_t *byte_value_groups_list;
+	libcdata_list_t *byte_value_groups_list;
 
 	/* The signatures array
 	 */

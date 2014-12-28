@@ -28,6 +28,7 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_scanner.h"
+#include "libsigscan_scan_tree.h"
 #include "libsigscan_signature.h"
 
 /* Creates a scanner
@@ -155,6 +156,22 @@ int libsigscan_scanner_free(
 		internal_scanner = (libsigscan_internal_scanner_t *) *scanner;
 		*scanner         = NULL;
 
+		if( internal_scanner->scan_tree != NULL )
+		{
+			if( libsigscan_scan_tree_free(
+			     &( internal_scanner->scan_tree ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free scan tree.",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( libcdata_array_free(
 		     &( internal_scanner->signatures_array ),
 		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
@@ -233,13 +250,13 @@ int libsigscan_scanner_add_signature(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-	if( internal_scanner->scan_tree_initialized != 0 )
+	if( internal_scanner->scan_tree != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid scanner - scan tree already initialized.",
+		 "%s: invalid scanner - scan tree already set.",
 		 function );
 
 		return( -1 );
@@ -300,12 +317,12 @@ on_error:
 /* Starts the scan
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_scanner_start_scan(
+int libsigscan_scanner_scan_start(
      libsigscan_scanner_t *scanner,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
-	static char *function                           = "libsigscan_scanner_start_scan";
+	static char *function                           = "libsigscan_scanner_scan_start";
 
 	if( scanner == NULL )
 	{
@@ -320,19 +337,55 @@ int libsigscan_scanner_start_scan(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO initialize scan trees */
+	if( internal_scanner->scan_tree == NULL )
+	{
+		if( libsigscan_scan_tree_initialize(
+		     &( internal_scanner->scan_tree ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create scan tree.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsigscan_scan_tree_build(
+		     internal_scanner->scan_tree,
+		     internal_scanner->signatures_array,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to build scan tree.",
+			 function );
+
+			libsigscan_scan_tree_free(
+			 &( internal_scanner->scan_tree ),
+			 NULL );
+
+			return( -1 );
+		}
+	}
+/* TODO
+ * initialize scan state?
+ */
 	return( 1 );
 }
 
 /* Stops the scan
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_scanner_stop_scan(
+int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
-	static char *function                           = "libsigscan_scanner_stop_scan";
+	static char *function                           = "libsigscan_scanner_scan_stop";
 
 	if( scanner == NULL )
 	{
@@ -347,7 +400,10 @@ int libsigscan_scanner_stop_scan(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO */
+/* TODO
+ * scan remaining data
+ * destroy scan state?
+ */
 	return( 1 );
 }
 

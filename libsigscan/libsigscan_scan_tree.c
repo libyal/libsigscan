@@ -25,6 +25,7 @@
 #include "libsigscan_byte_value_group.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_offset_group.h"
 #include "libsigscan_pattern_weights.h"
 #include "libsigscan_scan_tree.h"
@@ -187,7 +188,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 	int number_of_offsets                   = 0;
 	int occurrence_weight                   = 0;
 	int offset_index                        = 0;
-	int result                              = 1;
+	int result                              = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -211,10 +212,12 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 
 		return( -1 );
 	}
-	if( libsigscan_pattern_weights_get_largest_weight(
-	     similarity_weights,
-	     &largest_weight,
-	     error ) != 1 )
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          similarity_weights,
+	          &largest_weight,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -225,6 +228,12 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 
 		return( -1 );
 	}
+/* TODO
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+*/
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -293,11 +302,13 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 	}
 	else if( number_of_offsets == 1 )
 	{
-		if( libsigscan_offset_group_get_offset_by_index(
-		     offset_group,
-		     0,
-		     pattern_offset,
-		     error ) != 1 )
+		result = libsigscan_offset_group_get_offset_by_index(
+		          offset_group,
+		          0,
+		          pattern_offset,
+		          error );
+
+		if( result != 1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -461,6 +472,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 			}
 #endif
 		}
+		result = 1;
 	}
 	return( result );
 }
@@ -484,7 +496,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 	int largest_weight                      = 0;
 	int number_of_offsets                   = 0;
 	int offset_index                        = 0;
-	int result                              = 1;
+	int result                              = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -508,10 +520,12 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 
 		return( -1 );
 	}
-	if( libsigscan_pattern_weights_get_largest_weight(
-	     occurrence_weights,
-	     &largest_weight,
-	     error ) != 1 )
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          occurrence_weights,
+	          &largest_weight,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -521,6 +535,10 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 		 function );
 
 		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -719,10 +737,12 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 
 		return( -1 );
 	}
-	if( libsigscan_pattern_weights_get_largest_weight(
-	     byte_value_weights,
-	     &largest_weight,
-	     error ) != 1 )
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          byte_value_weights,
+	          &largest_weight,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -732,6 +752,10 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 		 function );
 
 		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -864,11 +888,13 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			break;
 
 		case 1:
-			if( libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
-			     scan_tree,
-			     byte_value_weights,
-			     pattern_offset,
-			     error ) != 1 )
+			result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
+			          scan_tree,
+			          byte_value_weights,
+			          pattern_offset,
+			          error );
+
+			if( result != 1 )
 			{
 				libcerror_error_set(
 				 error,
@@ -882,12 +908,14 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			break;
 
 		case 2:
-			if( libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
-			     scan_tree,
-			     occurrence_weights,
-			     byte_value_weights,
-			     pattern_offset,
-			     error ) != 1 )
+			result = libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
+			          scan_tree,
+			          occurrence_weights,
+			          byte_value_weights,
+			          pattern_offset,
+			          error );
+
+			if( result != 1 )
 			{
 				libcerror_error_set(
 				 error,
@@ -901,13 +929,15 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			break;
 
 		default:
-			if( libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
-			     scan_tree,
-			     similarity_weights,
-			     occurrence_weights,
-			     byte_value_weights,
-			     pattern_offset,
-			     error ) != 1 )
+			result = libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
+			          scan_tree,
+			          similarity_weights,
+			          occurrence_weights,
+			          byte_value_weights,
+			          pattern_offset,
+			          error );
+
+			if( result != 1 )
 			{
 				libcerror_error_set(
 				 error,

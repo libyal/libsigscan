@@ -27,6 +27,7 @@
 
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_pattern_weights.h"
 #include "libsigscan_signature_table.h"
 
 #if defined( __cplusplus )

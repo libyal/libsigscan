@@ -44,7 +44,7 @@ struct libsigscan_byte_value_group
 
 	/* The signature groups list sorted by byte value
 	 */
-	libcdata_array_t *signature_groups_list;
+	libcdata_list_t *signature_groups_list;
 };
 
 int libsigscan_byte_value_group_initialize(
