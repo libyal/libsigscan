@@ -1,12 +1,10 @@
 TODO:
-* add debug print functions
+* add support for ignore list
+* add support for "negative offsets" (relative from end)
+* add support for unbounded signatures
 * complete libsigscan_skip_table_build
 * add missing comments in include header
 * libsigscan_signature_set - validate signature flags
-
-* signature table
-  - add support for unbound/bound offsets
-  - add support for ignore list
 
 20141230
 * worked on initial version

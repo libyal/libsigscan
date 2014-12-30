@@ -1,5 +1,5 @@
 /*
- * Scan tree values functions
+ * Scan object functions
  *
  * Copyright (c) 2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSIGSCAN_SCAN_TREE_VALUES_H )
-#define _LIBSIGSCAN_SCAN_TREE_VALUES_H
+#if !defined( _LIBSIGSCAN_SCAN_OBJECT_H )
+#define _LIBSIGSCAN_SCAN_OBJECT_H
 
 #include <common.h>
 #include <types.h>
@@ -31,21 +31,28 @@
 extern "C" {
 #endif
 
-typedef struct libsigscan_scan_tree_values libsigscan_scan_tree_values_t;
+typedef struct libsigscan_scan_object libsigscan_scan_object_t;
 
-struct libsigscan_scan_tree_values
+struct libsigscan_scan_object
 {
-	/* Dummy
+	/* The type
 	 */
-	int dummy;
+	uint8_t type;
+
+	/* The value
+	 * Contains a scan tree node or a signature
+	 */
+	intptr_t *value;
 };
 
-int libsigscan_scan_tree_values_initialize(
-     libsigscan_scan_tree_values_t **scan_tree_values,
+int libsigscan_scan_object_initialize(
+     libsigscan_scan_object_t **scan_object,
+     uint8_t type,
+     intptr_t *value,
      libcerror_error_t **error );
 
-int libsigscan_scan_tree_values_free(
-     libsigscan_scan_tree_values_t **scan_tree_values,
+int libsigscan_scan_object_free(
+     libsigscan_scan_object_t **scan_object,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

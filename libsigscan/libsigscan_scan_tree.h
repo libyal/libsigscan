@@ -28,6 +28,7 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_pattern_weights.h"
+#include "libsigscan_scan_tree_node.h"
 #include "libsigscan_signature_table.h"
 
 #if defined( __cplusplus )
@@ -38,9 +39,9 @@ typedef struct libsigscan_scan_tree libsigscan_scan_tree_t;
 
 struct libsigscan_scan_tree
 {
-	/* The root tree node
+	/* The root (scan tree) node
 	 */
-	libcdata_tree_node_t *root_node;
+	libsigscan_scan_tree_node_t *root_node;
 };
 
 int libsigscan_scan_tree_initialize(
@@ -85,7 +86,7 @@ int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_array_t *signatures_array,
      libsigscan_signature_table_t *signature_table,
-     libcdata_tree_node_t **tree_node,
+     libsigscan_scan_tree_node_t **node,
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_build(

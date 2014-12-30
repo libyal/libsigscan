@@ -29,6 +29,7 @@
 #include "libsigscan_offset_group.h"
 #include "libsigscan_pattern_weights.h"
 #include "libsigscan_scan_tree.h"
+#include "libsigscan_scan_tree_node.h"
 #include "libsigscan_signature_group.h"
 #include "libsigscan_signature_table.h"
 
@@ -989,13 +990,15 @@ int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_array_t *signatures_array,
      libsigscan_signature_table_t *signature_table,
-     libcdata_tree_node_t **tree_node,
+     libsigscan_scan_tree_node_t **node,
      libcerror_error_t **error )
 {
 	libsigscan_byte_value_group_t *byte_value_group  = NULL;
 	libsigscan_pattern_weights_t *byte_value_weights = NULL;
 	libsigscan_pattern_weights_t *occurrence_weights = NULL;
 	libsigscan_pattern_weights_t *similarity_weights = NULL;
+	libsigscan_scan_object_t *scan_object            = NULL;
+	libsigscan_scan_tree_node_t *scan_tree_node      = NULL;
 	libsigscan_signature_group_t *signature_group    = NULL;
 	static char *function                            = "libsigscan_scan_tree_build_node";
 	off64_t pattern_offset                           = -1;
@@ -1289,6 +1292,21 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
+/* TODO: ignore list add pattern offset */
+
+	if( libsigscan_scan_tree_node_initialize(
+	     &scan_tree_node,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scan tree node.",
+		 function );
+
+		goto on_error;
+	}
 #ifdef TODO
 /* TODO:
  * create scan tree node
@@ -1303,15 +1321,33 @@ int libsigscan_scan_tree_build_node(
 
 		if( number_of_signatures == 0 )
 		{
-/* TODO: error */
+/* TODO: return error */
 		}
-		else if( number_of_signatures == 1 )
+		if( number_of_signatures == 1 )
 		{
-/* TODO: add byte value to scan tree node */
+/* TODO: create signature scan object */
 		}
 		else
 		{
-/* TODO: */
+/* TODO: create new pattern table */
+/* TODO: create scan tree sub node */
+/* TODO: create scan tree node scan object */
+		}
+/* TODO: add scan object */
+		if( libsigscan_scan_tree_node_set_byte_value(
+		     scan_tree_node,
+		     0,
+		     scan_object,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set occurrence weight.",
+			 function );
+
+			goto on_error;
 		}
 	}
 /* TODO
@@ -1326,9 +1362,18 @@ int libsigscan_scan_tree_build_node(
 /* TODO build a default scan tree sub node */
 	}
 #endif
+
+/* TODO: add scan tree node to node */
+
 	return( 1 );
 
 on_error:
+	if( scan_tree_node != NULL )
+	{
+		libsigscan_scan_tree_node_free(
+		 &scan_tree_node,
+		 NULL );
+	}
 	if( byte_value_weights != NULL )
 	{
 		libsigscan_pattern_weights_free(
