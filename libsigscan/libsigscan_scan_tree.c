@@ -1426,6 +1426,22 @@ int libsigscan_scan_tree_build_node(
 
 			goto on_error;
 		}
+		if( libsigscan_signature_group_get_byte_value(
+		     signature_group,
+		     &byte_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve byte value.",
+			 function,
+			 pattern_offset,
+			 signature_group_index );
+
+			goto on_error;
+		}
 		if( libsigscan_signature_group_get_number_of_signatures(
 		     signature_group,
 		     &number_of_signatures,
@@ -1560,7 +1576,7 @@ int libsigscan_scan_tree_build_node(
 
 		if( libsigscan_scan_tree_node_set_byte_value(
 		     *scan_tree_node,
-		     scan_object_type,
+		     byte_value,
 		     scan_object,
 		     error ) != 1 )
 		{
@@ -1568,8 +1584,9 @@ int libsigscan_scan_tree_build_node(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set occurrence weight.",
-			 function );
+			 "%s: unable to set scan tree node byte value: 0x%02" PRIx8 ".",
+			 function,
+			 byte_value );
 
 			goto on_error;
 		}

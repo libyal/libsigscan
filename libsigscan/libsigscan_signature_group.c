@@ -213,6 +213,43 @@ int libsigscan_signature_group_compare(
 	return( LIBCDATA_COMPARE_EQUAL );
 }
 
+/* Retrieves the byte vlaue
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_group_get_byte_value(
+     libsigscan_signature_group_t *signature_group,
+     uint8_t *byte_value,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_group_get_byte_value";
+
+	if( signature_group == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature group.",
+		 function );
+
+		return( -1 );
+	}
+	if( byte_value == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid byte value.",
+		 function );
+
+		return( -1 );
+	}
+	*byte_value = signature_group->byte_value;
+
+	return( 1 );
+}
+
 /* Retrieves the number of signatures
  * Returns 1 if successful or -1 on error
  */

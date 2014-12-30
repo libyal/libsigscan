@@ -60,6 +60,11 @@ int libsigscan_signature_group_compare(
      libsigscan_signature_group_t *second_signature_group,
      libcerror_error_t **error );
 
+int libsigscan_signature_group_get_byte_value(
+     libsigscan_signature_group_t *signature_group,
+     uint8_t *byte_value,
+     libcerror_error_t **error );
+
 int libsigscan_signature_group_get_number_of_signatures(
      libsigscan_signature_group_t *signature_group,
      int *number_of_signatures,
