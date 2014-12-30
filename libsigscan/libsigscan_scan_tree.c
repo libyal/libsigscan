@@ -1250,9 +1250,6 @@ int libsigscan_scan_tree_build_node(
 		 pattern_offset );
 	}
 #endif
-
-/* TODO fill scan tree node */
-
 	if( libsigscan_pattern_weights_free(
 	     &byte_value_weights,
 	     error ) != 1 )
@@ -1292,6 +1289,43 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
+#ifdef TODO
+/* TODO:
+ * create scan tree node
+ * retrieve the byte values for the pattern offset from the signature table
+ */
+
+	for( byte_value_index = 0;
+	     byte_value_index < number_of_byte_values;
+	     byte_value_index++ )
+	{
+/* TODO: get number of signatures for the byte value */
+
+		if( number_of_signatures == 0 )
+		{
+/* TODO: error */
+		}
+		else if( number_of_signatures == 1 )
+		{
+/* TODO: add byte value to scan tree node */
+		}
+		else
+		{
+/* TODO: */
+		}
+	}
+/* TODO
+ * determine remaining patterns
+ */
+	if( number_of_remaining_patterns == 1 )
+	{
+/* TODO set default pattern */
+	}
+	else if( number_of_remaining_patterns > 1 )
+	{
+/* TODO build a default scan tree sub node */
+	}
+#endif
 	return( 1 );
 
 on_error:
