@@ -26,6 +26,7 @@
 #include "libsigscan_byte_value_group.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_signature.h"
 #include "libsigscan_signature_table.h"
 
@@ -253,6 +254,20 @@ int libsigscan_signature_table_fill(
 
 			return( -1 );
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: signature: %s, pattern offset: %" PRIi64 ", pattern:\n",
+			 function,
+			 signature->identifier,
+			 signature->pattern_offset );
+			libcnotify_print_data(
+			 signature->pattern,
+			 signature->pattern_size,
+			 0 );
+		}
+#endif
 		pattern_offset = signature->pattern_offset;
 
 		if( ( signature_table->smallest_offset == -1 )
@@ -272,7 +287,6 @@ int libsigscan_signature_table_fill(
 		     pattern_index++ )
 		{
 /* TODO check ignore list for pattern offset and skip to next index */
-
 			if( libsigscan_signature_table_insert_signature(
 			     signature_table,
 			     pattern_offset,
@@ -527,15 +541,16 @@ int libsigscan_signature_table_insert_signature(
 	{
 		if( libsigscan_byte_value_group_initialize(
 		     &byte_value_group,
-		     byte_value,
+		     pattern_offset,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create byte value group.",
-			 function );
+			 "%s: unable to create byte value group for pattern offset: %" PRIi64 ".",
+			 function,
+			 pattern_offset );
 
 			return( -1 );
 		}
@@ -550,8 +565,9 @@ int libsigscan_signature_table_insert_signature(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-			 "%s: unable to insert signature into byte value groups list.",
-			 function );
+			 "%s: unable to insert byte value group for pattern offset: %" PRIi64 " into byte value groups list.",
+			 function,
+			 pattern_offset );
 
 			libsigscan_byte_value_group_free(
 			 &byte_value_group,
@@ -570,8 +586,9 @@ int libsigscan_signature_table_insert_signature(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to insert signature into byte value group.",
-		 function );
+		 "%s: unable to insert signature into byte value group for pattern offset: %" PRIi64 ".",
+		 function,
+		 pattern_offset );
 
 		return( -1 );
 	}

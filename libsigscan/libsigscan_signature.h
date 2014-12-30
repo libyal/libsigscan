@@ -54,6 +54,10 @@ struct libsigscan_signature
 	/* The pattern size
 	 */
 	size_t pattern_size;
+
+	/* The signature flags
+	 */
+	uint32_t signature_flags;
 };
 
 int libsigscan_signature_initialize(
@@ -71,6 +75,7 @@ int libsigscan_signature_set(
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,
+     uint32_t signature_flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

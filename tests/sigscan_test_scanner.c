@@ -33,8 +33,8 @@
 #include "sigscan_test_unused.h"
 
 /* Define to make qcow_test_seek generate verbose output
-#define SIGSCAN_TEST_SCANNER_VERBOSE
  */
+#define SIGSCAN_TEST_SCANNER_VERBOSE
 
 typedef struct sigscan_signature sigscan_signature_t;
 
@@ -55,6 +55,10 @@ struct sigscan_signature
 	/* The pattern size
 	 */
 	size_t pattern_size;
+
+	/* The signature flags
+	 */
+	uint32_t signature_flags;
 };
 
 /* Tests initializing the scanner
@@ -212,24 +216,24 @@ int sigscan_test_scanner_scan(
 /* TODO zip patterns */
 
 	sigscan_signature_t signatures[] = {
-		{ "7z",			0, _7z_pattern,			6 },
-		{ "esedb",		4, esedb_pattern,		4 },
-		{ "evt",		0, evt_pattern,			16 },
-		{ "evtx",		0, evtx_pattern,		8 },
-		{ "ewf_e01",		0, ewf_e01_pattern,		8 },
-		{ "ewf_l01",		0, ewf_l01_pattern,		8 },
-		{ "lnk",		0, lnk_pattern,			20 },
-		{ "msiecf",		0, msiecf_pattern,		24 },
-		{ "nk2",		0, nk2_pattern,			12 },
-		{ "olecf",		0, olecf_pattern,		8 },
-		{ "olecf_beta",		0, olecf_beta_pattern,		8 },
-		{ "pff",		0, pff_pattern,			4 },
-		{ "qcow",		0, qcow_pattern,		4 },
-		{ "rar",		0, rar_pattern,			7 },
-		{ "regf",		0, regf_pattern,		4 },
-		{ "wtcdb_cache",	0, wtcdb_cache_pattern,		4 },
-		{ "wtcdb_index",	0, wtcdb_index_pattern,		4 },
-		{ NULL,			0, NULL, 			0 },
+		{ "7z",			0, _7z_pattern,			6,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "esedb",		4, esedb_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "evt",		0, evt_pattern,			16,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "evtx",		0, evtx_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "ewf_e01",		0, ewf_e01_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "ewf_l01",		0, ewf_l01_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "lnk",		0, lnk_pattern,			20,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "msiecf",		0, msiecf_pattern,		24,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "nk2",		0, nk2_pattern,			12,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "olecf",		0, olecf_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "olecf_beta",		0, olecf_beta_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "pff",		0, pff_pattern,			4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "qcow",		0, qcow_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "rar",		0, rar_pattern,			7,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "regf",		0, regf_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "wtcdb_cache",	0, wtcdb_cache_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "wtcdb_index",	0, wtcdb_index_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ NULL,			0, NULL, 			0,	0 },
 	};
 
 	/* Random data
@@ -277,6 +281,7 @@ int sigscan_test_scanner_scan(
 		     signature->pattern_offset,
 		     signature->pattern,
 		     signature->pattern_size,
+		     signature->signature_flags,
 		     &error ) != 1 )
 		{
 			libcerror_error_set(

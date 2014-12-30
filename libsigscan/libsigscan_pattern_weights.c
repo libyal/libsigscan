@@ -24,6 +24,7 @@
 #include <types.h>
 
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_offset_group.h"
 #include "libsigscan_pattern_weights.h"
 #include "libsigscan_weight_group.h"
@@ -332,7 +333,7 @@ int libsigscan_pattern_weights_get_largest_weight(
 		return( -1 );
 	}
 	if( libcdata_list_get_last_element(
-	     pattern_weights->weight_groups_list,
+	     pattern_weights->offset_groups_list,
 	     &list_element,
 	     error ) != 1 )
 	{
@@ -340,7 +341,7 @@ int libsigscan_pattern_weights_get_largest_weight(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve last list element.",
+		 "%s: unable to retrieve last offset groups list element.",
 		 function );
 
 		return( -1 );
@@ -527,6 +528,15 @@ int libsigscan_pattern_weights_insert_offset(
 	}
 	else if( result == 0 )
 	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: adding offset group for weight: %d\n",
+			 function,
+			 weight );
+		}
+#endif
 		if( libsigscan_offset_group_initialize(
 		     &offset_group,
 		     weight,
@@ -536,8 +546,9 @@ int libsigscan_pattern_weights_insert_offset(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create offset group.",
-			 function );
+			 "%s: unable to create offset group for weight: %d.",
+			 function,
+			 weight );
 
 			return( -1 );
 		}
@@ -552,8 +563,9 @@ int libsigscan_pattern_weights_insert_offset(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-			 "%s: unable to insert offset into offset groups list.",
-			 function );
+			 "%s: unable to insert offset group for weight: %d into offset groups list.",
+			 function,
+			 weight );
 
 			libsigscan_offset_group_free(
 			 &offset_group,
@@ -562,6 +574,16 @@ int libsigscan_pattern_weights_insert_offset(
 			return( -1 );
 		}
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: adding pattern offset: %" PRIi64 " to offset group for weight: %d\n",
+		 function,
+		 pattern_offset,
+		 weight );
+	}
+#endif
 	if( libsigscan_offset_group_append_offset(
 	     offset_group,
 	     pattern_offset,
@@ -571,8 +593,9 @@ int libsigscan_pattern_weights_insert_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append offset to offset group.",
-		 function );
+		 "%s: unable to append pattern offset to offset group for weight: %d.",
+		 function,
+		 weight );
 
 		return( -1 );
 	}
@@ -726,6 +749,15 @@ int libsigscan_pattern_weights_insert_add_weight(
 	}
 	else if( result == 0 )
 	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: adding weight group for pattern offset: %" PRIi64 "\n",
+			 function,
+			 pattern_offset );
+		}
+#endif
 		if( libsigscan_weight_group_initialize(
 		     &weight_group,
 		     pattern_offset,
@@ -735,8 +767,9 @@ int libsigscan_pattern_weights_insert_add_weight(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create weight group.",
-			 function );
+			 "%s: unable to create weight group for pattern offset: %" PRIi64 ".",
+			 function,
+			 pattern_offset );
 
 			return( -1 );
 		}
@@ -751,8 +784,9 @@ int libsigscan_pattern_weights_insert_add_weight(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-			 "%s: unable to insert weight into weight groups list.",
-			 function );
+			 "%s: unable to insert weight group for pattern offset: %" PRIi64 " into weight groups list.",
+			 function,
+			 pattern_offset );
 
 			libsigscan_weight_group_free(
 			 &weight_group,
@@ -761,6 +795,16 @@ int libsigscan_pattern_weights_insert_add_weight(
 			return( -1 );
 		}
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: adding weight: %d to weight group for pattern offset: %" PRIi64 "\n",
+		 function,
+		 weight,
+		 pattern_offset );
+	}
+#endif
 	if( libsigscan_weight_group_add_weight(
 	     weight_group,
 	     weight,
@@ -770,8 +814,9 @@ int libsigscan_pattern_weights_insert_add_weight(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to add weight to weight group.",
-		 function );
+		 "%s: unable to add weight to weight group for pattern offset: %" PRIi64 ".",
+		 function,
+		 pattern_offset );
 
 		return( -1 );
 	}

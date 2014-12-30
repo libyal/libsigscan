@@ -2,10 +2,14 @@ TODO:
 * add debug print functions
 * complete libsigscan_skip_table_build
 * add missing comments in include header
+* libsigscan_signature_set - validate signature flags
 
 * signature table
   - add support for unbound/bound offsets
   - add support for ignore list
+
+20141230
+* worked on initial version
 
 20141229
 * updated dpkg files

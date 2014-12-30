@@ -227,9 +227,10 @@ int libsigscan_scanner_add_signature(
      libsigscan_scanner_t *scanner,
      const char *identifier,
      size_t identifier_size,
-     off64_t offset,
+     off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,
+     uint32_t signature_flags,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
@@ -281,6 +282,25 @@ int libsigscan_scanner_add_signature(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create signature.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_signature_set(
+	     signature,
+	     identifier,
+	     identifier_size,
+	     pattern_offset,
+	     pattern,
+	     pattern_size,
+	     signature_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set signature values.",
 		 function );
 
 		goto on_error;

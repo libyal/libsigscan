@@ -156,6 +156,7 @@ int libsigscan_signature_set(
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,
+     uint32_t signature_flags,
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_signature_set";
@@ -182,7 +183,8 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-	if( identifier_size > (size_t) SSIZE_MAX )
+	if( ( identifier_size == 0 )
+	 || ( identifier_size > (size_t) SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -204,7 +206,8 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-	if( pattern_size > (size_t) SSIZE_MAX )
+	if( ( pattern_size == 0 )
+	 || ( pattern_size > (size_t) SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -215,6 +218,7 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
+/* TODO validate singature flags */
 	if( signature->identifier != NULL )
 	{
 		memory_free(
@@ -293,6 +297,8 @@ int libsigscan_signature_set(
 
 		goto on_error;
 	}
+	signature->signature_flags = signature_flags;
+
 	return( 1 );
 
 on_error:
