@@ -277,6 +277,15 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 			return( -1 );
 		}
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of offsets: %d\n",
+		 function,
+		 number_of_offsets );
+	}
+#endif
 	if( number_of_offsets == 0 )
 	{
 		/* No similarity offset fall back on the occurence weights.
@@ -583,6 +592,15 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 			return( -1 );
 		}
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of offsets: %d\n",
+		 function,
+		 number_of_offsets );
+	}
+#endif
 	if( number_of_offsets == 0 )
 	{
 		/* No occurrnece offset fall back on the byte value weights.
@@ -753,10 +771,12 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 
 		return( -1 );
 	}
+/* TODO
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
+*/
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -804,9 +824,9 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: largest byte value weight: %d\n",
+		 "%s: number of offsets: %d\n",
 		 function,
-		 largest_weight );
+		 number_of_offsets );
 	}
 #endif
 	if( number_of_offsets > 0 )
@@ -882,6 +902,15 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 
 		return( -1 );
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of signatures: %d\n",
+		 function,
+		 number_of_signatures );
+	}
+#endif
 	switch( number_of_signatures )
 	{
 		case 0:
@@ -969,7 +998,7 @@ int libsigscan_scan_tree_build_node(
 	libsigscan_pattern_weights_t *similarity_weights = NULL;
 	libsigscan_signature_group_t *signature_group    = NULL;
 	static char *function                            = "libsigscan_scan_tree_build_node";
-	off64_t pattern_offset                           = 0;
+	off64_t pattern_offset                           = -1;
 	uint8_t byte_value                               = 0;
 	int byte_value_group_index                       = 0;
 	int signature_group_index                        = 0;
@@ -1212,6 +1241,15 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: most significant pattern offset: %" PRIi64 "\n",
+		 function,
+		 pattern_offset );
+	}
+#endif
 
 /* TODO fill scan tree node */
 

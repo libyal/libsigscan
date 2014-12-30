@@ -324,6 +324,7 @@ int libsigscan_offset_group_get_offset_by_index(
      off64_t *pattern_offset,
      libcerror_error_t **error )
 {
+	off64_t *offset_value = NULL;
 	static char *function = "libsigscan_offset_group_get_offset_by_index";
 
 	if( offset_group == NULL )
@@ -337,10 +338,21 @@ int libsigscan_offset_group_get_offset_by_index(
 
 		return( -1 );
 	}
+	if( pattern_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid pattern offset.",
+		 function );
+
+		return( -1 );
+	}
 	if( libcdata_array_get_entry_by_index(
 	     offset_group->offsets_array,
 	     offset_index,
-	     (intptr_t **) pattern_offset,
+	     (intptr_t **) &offset_value,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -353,6 +365,19 @@ int libsigscan_offset_group_get_offset_by_index(
 
 		return( -1 );
 	}
+	if( offset_value == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing offset value.",
+		 function );
+
+		return( -1 );
+	}
+	*pattern_offset = *offset_value;
+
 	return( 1 );
 }
 
