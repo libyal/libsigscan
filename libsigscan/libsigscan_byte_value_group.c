@@ -293,6 +293,10 @@ int libsigscan_byte_value_group_get_signature_group(
 
 			break;
 		}
+		if( ( *signature_group )->byte_value > byte_value )
+		{
+			break;
+		}
 		if( libcdata_list_element_get_next_element(
 		     list_element,
 		     &list_element,

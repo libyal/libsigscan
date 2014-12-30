@@ -33,6 +33,7 @@ libsigscan_la_SOURCES = \
 	libsigscan_libuna.h \
 	libsigscan_notify.c libsigscan_notify.h \
 	libsigscan_offset_group.c libsigscan_offset_group.h \
+	libsigscan_offsets_list.c libsigscan_offsets_list.h \
 	libsigscan_pattern_weights.c libsigscan_pattern_weights.h \
 	libsigscan_scan_object.c libsigscan_scan_object.h \
 	libsigscan_scan_result.c libsigscan_scan_result.h \

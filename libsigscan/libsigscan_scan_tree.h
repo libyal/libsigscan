@@ -86,7 +86,8 @@ int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_array_t *signatures_array,
      libsigscan_signature_table_t *signature_table,
-     libsigscan_scan_tree_node_t **node,
+     libcdata_list_t *offsets_ignore_list,
+     libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_build(

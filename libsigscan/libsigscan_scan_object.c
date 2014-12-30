@@ -26,6 +26,7 @@
 #include "libsigscan_definitions.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_scan_object.h"
+#include "libsigscan_scan_tree_node.h"
 
 /* Creates scan object
  * Make sure the value scan_object is referencing, is set to NULL
@@ -141,6 +142,7 @@ int libsigscan_scan_object_free(
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_scan_object_free";
+	int result            = 1;
 
 	if( scan_object == NULL )
 	{
@@ -155,11 +157,29 @@ int libsigscan_scan_object_free(
 	}
 	if( *scan_object != NULL )
 	{
+		/* No need to free signature values since they are freed elsewhere
+		 */
+		if( ( *scan_object )->type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SCAN_TREE_NODE )
+		{
+			if( libsigscan_scan_tree_node_free(
+			     (libsigscan_scan_tree_node_t **) &( ( *scan_object )->value ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free scan tree node.",
+				 function );
+
+				result = -1;
+			}
+		}
 		memory_free(
 		 *scan_object );
 
 		*scan_object = NULL;
 	}
-	return( 1 );
+	return( result );
 }
 

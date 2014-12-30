@@ -27,6 +27,7 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_libcnotify.h"
+#include "libsigscan_offsets_list.h"
 #include "libsigscan_signature.h"
 #include "libsigscan_signature_table.h"
 
@@ -177,6 +178,7 @@ int libsigscan_signature_table_free(
 int libsigscan_signature_table_fill(
      libsigscan_signature_table_t *signature_table,
      libcdata_array_t *signatures_array,
+     libcdata_list_t *offsets_ignore_list,
      libcerror_error_t **error )
 {
 	libsigscan_signature_t *signature = NULL;
@@ -184,6 +186,7 @@ int libsigscan_signature_table_fill(
 	off64_t pattern_offset            = 0;
 	size_t pattern_index              = 0;
 	int number_of_signatures          = 0;
+	int result                        = 0;
 	int signature_index               = 0;
 
 	if( signature_table == NULL )
@@ -286,22 +289,41 @@ int libsigscan_signature_table_fill(
 		     pattern_index < signature->pattern_size;
 		     pattern_index++ )
 		{
-/* TODO check ignore list for pattern offset and skip to next index */
-			if( libsigscan_signature_table_insert_signature(
-			     signature_table,
-			     pattern_offset,
-			     signature->pattern[ pattern_index ],
-			     signature,
-			     error ) != 1 )
+			result = libsigscan_offsets_list_has_offset(
+			          offsets_ignore_list,
+			          pattern_offset,
+			          error );
+
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to insert signature into signature table.",
-				 function );
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to determine if offsets ignore list contains: %" PRIi64 ".",
+				 function,
+				 pattern_offset );
 
 				return( -1 );
+			}
+			else if( result == 0 )
+			{
+				if( libsigscan_signature_table_insert_signature(
+				     signature_table,
+				     pattern_offset,
+				     signature->pattern[ pattern_index ],
+				     signature,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+					 "%s: unable to insert signature into signature table.",
+					 function );
+
+					return( -1 );
+				}
 			}
 			pattern_offset++;
 		}
@@ -470,6 +492,10 @@ int libsigscan_signature_table_get_byte_value_group_by_offset(
 		{
 			result = 1;
 
+			break;
+		}
+		if( ( *byte_value_group )->pattern_offset > pattern_offset )
+		{
 			break;
 		}
 		if( libcdata_list_element_get_next_element(

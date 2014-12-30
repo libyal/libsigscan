@@ -26,36 +26,7 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_offset_group.h"
-
-/* Frees an offset
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_offset_free(
-     off64_t **offset,
-     libcerror_error_t **error )
-{
-	static char *function = "libsigscan_offset_free";
-
-	if( offset == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid offset.",
-		 function );
-
-		return( -1 );
-	}
-	if( *offset != NULL )
-	{
-		memory_free(
-		 *offset );
-
-		*offset = NULL;
-	}
-	return( 1 );
-}
+#include "libsigscan_offsets_list.h"
 
 /* Creates an offset group
  * Make sure the value offset_group is referencing, is set to NULL

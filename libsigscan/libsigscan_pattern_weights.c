@@ -463,6 +463,10 @@ int libsigscan_pattern_weights_get_offset_group(
 
 			break;
 		}
+		if( ( *offset_group )->weight > weight )
+		{
+			break;
+		}
 		if( libcdata_list_element_get_next_element(
 		     list_element,
 		     &list_element,
@@ -682,6 +686,10 @@ int libsigscan_pattern_weights_get_weight_group(
 		{
 			result = 1;
 
+			break;
+		}
+		if( ( *weight_group )->pattern_offset > pattern_offset )
+		{
 			break;
 		}
 		if( libcdata_list_element_get_next_element(

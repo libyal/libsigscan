@@ -75,6 +75,7 @@ int libsigscan_signature_table_free(
 int libsigscan_signature_table_fill(
      libsigscan_signature_table_t *signature_table,
      libcdata_array_t *signatures_array,
+     libcdata_list_t *offsets_ignore_list,
      libcerror_error_t **error );
 
 int libsigscan_signature_table_get_number_of_byte_value_groups(
