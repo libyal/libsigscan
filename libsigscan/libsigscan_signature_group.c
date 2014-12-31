@@ -94,16 +94,15 @@ int libsigscan_signature_group_initialize(
 
 		return( -1 );
 	}
-	if( libcdata_array_initialize(
-	     &( ( *signature_group )->signatures_array ),
-	     0,
+	if( libcdata_list_initialize(
+	     &( ( *signature_group )->signatures_list ),
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create signatures array.",
+		 "%s: unable to create signatures list.",
 		 function );
 
 		goto on_error;
@@ -146,10 +145,10 @@ int libsigscan_signature_group_free(
 	}
 	if( *signature_group != NULL )
 	{
-		/* The signatures in the array are references and freed elsewhere
- */
-		if( libcdata_array_free(
-		     &( ( *signature_group )->signatures_array ),
+		/* The signatures in the list are references and freed elsewhere
+		 */
+		if( libcdata_list_free(
+		     &( ( *signature_group )->signatures_list ),
 		     NULL,
 		     error ) != 1 )
 		{
@@ -157,7 +156,7 @@ int libsigscan_signature_group_free(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free signatures array.",
+			 "%s: unable to free signatures list.",
 			 function );
 
 			result = -1;
@@ -271,8 +270,8 @@ int libsigscan_signature_group_get_number_of_signatures(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_number_of_entries(
-	     signature_group->signatures_array,
+	if( libcdata_list_get_number_of_elements(
+	     signature_group->signatures_list,
 	     number_of_signatures,
 	     error ) != 1 )
 	{
@@ -310,8 +309,8 @@ int libsigscan_signature_group_get_signature_by_index(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_entry_by_index(
-	     signature_group->signatures_array,
+	if( libcdata_list_get_value_by_index(
+	     signature_group->signatures_list,
 	     signature_index,
 	     (intptr_t **) signature,
 	     error ) != 1 )
@@ -338,7 +337,6 @@ int libsigscan_signature_group_append_signature(
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_signature_group_append_signature";
-	int entry_index       = 0;
 
 	if( signature_group == NULL )
 	{
@@ -351,9 +349,8 @@ int libsigscan_signature_group_append_signature(
 
 		return( -1 );
 	}
-	if( libcdata_array_append_entry(
-	     signature_group->signatures_array,
-	     &entry_index,
+	if( libcdata_list_append_value(
+	     signature_group->signatures_list,
 	     (intptr_t *) signature,
 	     error ) != 1 )
 	{

@@ -40,9 +40,9 @@ typedef struct libsigscan_internal_scanner libsigscan_internal_scanner_t;
 
 struct libsigscan_internal_scanner
 {
-	/* The signatures array
+	/* The signatures list
 	 */
-	libcdata_array_t *signatures_array;
+	libcdata_list_t *signatures_list;
 
 	/* The scan tree
 	 */

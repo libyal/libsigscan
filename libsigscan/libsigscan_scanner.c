@@ -95,16 +95,15 @@ int libsigscan_scanner_initialize(
 
 		return( -1 );
 	}
-	if( libcdata_array_initialize(
-	     &( internal_scanner->signatures_array ),
-	     0,
+	if( libcdata_list_initialize(
+	     &( internal_scanner->signatures_list ),
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create signatures array.",
+		 "%s: unable to create signatures list.",
 		 function );
 
 		goto on_error;
@@ -116,10 +115,10 @@ int libsigscan_scanner_initialize(
 on_error:
 	if( internal_scanner != NULL )
 	{
-		if( internal_scanner->signatures_array != NULL )
+		if( internal_scanner->signatures_list != NULL )
 		{
-			libcdata_array_free(
-			 &( internal_scanner->signatures_array ),
+			libcdata_list_free(
+			 &( internal_scanner->signatures_list ),
 			 NULL,
 			 NULL );
 		}
@@ -172,8 +171,8 @@ int libsigscan_scanner_free(
 				result = -1;
 			}
 		}
-		if( libcdata_array_free(
-		     &( internal_scanner->signatures_array ),
+		if( libcdata_list_free(
+		     &( internal_scanner->signatures_list ),
 		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
 		     error ) != 1 )
 		{
@@ -181,7 +180,7 @@ int libsigscan_scanner_free(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free signatures array.",
+			 "%s: unable to free signatures list.",
 			 function );
 
 			result = -1;
@@ -236,7 +235,6 @@ int libsigscan_scanner_add_signature(
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
 	libsigscan_signature_t *signature               = NULL;
 	static char *function                           = "libsigscan_scanner_add_signature";
-	int entry_index                                 = 0;
 
 	if( scanner == NULL )
 	{
@@ -305,9 +303,8 @@ int libsigscan_scanner_add_signature(
 
 		goto on_error;
 	}
-	if( libcdata_array_append_entry(
-	     internal_scanner->signatures_array,
-	     &entry_index,
+	if( libcdata_list_append_value(
+	     internal_scanner->signatures_list,
 	     (intptr_t *) signature,
 	     error ) != 1 )
 	{
@@ -315,7 +312,7 @@ int libsigscan_scanner_add_signature(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append signature to signatures array.",
+		 "%s: unable to append signature to signatures list.",
 		 function );
 
 		goto on_error;
@@ -374,7 +371,7 @@ int libsigscan_scanner_scan_start(
 		}
 		if( libsigscan_scan_tree_build(
 		     internal_scanner->scan_tree,
-		     internal_scanner->signatures_array,
+		     internal_scanner->signatures_list,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

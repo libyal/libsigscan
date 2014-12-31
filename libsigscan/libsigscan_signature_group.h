@@ -41,9 +41,9 @@ struct libsigscan_signature_group
 	 */
 	uint8_t byte_value;
 
-	/* The signatures array
+	/* The signatures list
 	 */
-	libcdata_array_t *signatures_array;
+	libcdata_list_t *signatures_list;
 };
 
 int libsigscan_signature_group_initialize(

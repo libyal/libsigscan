@@ -43,10 +43,6 @@ struct libsigscan_signature_table
 	 */
 	libcdata_list_t *byte_value_groups_list;
 
-	/* The signatures array
-	 */
-	libcdata_array_t *signatures_array;
-
 	/* The smallest offset
 	 */
 	off64_t smallest_offset;
@@ -74,7 +70,7 @@ int libsigscan_signature_table_free(
 
 int libsigscan_signature_table_fill(
      libsigscan_signature_table_t *signature_table,
-     libcdata_array_t *signatures_array,
+     libcdata_list_t *signatures_list,
      libcdata_list_t *offsets_ignore_list,
      libcerror_error_t **error );
 
@@ -100,17 +96,6 @@ int libsigscan_signature_table_insert_signature(
      off64_t pattern_offset,
      uint8_t byte_value,
      libsigscan_signature_t *signature,
-     libcerror_error_t **error );
-
-int libsigscan_signature_table_get_number_of_signatures(
-     libsigscan_signature_table_t *signature_table,
-     int *number_of_signatures,
-     libcerror_error_t **error );
-
-int libsigscan_signature_table_get_signature_by_index(
-     libsigscan_signature_table_t *signature_table,
-     int signature_index,
-     libsigscan_signature_t **signature,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

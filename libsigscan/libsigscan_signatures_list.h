@@ -1,5 +1,5 @@
 /*
- * The signatures array functions
+ * The signatures list functions
  *
  * Copyright (c) 2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSIGSCAN_SIGNATURES_ARRAY_H )
-#define _LIBSIGSCAN_SIGNATURES_ARRAY_H
+#if !defined( _LIBSIGSCAN_SIGNATURES_LIST_H )
+#define _LIBSIGSCAN_SIGNATURES_LIST_H
 
 #include <common.h>
 #include <types.h>
@@ -33,13 +33,8 @@
 extern "C" {
 #endif
 
-int libsigscan_signatures_array_get_number_of_signatures(
-     libcdata_array_t *signatures_array,
-     int *number_of_signatures,
-     libcerror_error_t **error );
-
-int libsigscan_signatures_array_remove_signature(
-     libcdata_array_t *signatures_array,
+int libsigscan_signatures_list_remove_signature(
+     libcdata_list_t *signatures_list,
      libsigscan_signature_t *signature,
      libcerror_error_t **error );
 

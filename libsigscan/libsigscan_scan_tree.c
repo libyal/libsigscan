@@ -36,7 +36,7 @@
 #include "libsigscan_signature.h"
 #include "libsigscan_signature_group.h"
 #include "libsigscan_signature_table.h"
-#include "libsigscan_signatures_array.h"
+#include "libsigscan_signatures_list.h"
 
 uint8_t libsigscan_common_byte_values[ 256 ] = {
 /*                           \a \b \t \n \v \f \r      */
@@ -920,7 +920,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
  */
 int libsigscan_scan_tree_get_most_significant_pattern_offset(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_array_t *signatures_array,
+     libcdata_list_t *signatures_list,
      libsigscan_pattern_weights_t *similarity_weights,
      libsigscan_pattern_weights_t *occurrence_weights,
      libsigscan_pattern_weights_t *byte_value_weights,
@@ -942,8 +942,8 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_number_of_entries(
-	     signatures_array,
+	if( libcdata_list_get_number_of_elements(
+	     signatures_list,
 	     &number_of_signatures,
 	     error ) != 1 )
 	{
@@ -1041,13 +1041,13 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
  */
 int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_array_t *signatures_array,
+     libcdata_list_t *signatures_list,
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
      libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error )
 {
-	libcdata_array_t *remaining_signatures_array      = NULL;
+	libcdata_list_t *remaining_signatures_list        = NULL;
 	libcdata_list_t *sub_offsets_ignore_list          = NULL;
 	libsigscan_byte_value_group_t *byte_value_group   = NULL;
 	libsigscan_pattern_weights_t *byte_value_weights  = NULL;
@@ -1103,9 +1103,9 @@ int libsigscan_scan_tree_build_node(
 
 		return( -1 );
 	}
-	if( libcdata_array_clone(
-	     &remaining_signatures_array,
-	     signatures_array,
+	if( libcdata_list_clone(
+	     &remaining_signatures_list,
+	     signatures_list,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libsigscan_signature_clone,
 	     error ) != 1 )
@@ -1114,7 +1114,7 @@ int libsigscan_scan_tree_build_node(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to clone remaining signatures array.",
+		 "%s: unable to clone remaining signatures list.",
 		 function );
 
 		goto on_error;
@@ -1330,7 +1330,7 @@ int libsigscan_scan_tree_build_node(
 	}
 	if( libsigscan_scan_tree_get_most_significant_pattern_offset(
 	     scan_tree,
-	     signatures_array,
+	     signatures_list,
 	     similarity_weights,
 	     occurrence_weights,
 	     byte_value_weights,
@@ -1573,7 +1573,7 @@ int libsigscan_scan_tree_build_node(
 			}
 			if( libsigscan_signature_table_fill(
 			     sub_signature_table,
-			     signature_group->signatures_array,
+			     signature_group->signatures_list,
 			     sub_offsets_ignore_list,
 			     error ) != 1 )
 			{
@@ -1588,7 +1588,7 @@ int libsigscan_scan_tree_build_node(
 			}
 			if( libsigscan_scan_tree_build_node(
 			     scan_tree,
-			     signatures_array,
+			     signature_group->signatures_list,
 			     sub_signature_table,
 			     sub_offsets_ignore_list,
 			     (libsigscan_scan_tree_node_t **) &scan_object_value,
@@ -1680,8 +1680,8 @@ int libsigscan_scan_tree_build_node(
 
 				goto on_error;
 			}
-			if( libsigscan_signatures_array_remove_signature(
-			     remaining_signatures_array,
+			if( libsigscan_signatures_list_remove_signature(
+			     remaining_signatures_list,
 			     (libsigscan_signature_t *) scan_object_value,
 			     error ) != 1 )
 			{
@@ -1699,8 +1699,8 @@ int libsigscan_scan_tree_build_node(
 	}
 	/* Determine the scan tree node default value
 	 */
-	if( libsigscan_signatures_array_get_number_of_signatures(
-	     remaining_signatures_array,
+	if( libcdata_list_get_number_of_elements(
+	     remaining_signatures_list,
 	     &number_of_remaining_signatures,
 	     error ) != 1 )
 	{
@@ -1751,7 +1751,7 @@ int libsigscan_scan_tree_build_node(
 		}
 		if( libsigscan_signature_table_fill(
 		     sub_signature_table,
-		     number_of_remaining_signatures,
+		     remaining_signatures_list,
 		     sub_offsets_ignore_list,
 		     error ) != 1 )
 		{
@@ -1766,7 +1766,7 @@ int libsigscan_scan_tree_build_node(
 		}
 		if( libsigscan_scan_tree_build_node(
 		     scan_tree,
-		     signatures_array,
+		     remaining_signatures_list,
 		     sub_signature_table,
 		     sub_offsets_ignore_list,
 		     (libsigscan_scan_tree_node_t **) &scan_object_value,
@@ -1797,44 +1797,45 @@ int libsigscan_scan_tree_build_node(
 			goto on_error;
 		}
 	}
-	if( libsigscan_scan_object_initialize(
-	     &scan_object,
-	     scan_object_type,
-	     scan_object_value,
-	     error ) != 1 )
+	if( scan_object_value != NULL )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create scan object",
-		 function );
+		if( libsigscan_scan_object_initialize(
+		     &scan_object,
+		     scan_object_type,
+		     scan_object_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create scan object",
+			 function );
 
-		goto on_error;
+			goto on_error;
+		}
+		/* The scan object takes over management of the scan object value
+		 */
+		scan_object_value = NULL;
+
+		if( libsigscan_scan_tree_node_set_default_value(
+		     *scan_tree_node,
+		     scan_object,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set scan tree node default value.",
+			 function );
+
+			goto on_error;
+		}
+		/* The scan tree node takes over management of the scan object
+		 */
+		scan_object = NULL;
 	}
-	/* The scan object takes over management of the scan object value
-	 */
-	scan_object_value = NULL;
-
-	if( libsigscan_scan_tree_node_set_default_value(
-	     *scan_tree_node,
-	     byte_value,
-	     scan_object,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set scan tree node default value.",
-		 function );
-
-		goto on_error;
-	}
-	/* The scan tree node takes over management of the scan object
-	 */
-	scan_object = NULL;
-
 	if( libcdata_list_free(
 	     &sub_offsets_ignore_list,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_free,
@@ -1849,8 +1850,8 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
-	if( libcdata_array_free(
-	     &remaining_signatures_array,
+	if( libcdata_list_free(
+	     &remaining_signatures_list,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 	     error ) != 1 )
 	{
@@ -1858,7 +1859,7 @@ int libsigscan_scan_tree_build_node(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free remaining signatures array.",
+		 "%s: unable to free remaining signatures list.",
 		 function );
 
 		goto on_error;
@@ -1934,10 +1935,10 @@ on_error:
 		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_free,
 		 NULL );
 	}
-	if( remaining_signatures_array != NULL )
+	if( remaining_signatures_list != NULL )
 	{
-		libcdata_array_free(
-		 &remaining_signatures_array,
+		libcdata_list_free(
+		 &remaining_signatures_list,
 		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 		 NULL );
 	}
@@ -1949,7 +1950,7 @@ on_error:
  */
 int libsigscan_scan_tree_build(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_array_t *signatures_array,
+     libcdata_list_t *signatures_list,
      libcerror_error_t **error )
 {
 	libcdata_list_t *offsets_ignore_list          = NULL;
@@ -1995,7 +1996,7 @@ int libsigscan_scan_tree_build(
 	}
 	if( libsigscan_signature_table_fill(
 	     signature_table,
-	     signatures_array,
+	     signatures_list,
 	     offsets_ignore_list,
 	     error ) != 1 )
 	{
@@ -2010,7 +2011,7 @@ int libsigscan_scan_tree_build(
 	}
 	if( libsigscan_scan_tree_build_node(
 	     scan_tree,
-	     signatures_array,
+	     signatures_list,
 	     signature_table,
 	     offsets_ignore_list,
 	     &( scan_tree->root_node ),

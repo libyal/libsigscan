@@ -148,7 +148,7 @@ int libsigscan_signature_table_free(
 	}
 	if( *signature_table != NULL )
 	{
-		/* The signatures_array is references and freed somewhere else
+		/* The signatures_list is references and freed somewhere else
 		 */
 		if( libcdata_list_free(
 		     &( ( *signature_table )->byte_value_groups_list ),
@@ -177,17 +177,18 @@ int libsigscan_signature_table_free(
  */
 int libsigscan_signature_table_fill(
      libsigscan_signature_table_t *signature_table,
-     libcdata_array_t *signatures_array,
+     libcdata_list_t *signatures_list,
      libcdata_list_t *offsets_ignore_list,
      libcerror_error_t **error )
 {
-	libsigscan_signature_t *signature = NULL;
-	static char *function             = "libsigscan_signature_table_fill";
-	off64_t pattern_offset            = 0;
-	size_t pattern_index              = 0;
-	int number_of_signatures          = 0;
-	int result                        = 0;
-	int signature_index               = 0;
+	libcdata_list_element_t *list_element = NULL;
+	libsigscan_signature_t *signature     = NULL;
+	static char *function                 = "libsigscan_signature_table_fill";
+	off64_t pattern_offset                = 0;
+	size_t pattern_index                  = 0;
+	int number_of_signatures              = 0;
+	int result                            = 0;
+	int signature_index                   = 0;
 
 	if( signature_table == NULL )
 	{
@@ -200,19 +201,8 @@ int libsigscan_signature_table_fill(
 
 		return( -1 );
 	}
-	if( signature_table->signatures_array != NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid signature table - signatures array already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_number_of_entries(
-	     signatures_array,
+	if( libcdata_list_get_number_of_elements(
+	     signatures_list,
 	     &number_of_signatures,
 	     error ) != 1 )
 	{
@@ -225,13 +215,24 @@ int libsigscan_signature_table_fill(
 
 		return( -1 );
 	}
-	for( signature_index = 0;
-	     signature_index < number_of_signatures;
-	     signature_index++ )
+	if( libcdata_list_get_first_element(
+	     signatures_list,
+	     &list_element,
+	     error ) != 1 )
 	{
-		if( libcdata_array_get_entry_by_index(
-		     signatures_array,
-		     signature_index,
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve first list element.",
+		 function );
+
+		return( -1 );
+	}
+	while( list_element != NULL )
+	{
+		if( libcdata_list_element_get_value(
+		     list_element,
 		     (intptr_t **) &signature,
 		     error ) != 1 )
 		{
@@ -239,9 +240,8 @@ int libsigscan_signature_table_fill(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve signature: %d.",
-			 function,
-			 signature_index );
+			 "%s: unable to retrieve signature.",
+			 function );
 
 			return( -1 );
 		}
@@ -251,9 +251,8 @@ int libsigscan_signature_table_fill(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing signature: %d.",
-			 function,
-			 signature_index );
+			 "%s: missing signature.",
+			 function );
 
 			return( -1 );
 		}
@@ -327,9 +326,21 @@ int libsigscan_signature_table_fill(
 			}
 			pattern_offset++;
 		}
-	}
-	signature_table->signatures_array = signatures_array;
+		if( libcdata_list_element_get_next_element(
+		     list_element,
+		     &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve next list element.",
+			 function );
 
+			return( -1 );
+		}
+	}
 	return( 1 );
 }
 
@@ -615,85 +626,6 @@ int libsigscan_signature_table_insert_signature(
 		 "%s: unable to insert signature into byte value group for pattern offset: %" PRIi64 ".",
 		 function,
 		 pattern_offset );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
-/* Retrieves the number of signatures
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_signature_table_get_number_of_signatures(
-     libsigscan_signature_table_t *signature_table,
-     int *number_of_signatures,
-     libcerror_error_t **error )
-{
-	static char *function = "libsigscan_signature_table_get_number_of_signatures";
-
-	if( signature_table == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid signature table.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_number_of_entries(
-	     signature_table->signatures_array,
-	     number_of_signatures,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of signatures.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
-/* Retrieves a specific signature
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_signature_table_get_signature_by_index(
-     libsigscan_signature_table_t *signature_table,
-     int signature_index,
-     libsigscan_signature_t **signature,
-     libcerror_error_t **error )
-{
-	static char *function = "libsigscan_signature_table_get_signature_by_index";
-
-	if( signature_table == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid signature table.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_entry_by_index(
-	     signature_table->signatures_array,
-	     signature_index,
-	     (intptr_t **) signature,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve signature: %d.",
-		 function,
-		 signature_index );
 
 		return( -1 );
 	}
