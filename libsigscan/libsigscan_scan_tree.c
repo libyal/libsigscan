@@ -1454,6 +1454,8 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
+	/* Determine the scan tree node byte values
+	 */
 	for( signature_group_index = 0;
 	     signature_group_index < number_of_signature_groups;
 	     signature_group_index++ )
@@ -1695,22 +1697,8 @@ int libsigscan_scan_tree_build_node(
 			}
 		}
 	}
-/* TODO */
-	if( libcdata_list_free(
-	     &sub_offsets_ignore_list,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_free,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free offsets ignore list.",
-		 function );
-
-		goto on_error;
-	}
-/* TODO */
+	/* Determine the scan tree node default value
+	 */
 	if( libsigscan_signatures_array_get_number_of_signatures(
 	     remaining_signatures_array,
 	     &number_of_remaining_signatures,
@@ -1727,13 +1715,154 @@ int libsigscan_scan_tree_build_node(
 	}
 	if( number_of_remaining_signatures == 1 )
 	{
-/* TODO set default pattern */
+		if( libsigscan_signature_group_get_signature_by_index(
+		     signature_group,
+		     0,
+		     (libsigscan_signature_t **) &scan_object_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve signature: 0.",
+			 function,
+			 pattern_offset,
+			 signature_group_index );
+
+			goto on_error;
+		}
+		scan_object_type = LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE;
 	}
 	else if( number_of_remaining_signatures > 1 )
 	{
-/* TODO build a default scan tree sub node */
+		if( libsigscan_signature_table_initialize(
+		     &sub_signature_table,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create signature table.",
+			 function );
+
+			goto on_error;
+		}
+		if( libsigscan_signature_table_fill(
+		     sub_signature_table,
+		     number_of_remaining_signatures,
+		     sub_offsets_ignore_list,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to fill signature table.",
+			 function );
+
+			goto on_error;
+		}
+		if( libsigscan_scan_tree_build_node(
+		     scan_tree,
+		     signatures_array,
+		     sub_signature_table,
+		     sub_offsets_ignore_list,
+		     (libsigscan_scan_tree_node_t **) &scan_object_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to build scan tree node.",
+			 function );
+
+			goto on_error;
+		}
+		scan_object_type = LIBSIGSCAN_SCAN_OBJECT_TYPE_SCAN_TREE_NODE;
+
+		if( libsigscan_signature_table_free(
+		     &sub_signature_table,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free signature table.",
+			 function );
+
+			goto on_error;
+		}
 	}
-/* TODO: add scan tree node to node */
+	if( libsigscan_scan_object_initialize(
+	     &scan_object,
+	     scan_object_type,
+	     scan_object_value,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scan object",
+		 function );
+
+		goto on_error;
+	}
+	/* The scan object takes over management of the scan object value
+	 */
+	scan_object_value = NULL;
+
+	if( libsigscan_scan_tree_node_set_default_value(
+	     *scan_tree_node,
+	     byte_value,
+	     scan_object,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan tree node default value.",
+		 function );
+
+		goto on_error;
+	}
+	/* The scan tree node takes over management of the scan object
+	 */
+	scan_object = NULL;
+
+	if( libcdata_list_free(
+	     &sub_offsets_ignore_list,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free offsets ignore list.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_free(
+	     &remaining_signatures_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free remaining signatures array.",
+		 function );
+
+		goto on_error;
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -1803,6 +1932,13 @@ on_error:
 		libcdata_list_free(
 		 &sub_offsets_ignore_list,
 		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_free,
+		 NULL );
+	}
+	if( remaining_signatures_array != NULL )
+	{
+		libcdata_array_free(
+		 &remaining_signatures_array,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 		 NULL );
 	}
 	return( -1 );
