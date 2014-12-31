@@ -24,6 +24,8 @@
 #include <types.h>
 
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
+#include "libsigscan_signature.h"
 #include "libsigscan_skip_table.h"
 
 /* Creates a skip table
@@ -32,7 +34,6 @@
  */
 int libsigscan_skip_table_initialize(
      libsigscan_skip_table_t **skip_table,
-     size_t skip_pattern_size,
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_skip_table_initialize";
@@ -55,17 +56,6 @@ int libsigscan_skip_table_initialize(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid skip table value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( skip_pattern_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid skip pattern size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -103,8 +93,6 @@ int libsigscan_skip_table_initialize(
 
 		return( -1 );
 	}
-	( *skip_table )->skip_pattern_size = skip_pattern_size;
-
 	return( 1 );
 
 on_error:
@@ -148,14 +136,20 @@ int libsigscan_skip_table_free(
 	return( 1 );
 }
 
-/* Builds the skip table
+/* Fill the skip table
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_skip_table_build(
+int libsigscan_skip_table_fill(
      libsigscan_skip_table_t *skip_table,
+     libcdata_list_t *signatures_list,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_skip_table_build";
+	libcdata_list_element_t *list_element = NULL;
+	libsigscan_signature_t *signature     = NULL;
+	static char *function                 = "libsigscan_skip_table_fill";
+	size_t pattern_index                  = 0;
+	size_t skip_value                     = 0;
+	uint8_t byte_value                    = 0;
 
 	if( skip_table == NULL )
 	{
@@ -168,7 +162,147 @@ int libsigscan_skip_table_build(
 
 		return( -1 );
 	}
-/* TODO iterate over the patterns and fill the skip table */
+	/* First determine the smallest pattern size
+	 */
+	if( libcdata_list_get_first_element(
+	     signatures_list,
+	     &list_element,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve first list element.",
+		 function );
+
+		return( -1 );
+	}
+	while( list_element != NULL )
+	{
+		if( libcdata_list_element_get_value(
+		     list_element,
+		     (intptr_t **) &signature,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve signature.",
+			 function );
+
+			return( -1 );
+		}
+		if( signature == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing signature.",
+			 function );
+
+			return( -1 );
+		}
+		if( ( skip_table->largest_pattern_size == 0 )
+		 || ( skip_table->largest_pattern_size < signature->pattern_size ) )
+		{
+			skip_table->largest_pattern_size = signature->pattern_size;
+		}
+		if( ( skip_table->smallest_pattern_size == 0 )
+		 || ( skip_table->smallest_pattern_size > signature->pattern_size ) )
+		{
+			skip_table->smallest_pattern_size = signature->pattern_size;
+		}
+		if( libcdata_list_element_get_next_element(
+		     list_element,
+		     &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve next list element.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	/* Next fill the skip table
+	 */
+	if( libcdata_list_get_first_element(
+	     signatures_list,
+	     &list_element,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve first list element.",
+		 function );
+
+		return( -1 );
+	}
+	while( list_element != NULL )
+	{
+		if( libcdata_list_element_get_value(
+		     list_element,
+		     (intptr_t **) &signature,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve signature.",
+			 function );
+
+			return( -1 );
+		}
+		if( signature == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing signature.",
+			 function );
+
+			return( -1 );
+		}
+		skip_value = skip_table->smallest_pattern_size;
+
+		for( pattern_index = 0;
+		     pattern_index < skip_table->smallest_pattern_size;
+		     pattern_index++ )
+		{
+			skip_value -= 1;
+			byte_value  = signature->pattern[ pattern_index ];
+
+			if( ( skip_table->skip_values[ byte_value ] == 0 )
+			 || ( skip_value < skip_table->skip_values[ byte_value ] ) )
+			{
+				skip_table->skip_values[ byte_value ] = skip_value;
+			}
+		}
+		if( libcdata_list_element_get_next_element(
+		     list_element,
+		     &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve next list element.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	return( 1 );
 }
 
@@ -207,7 +341,7 @@ int libsigscan_skip_table_get_skip_value(
 	}
 	if( skip_table->skip_values[ byte_value ] == 0 )
 	{
-		*skip_value = skip_table->skip_pattern_size;
+		*skip_value = skip_table->smallest_pattern_size;
 	}
 	else
 	{
@@ -216,16 +350,17 @@ int libsigscan_skip_table_get_skip_value(
 	return( 1 );
 }
 
-/* Sets a specific skip value
+#if defined( HAVE_DEBUG_OUTPUT )
+
+/* Prints a skip table
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_skip_table_set_skip_value(
+int libsigscan_skip_table_printf(
      libsigscan_skip_table_t *skip_table,
-     uint8_t byte_value,
-     size_t skip_value,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_skip_table_set_skip_value";
+	static char *function    = "libsigscan_skip_table_printf";
+	int16_t byte_value_index = 0;
 
 	if( skip_table == NULL )
 	{
@@ -238,33 +373,30 @@ int libsigscan_skip_table_set_skip_value(
 
 		return( -1 );
 	}
-	if( skip_value > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid skip value value out of bounds.",
-		 function );
+	libcnotify_printf(
+	 "Skip table:\n" );
 
-		return( -1 );
-	}
-	if( skip_value > (size_t) skip_table->skip_pattern_size )
+	for( byte_value_index = 0;
+	     byte_value_index < 256;
+	     byte_value_index++ )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid skip value value out of bounds.",
-		 function );
+		if( skip_table->skip_values[ byte_value_index] != 0 )
+		{
+			libcnotify_printf(
+			 "\tByte value: 0x%02" PRIx16 "\t: %" PRIzd "\n",
+			 byte_value_index,
+			 skip_table->skip_values[ byte_value_index] );
+		}
+	}
+	libcnotify_printf(
+	 "\tDefault\t\t: %" PRIzd "\n",
+         skip_table->smallest_pattern_size );
 
-		return( -1 );
-	}
-	if( ( skip_table->skip_values[ byte_value ] == 0 )
-	 || ( skip_value < skip_table->skip_values[ byte_value ] ) )
-	{
-		skip_table->skip_values[ byte_value ] = skip_value;
-	}
+	libcnotify_printf(
+	 "\n" );
+
 	return( 1 );
 }
+
+#endif
 

@@ -109,9 +109,6 @@ int libsigscan_signature_table_initialize(
 
 		goto on_error;
 	}
-	( *signature_table )->smallest_offset = -1;
-	( *signature_table )->largest_offset  = -1;
-
 	return( 1 );
 
 on_error:
@@ -186,7 +183,6 @@ int libsigscan_signature_table_fill(
 	static char *function                 = "libsigscan_signature_table_fill";
 	off64_t pattern_offset                = 0;
 	size_t pattern_index                  = 0;
-	int number_of_signatures              = 0;
 	int result                            = 0;
 	int signature_index                   = 0;
 
@@ -197,20 +193,6 @@ int libsigscan_signature_table_fill(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid signature table.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_list_get_number_of_elements(
-	     signatures_list,
-	     &number_of_signatures,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of signatures.",
 		 function );
 
 		return( -1 );
@@ -272,18 +254,6 @@ int libsigscan_signature_table_fill(
 #endif
 		pattern_offset = signature->pattern_offset;
 
-		if( ( signature_table->smallest_offset == -1 )
-		 || ( signature_table->smallest_offset > pattern_offset ) )
-		{
-			signature_table->smallest_offset = pattern_offset;
-			signature_table->smallest_size   = signature->pattern_size;
-		}
-		if( ( signature_table->largest_offset == -1 )
-		 || ( signature_table->largest_offset > pattern_offset ) )
-		{
-			signature_table->largest_offset = pattern_offset;
-			signature_table->largest_size   = signature->pattern_size;
-		}
 		for( pattern_index = 0;
 		     pattern_index < signature->pattern_size;
 		     pattern_index++ )

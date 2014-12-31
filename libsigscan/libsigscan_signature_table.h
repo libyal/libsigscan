@@ -42,22 +42,6 @@ struct libsigscan_signature_table
 	/* The byte value groups list sorted by offset and byte value
 	 */
 	libcdata_list_t *byte_value_groups_list;
-
-	/* The smallest offset
-	 */
-	off64_t smallest_offset;
-
-	/* The size of the pattern of the signature with the smallest offset
-	 */
-	size_t smallest_size;
-
-	/* The largest offset
-	 */
-	off64_t largest_offset;
-
-	/* The size of the pattern of the signature with the largest offset
-	 */
-	size_t largest_size;
 };
 
 int libsigscan_signature_table_initialize(

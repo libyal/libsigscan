@@ -37,6 +37,7 @@
 #include "libsigscan_signature_group.h"
 #include "libsigscan_signature_table.h"
 #include "libsigscan_signatures_list.h"
+#include "libsigscan_skip_table.h"
 
 uint8_t libsigscan_common_byte_values[ 256 ] = {
 /*                           \a \b \t \n \v \f \r      */
@@ -176,6 +177,22 @@ int libsigscan_scan_tree_free(
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free root scan tree node.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( ( *scan_tree )->skip_table != NULL )
+		{
+			if( libsigscan_skip_table_free(
+			     &( ( *scan_tree )->skip_table ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free skip table.",
 				 function );
 
 				result = -1;
@@ -2040,12 +2057,6 @@ int libsigscan_scan_tree_build(
 
 		goto on_error;
 	}
-	/* The skip table is determined to provide for the Boyer–Moore–Horspool skip values
-	 */
-
-/* TODO create skip table */
-/* TODO determine largest pattern size */
-
 	if( libsigscan_signature_table_free(
 	     &signature_table,
 	     error ) != 1 )
@@ -2059,9 +2070,44 @@ int libsigscan_scan_tree_build(
 
 		goto on_error;
 	}
+	/* The skip table is determined to provide for the Boyer–Moore–Horspool skip values
+	 */
+	if( libsigscan_skip_table_initialize(
+	     &( scan_tree->skip_table ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create skip table.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_skip_table_fill(
+	     scan_tree->skip_table,
+	     signatures_list,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to fill skip table.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
+	if( scan_tree->skip_table != NULL )
+	{
+		libsigscan_skip_table_free(
+		 &( scan_tree->skip_table ),
+		 NULL );
+	}
 	if( offsets_ignore_list != NULL )
 	{
 		libcdata_list_free(

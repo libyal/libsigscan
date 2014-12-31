@@ -36,9 +36,13 @@ typedef struct libsigscan_skip_table libsigscan_skip_table_t;
 
 struct libsigscan_skip_table
 {
-	/* The skip pattern size
+	/* The largest pattern size
 	 */
-	size_t skip_pattern_size;
+	size_t largest_pattern_size;
+
+	/* The smallest pattern size
+	 */
+	size_t smallest_pattern_size;
 
 	/* The skip values
 	 */
@@ -47,16 +51,15 @@ struct libsigscan_skip_table
 
 int libsigscan_skip_table_initialize(
      libsigscan_skip_table_t **skip_table,
-     size_t skip_pattern_size,
      libcerror_error_t **error );
 
 int libsigscan_skip_table_free(
      libsigscan_skip_table_t **skip_table,
      libcerror_error_t **error );
 
-/* TODO */
-int libsigscan_skip_table_build(
+int libsigscan_skip_table_fill(
      libsigscan_skip_table_t *skip_table,
+     libcdata_list_t *signatures_list,
      libcerror_error_t **error );
 
 int libsigscan_skip_table_get_skip_value(
@@ -65,11 +68,13 @@ int libsigscan_skip_table_get_skip_value(
      size_t *skip_value,
      libcerror_error_t **error );
 
-int libsigscan_skip_table_set_skip_value(
+#if defined( HAVE_DEBUG_OUTPUT )
+
+int libsigscan_skip_table_printf(
      libsigscan_skip_table_t *skip_table,
-     uint8_t byte_value,
-     size_t skip_value,
      libcerror_error_t **error );
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 #if defined( __cplusplus )
 }

@@ -30,6 +30,7 @@
 #include "libsigscan_pattern_weights.h"
 #include "libsigscan_scan_tree_node.h"
 #include "libsigscan_signature_table.h"
+#include "libsigscan_skip_table.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -42,6 +43,10 @@ struct libsigscan_scan_tree
 	/* The root (scan tree) node
 	 */
 	libsigscan_scan_tree_node_t *root_node;
+
+	/* The skip table
+	 */
+	libsigscan_skip_table_t *skip_table;
 };
 
 int libsigscan_scan_tree_initialize(

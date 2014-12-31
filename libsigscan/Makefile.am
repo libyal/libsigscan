@@ -20,7 +20,6 @@ libsigscan_la_SOURCES = \
 	libsigscan.c \
 	libsigscan_byte_value_group.c libsigscan_byte_value_group.h \
 	libsigscan_codepage.h \
-	libsigscan_debug.c libsigscan_debug.h \
 	libsigscan_definitions.h \
 	libsigscan_error.c libsigscan_error.h \
 	libsigscan_extern.h \
