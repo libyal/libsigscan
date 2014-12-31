@@ -176,6 +176,7 @@ int libsigscan_signature_table_fill(
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *signatures_list,
      libcdata_list_t *offsets_ignore_list,
+     int pattern_offsets_mode,
      libcerror_error_t **error )
 {
 	libcdata_list_element_t *list_element = NULL;

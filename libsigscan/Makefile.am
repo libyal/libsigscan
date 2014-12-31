@@ -36,6 +36,7 @@ libsigscan_la_SOURCES = \
 	libsigscan_pattern_weights.c libsigscan_pattern_weights.h \
 	libsigscan_scan_object.c libsigscan_scan_object.h \
 	libsigscan_scan_result.c libsigscan_scan_result.h \
+	libsigscan_scan_state.c libsigscan_scan_state.h \
 	libsigscan_scan_tree.c libsigscan_scan_tree.h \
 	libsigscan_scan_tree_node.c libsigscan_scan_tree_node.h \
 	libsigscan_scanner.c libsigscan_scanner.h \

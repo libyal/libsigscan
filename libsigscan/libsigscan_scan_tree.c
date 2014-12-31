@@ -1061,6 +1061,7 @@ int libsigscan_scan_tree_build_node(
      libcdata_list_t *signatures_list,
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
+     int pattern_offsets_mode,
      libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error )
 {
@@ -1592,6 +1593,7 @@ int libsigscan_scan_tree_build_node(
 			     sub_signature_table,
 			     signature_group->signatures_list,
 			     sub_offsets_ignore_list,
+			     pattern_offsets_mode,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1608,6 +1610,7 @@ int libsigscan_scan_tree_build_node(
 			     signature_group->signatures_list,
 			     sub_signature_table,
 			     sub_offsets_ignore_list,
+			     pattern_offsets_mode,
 			     (libsigscan_scan_tree_node_t **) &scan_object_value,
 			     error ) != 1 )
 			{
@@ -1770,6 +1773,7 @@ int libsigscan_scan_tree_build_node(
 		     sub_signature_table,
 		     remaining_signatures_list,
 		     sub_offsets_ignore_list,
+		     pattern_offsets_mode,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1786,6 +1790,7 @@ int libsigscan_scan_tree_build_node(
 		     remaining_signatures_list,
 		     sub_signature_table,
 		     sub_offsets_ignore_list,
+		     pattern_offsets_mode,
 		     (libsigscan_scan_tree_node_t **) &scan_object_value,
 		     error ) != 1 )
 		{
@@ -1968,6 +1973,7 @@ on_error:
 int libsigscan_scan_tree_build(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_list_t *signatures_list,
+     int pattern_offsets_mode,
      libcerror_error_t **error )
 {
 	libcdata_list_t *offsets_ignore_list          = NULL;
@@ -2015,6 +2021,7 @@ int libsigscan_scan_tree_build(
 	     signature_table,
 	     signatures_list,
 	     offsets_ignore_list,
+	     pattern_offsets_mode,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -2031,6 +2038,7 @@ int libsigscan_scan_tree_build(
 	     signatures_list,
 	     signature_table,
 	     offsets_ignore_list,
+	     pattern_offsets_mode,
 	     &( scan_tree->root_node ),
 	     error ) != 1 )
 	{

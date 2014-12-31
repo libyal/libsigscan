@@ -23,6 +23,7 @@
 #include <memory.h>
 #include <types.h>
 
+#include "libsigscan_definitions.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_signature.h"
 
@@ -225,7 +226,8 @@ int libsigscan_signature_set(
      uint32_t signature_flags,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_set";
+	static char *function    = "libsigscan_signature_set";
+	uint32_t supported_flags = 0;
 
 	if( signature == NULL )
 	{
@@ -284,7 +286,20 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-/* TODO validate singature flags */
+	supported_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START
+	                | LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END;
+
+	if( ( signature_flags & ~supported_flags ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported signature flags.",
+		 function );
+
+		return( -1 );
+	}
 	if( signature->identifier != NULL )
 	{
 		memory_free(
@@ -334,7 +349,7 @@ int libsigscan_signature_set(
 	signature->pattern_offset = pattern_offset;
 
 	signature->pattern = (uint8_t *) memory_allocate(
-	                                  sizeof( uint8_t ) * signature->pattern_size );
+	                                  sizeof( uint8_t ) * pattern_size );
 
 	if( signature->pattern == NULL )
 	{

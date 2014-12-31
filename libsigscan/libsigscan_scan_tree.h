@@ -92,12 +92,14 @@ int libsigscan_scan_tree_build_node(
      libcdata_list_t *signatures_list,
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
+     int pattern_offsets_mode,
      libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_build(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_list_t *signatures_list,
+     int pattern_offsets_mode,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

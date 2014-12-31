@@ -113,6 +113,7 @@ int main( int argc, char * const argv[] )
 {
 	libcerror_error_t *error              = NULL;
 	libcstring_system_character_t *source = NULL;
+	libsigscan_scan_state_t *scan_state   = NULL;
 	char *program                         = "sigscan";
 	libcstring_system_integer_t option    = 0;
 	int verbose                           = 0;
@@ -211,12 +212,23 @@ int main( int argc, char * const argv[] )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize info handle.\n" );
+		 "Unable to create scan handle.\n" );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_initialize(
+	     &scan_state,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create scan state.\n" );
 
 		goto on_error;
 	}
 	if( scan_handle_scan_input(
 	     sigscan_scan_handle,
+	     scan_state,
 	     source,
 	     &error ) != 1 )
 	{
@@ -224,6 +236,16 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to scan: %" PRIs_LIBCSTRING_SYSTEM ".\n",
 		 source );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_free(
+	     &scan_state,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free scan state.\n" );
 
 		goto on_error;
 	}
@@ -246,6 +268,12 @@ on_error:
 		 error );
 		libcerror_error_free(
 		 &error );
+	}
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
 	}
 	if( sigscan_scan_handle != NULL )
 	{

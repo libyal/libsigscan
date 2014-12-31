@@ -44,9 +44,15 @@ struct libsigscan_internal_scanner
 	 */
 	libcdata_list_t *signatures_list;
 
-	/* The scan tree
+	/* The header (signatures) scan tree
+	 * Header signatures are signatures with a pattern offset relative from the start of the data.
 	 */
-	libsigscan_scan_tree_t *scan_tree;
+	libsigscan_scan_tree_t *header_scan_tree;
+
+	/* The footer (signatures) scan tree
+	 * Footer signatures are signatures with a pattern offset relative from the end of the data.
+	 */
+	libsigscan_scan_tree_t *footer_scan_tree;
 
 	/* Value to indicate if abort was signalled
 	 */
@@ -82,16 +88,19 @@ int libsigscan_scanner_add_signature(
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_start(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_buffer(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const uint8_t *buffer,
      size_t buffer_size,
      libcerror_error_t **error );
@@ -99,6 +108,7 @@ int libsigscan_scanner_scan_buffer(
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const char *filename,
      libcerror_error_t **error );
 
@@ -107,6 +117,7 @@ int libsigscan_scanner_scan_file(
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file_wide(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const wchar_t *filename,
      libcerror_error_t **error );
 
@@ -115,20 +126,8 @@ int libsigscan_scanner_scan_file_wide(
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file_io_handle(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libbfio_handle_t *file_io_handle,
-     libcerror_error_t **error );
-
-LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_get_number_of_scan_results(
-     libsigscan_scanner_t *scanner,
-     int *number_of_scan_results,
-     libcerror_error_t **error );
-
-LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_get_scan_result(
-     libsigscan_scanner_t *scanner,
-     int scan_result_index,
-     libsigscan_scan_result_t **scan_result,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

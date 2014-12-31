@@ -65,11 +65,13 @@ int scan_handle_signal_abort(
 
 int scan_handle_scan_input(
      scan_handle_t *scan_handle,
+     libsigscan_scan_state_t *scan_state,
      const libcstring_system_character_t *filename,
      libcerror_error_t **error );
 
 int scan_handle_scan_results_fprint(
      scan_handle_t *scan_handle,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

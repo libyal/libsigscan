@@ -159,6 +159,10 @@ int libsigscan_error_backtrace_sprint(
 
 /* Creates a scanner
  * Make sure the value scanner is referencing, is set to NULL
+ *
+ * Currently only supports "bounded" sigatures (signatures with a fixed offset).
+ * Unbounded signatures can be set but will be ignored.
+ *
  * Returns 1 if successful or -1 on error
  */
 LIBSIGSCAN_EXTERN \
@@ -174,11 +178,17 @@ int libsigscan_scanner_free(
      libsigscan_scanner_t **scanner,
      libsigscan_error_t **error );
 
+/* Signals the scanner to abort its current activity
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_signal_abort(
      libsigscan_scanner_t *scanner,
      libsigscan_error_t **error );
 
+/* Adds a signature
+ * Returns 1 if successful, 0 if signature already exists or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_add_signature(
      libsigscan_scanner_t *scanner,
@@ -190,34 +200,54 @@ int libsigscan_scanner_add_signature(
      uint32_t signature_flags,
      libsigscan_error_t **error );
 
+/* Starts the scan
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_scan_strart(
+int libsigscan_scanner_scan_start(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libsigscan_error_t **error );
 
+/* Stops the scan
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libsigscan_error_t **error );
 
+/* Scans a buffer
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_buffer(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const uint8_t *buffer,
      size_t buffer_size,
      libsigscan_error_t **error );
 
+/* Scans a file
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const char *filename,
      libsigscan_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
+/* Scans a file
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file_wide(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const wchar_t *filename,
      libsigscan_error_t **error );
 
@@ -225,32 +255,17 @@ int libsigscan_scanner_scan_file_wide(
 
 #if defined( LIBSIGSCAN_HAVE_BFIO )
 
+/* Scans a file using a Basic File IO (bfio) handle
+ * Returns 1 if successful or -1 on error
+ */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file_io_handle(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libbfio_handle_t *file_io_handle,
      libsigscan_error_t **error );
 
 #endif /* defined( LIBSIGSCAN_HAVE_BFIO ) */
-
-/* Retrieves the number of scan results
- * Returns 1 if successful or -1 on error
- */
-LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_get_number_of_scan_results(
-     libsigscan_scanner_t *scanner,
-     int *number_of_scan_results,
-     libsigscan_error_t **error );
-
-/* Retrieves a specific scan result
- * Returns 1 if successful or -1 on error
- */
-LIBSIGSCAN_EXTERN \
-int libsigscan_scanner_get_scan_result(
-     libsigscan_scanner_t *scanner,
-     int scan_result_index,
-     libsigscan_scan_result_t **scan_result,
-     libsigscan_error_t **error );
 
 /* -------------------------------------------------------------------------
  * Scan result functions
@@ -261,6 +276,55 @@ int libsigscan_scanner_get_scan_result(
  */
 LIBSIGSCAN_EXTERN \
 int libsigscan_scan_result_free(
+     libsigscan_scan_result_t **scan_result,
+     libsigscan_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Scan state functions
+ * ------------------------------------------------------------------------- */
+
+/* Creates a scan state
+ * Make sure the value scan_state is referencing, is set to NULL
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_state_initialize(
+     libsigscan_scan_state_t **scan_state,
+     libsigscan_error_t **error );
+
+/* Frees a scan state
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_state_free(
+     libsigscan_scan_state_t **scan_state,
+     libsigscan_error_t **error );
+
+/* Sets the data size
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_state_set_data_size(
+     libsigscan_scan_state_t *scan_state,
+     size64_t data_size,
+     libsigscan_error_t **error );
+
+/* Retrieves the number of scan results
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_state_get_number_of_results(
+     libsigscan_scan_state_t *scan_state,
+     int *number_of_results,
+     libsigscan_error_t **error );
+
+/* Retrieves a specific scan result
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_state_get_result(
+     libsigscan_scan_state_t *scan_state,
+     int result_index,
      libsigscan_scan_result_t **scan_result,
      libsigscan_error_t **error );
 

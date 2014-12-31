@@ -28,11 +28,17 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_scanner.h"
+#include "libsigscan_scan_state.h"
 #include "libsigscan_scan_tree.h"
 #include "libsigscan_signature.h"
+#include "libsigscan_types.h"
 
 /* Creates a scanner
  * Make sure the value scanner is referencing, is set to NULL
+ *
+ * Currently only supports "bounded" sigatures (signatures with a fixed offset).
+ * Unbounded signatures can be set but will be ignored.
+ *
  * Returns 1 if successful or -1 on error
  */
 int libsigscan_scanner_initialize(
@@ -155,17 +161,33 @@ int libsigscan_scanner_free(
 		internal_scanner = (libsigscan_internal_scanner_t *) *scanner;
 		*scanner         = NULL;
 
-		if( internal_scanner->scan_tree != NULL )
+		if( internal_scanner->header_scan_tree != NULL )
 		{
 			if( libsigscan_scan_tree_free(
-			     &( internal_scanner->scan_tree ),
+			     &( internal_scanner->header_scan_tree ),
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free scan tree.",
+				 "%s: unable to free header scan tree.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( internal_scanner->footer_scan_tree != NULL )
+		{
+			if( libsigscan_scan_tree_free(
+			     &( internal_scanner->footer_scan_tree ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free footer scan tree.",
 				 function );
 
 				result = -1;
@@ -249,13 +271,24 @@ int libsigscan_scanner_add_signature(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-	if( internal_scanner->scan_tree != NULL )
+	if( internal_scanner->header_scan_tree != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid scanner - scan tree already set.",
+		 "%s: invalid scanner - header scan tree already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_scanner->footer_scan_tree != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid scanner - footer scan tree already set.",
 		 function );
 
 		return( -1 );
@@ -336,6 +369,7 @@ on_error:
  */
 int libsigscan_scanner_scan_start(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
@@ -354,43 +388,92 @@ int libsigscan_scanner_scan_start(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-	if( internal_scanner->scan_tree == NULL )
+	if( internal_scanner->header_scan_tree == NULL )
 	{
 		if( libsigscan_scan_tree_initialize(
-		     &( internal_scanner->scan_tree ),
+		     &( internal_scanner->header_scan_tree ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create scan tree.",
+			 "%s: unable to create header scan tree.",
 			 function );
 
 			return( -1 );
 		}
 		if( libsigscan_scan_tree_build(
-		     internal_scanner->scan_tree,
+		     internal_scanner->header_scan_tree,
 		     internal_scanner->signatures_list,
+		     LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to build scan tree.",
+			 "%s: unable to build header scan tree.",
 			 function );
 
 			libsigscan_scan_tree_free(
-			 &( internal_scanner->scan_tree ),
+			 &( internal_scanner->header_scan_tree ),
 			 NULL );
 
 			return( -1 );
 		}
 	}
-/* TODO
- * initialize scan state?
- */
+	if( internal_scanner->footer_scan_tree == NULL )
+	{
+		if( libsigscan_scan_tree_initialize(
+		     &( internal_scanner->footer_scan_tree ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create footer scan tree.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsigscan_scan_tree_build(
+		     internal_scanner->footer_scan_tree,
+		     internal_scanner->signatures_list,
+		     LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to build footer scan tree.",
+			 function );
+
+			libsigscan_scan_tree_free(
+			 &( internal_scanner->footer_scan_tree ),
+			 NULL );
+
+			return( -1 );
+		}
+	}
+/* TODO determine header spanning range */
+/* TODO determine footer spanning range */
+	if( libsigscan_scan_state_start(
+	     scan_state,
+	     internal_scanner->header_scan_tree->root_node,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -399,6 +482,7 @@ int libsigscan_scanner_scan_start(
  */
 int libsigscan_scanner_scan_stop(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
@@ -417,10 +501,21 @@ int libsigscan_scanner_scan_stop(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO
- * scan remaining data
- * destroy scan state?
- */
+/* TODO check scan state - is the right state */
+/* TODO scan remaining data */
+	if( libsigscan_scan_state_stop(
+	     scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -429,6 +524,7 @@ int libsigscan_scanner_scan_stop(
  */
 int libsigscan_scanner_scan_buffer(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const uint8_t *buffer,
      size_t buffer_size,
      libcerror_error_t **error )
@@ -449,7 +545,6 @@ int libsigscan_scanner_scan_buffer(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO */
 	if( buffer == NULL )
 	{
 		libcerror_error_set(
@@ -467,11 +562,12 @@ int libsigscan_scanner_scan_buffer(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid buffer size value out of bounds.",
+		 "%s: invalid buffer size value exceeds maximum.",
 		 function );
 
 		return( -1 );
 	}
+/* TODO check scan state - is the right state */
 /* TODO */
 	return( 1 );
 }
@@ -481,6 +577,7 @@ int libsigscan_scanner_scan_buffer(
  */
 int libsigscan_scanner_scan_file(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const char *filename,
      libcerror_error_t **error )
 {
@@ -500,7 +597,22 @@ int libsigscan_scanner_scan_file(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO */
+/* TODO check scan state - is the right state */
+/* TODO set active node */
+	if( libsigscan_scan_state_update(
+	     scan_state,
+	     NULL,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -511,6 +623,7 @@ int libsigscan_scanner_scan_file(
  */
 int libsigscan_scanner_scan_file_wide(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      const wchar_t *filename,
      libcerror_error_t **error )
 {
@@ -530,7 +643,22 @@ int libsigscan_scanner_scan_file_wide(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO */
+/* TODO check scan state - is the right state */
+/* TODO set active node */
+	if( libsigscan_scan_state_update(
+	     scan_state,
+	     NULL,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -541,6 +669,7 @@ int libsigscan_scanner_scan_file_wide(
  */
 int libsigscan_scanner_scan_file_io_handle(
      libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
@@ -560,64 +689,22 @@ int libsigscan_scanner_scan_file_io_handle(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO */
-	return( 1 );
-}
-
-/* Retrieves the number of scan results
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_scanner_get_number_of_scan_results(
-     libsigscan_scanner_t *scanner,
-     int *number_of_scan_results,
-     libcerror_error_t **error )
-{
-	libsigscan_internal_scanner_t *internal_scanner = NULL;
-	static char *function                           = "libsigscan_scanner_get_number_of_scan_results";
-
-	if( scanner == NULL )
+/* TODO check scan state - is the right state */
+/* TODO set active node */
+	if( libsigscan_scan_state_update(
+	     scan_state,
+	     NULL,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid scanner.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
 		 function );
 
 		return( -1 );
 	}
-	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
-
-/* TODO */
-	return( 1 );
-}
-
-/* Retrieves a specific scan result
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_scanner_get_scan_result(
-     libsigscan_scanner_t *scanner,
-     int scan_result_index,
-     libsigscan_scan_result_t **scan_result,
-     libcerror_error_t **error )
-{
-	libsigscan_internal_scanner_t *internal_scanner = NULL;
-	static char *function                           = "libsigscan_scanner_get_scan_result";
-
-	if( scanner == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid scanner.",
-		 function );
-
-		return( -1 );
-	}
-	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
-
-/* TODO */
 	return( 1 );
 }
 

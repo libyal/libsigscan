@@ -212,6 +212,7 @@ int scan_handle_signal_abort(
  */
 int scan_handle_scan_input(
      scan_handle_t *scan_handle,
+     libsigscan_scan_state_t *scan_state,
      const libcstring_system_character_t *filename,
      libcerror_error_t **error )
 {
@@ -231,11 +232,13 @@ int scan_handle_scan_input(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsigscan_scanner_scan_file_wide(
 	     scan_handle->scanner,
+	     scan_state,
 	     filename,
 	     error ) != 1 )
 #else
 	if( libsigscan_scanner_scan_file(
 	     scan_handle->scanner,
+	     scan_state,
 	     filename,
 	     error ) != 1 )
 #endif
@@ -251,6 +254,7 @@ int scan_handle_scan_input(
 	}
 	if( scan_handle_scan_results_fprint(
 	     scan_handle,
+	     scan_state,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -270,12 +274,13 @@ int scan_handle_scan_input(
  */
 int scan_handle_scan_results_fprint(
      scan_handle_t *scan_handle,
+     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error )
 {
 	libsigscan_scan_result_t *scan_result = NULL;
 	static char *function                 = "scan_handle_scan_results_fprint";
-	int number_of_scan_results            = 0;
-	int scan_result_index                 = 0;
+	int number_of_results                 = 0;
+	int result_index                      = 0;
 
 	if( scan_handle == NULL )
 	{
@@ -288,9 +293,9 @@ int scan_handle_scan_results_fprint(
 
 		return( -1 );
 	}
-	if( libsigscan_scanner_get_number_of_scan_results(
-	     scan_handle->scanner,
-	     &number_of_scan_results,
+	if( libsigscan_scan_state_get_number_of_results(
+	     scan_state,
+	     &number_of_results,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -309,26 +314,26 @@ int scan_handle_scan_results_fprint(
 	fprintf(
 	 scan_handle->notify_stream,
 	 "\tNumber of scan results\t: %d\n",
-	 number_of_scan_results );
+	 number_of_results );
 
 	fprintf(
 	 scan_handle->notify_stream,
 	 "\n" );
 
-	if( number_of_scan_results > 0 )
+	if( number_of_results > 0 )
 	{
-		for( scan_result_index = 0;
-		     scan_result_index < number_of_scan_results;
-		     scan_result_index++ )
+		for( result_index = 0;
+		     result_index < number_of_results;
+		     result_index++ )
 		{
 			fprintf(
 			 scan_handle->notify_stream,
 			 "Scan result: %d\n",
-			 scan_result_index );
+			 result_index );
 
-			if( libsigscan_scanner_get_scan_result(
-			     scan_handle->scanner,
-			     scan_result_index,
+			if( libsigscan_scan_state_get_result(
+			     scan_state,
+			     result_index,
 			     &scan_result,
 			     error ) != 1 )
 			{
@@ -338,7 +343,7 @@ int scan_handle_scan_results_fprint(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve scan result: %d.",
 				 function,
-				 scan_result_index );
+				 result_index );
 
 				goto on_error;
 			}
@@ -355,7 +360,7 @@ int scan_handle_scan_results_fprint(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve scan result: %d identifier.",
 				 function,
-				 scan_result_index );
+				 result_index );
 
 				goto on_error;
 			}

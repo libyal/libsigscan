@@ -203,6 +203,7 @@ typedef int64_t off64_t;
  */
 typedef intptr_t libsigscan_scanner_t;
 typedef intptr_t libsigscan_scan_result_t;
+typedef intptr_t libsigscan_scan_state_t;
 
 #ifdef __cplusplus
 }
