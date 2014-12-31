@@ -24,6 +24,7 @@
 #include <types.h>
 
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_scan_object.h"
 #include "libsigscan_scan_tree_node.h"
 
@@ -33,6 +34,7 @@
  */
 int libsigscan_scan_tree_node_initialize(
      libsigscan_scan_tree_node_t **scan_tree_node,
+     off64_t pattern_offset,
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_scan_tree_node_initialize";
@@ -92,6 +94,8 @@ int libsigscan_scan_tree_node_initialize(
 
 		return( -1 );
 	}
+	( *scan_tree_node )->pattern_offset = pattern_offset;
+
 	return( 1 );
 
 on_error:
@@ -270,4 +274,97 @@ int libsigscan_scan_tree_node_set_default_value(
 
 	return( 1 );
 }
+
+#if defined( HAVE_DEBUG_OUTPUT )
+
+/* Prints the scan tree node
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_tree_node_printf(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_tree_node_printf";
+	uint16_t byte_value   = 0;
+
+	if( scan_tree_node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree node.",
+		 function );
+
+		return( -1 );
+	}
+	libcnotify_printf(
+	 "%s: scan tree node: 0x%08" PRIjx "\n",
+	 function,
+	 (intptr_t *) scan_tree_node );
+
+	libcnotify_printf(
+	 "%s: pattern offset: %" PRIi64 "\n",
+	 function,
+	 scan_tree_node->pattern_offset );
+
+	for( byte_value = 0;
+	     byte_value < 256;
+	     byte_value++ )
+	{
+		if( scan_tree_node->scan_objects_table[ byte_value ] == NULL )
+		{
+			continue;
+		}
+		libcnotify_printf(
+		 "%s: byte value: 0x%02" PRIx16 ": ",
+		 function,
+		 byte_value );
+
+		if( libsigscan_scan_object_printf(
+		     scan_tree_node->scan_objects_table[ byte_value ],
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print scan object for byte value: 0x%02" PRIx16 ".",
+			 function,
+			 byte_value );
+
+			return( -1 );
+		}
+		libcnotify_printf(
+		 "\n" );
+	}
+	if( scan_tree_node->default_scan_object != NULL )
+	{
+		libcnotify_printf(
+		 "%s: default: ",
+		 function );
+
+		if( libsigscan_scan_object_printf(
+		     scan_tree_node->default_scan_object,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print default scan object.",
+			 function );
+
+			return( -1 );
+		}
+		libcnotify_printf(
+		 "\n" );
+	}
+	libcnotify_printf(
+	 "\n" );
+
+	return( 1 );
+}
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 

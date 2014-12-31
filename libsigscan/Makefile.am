@@ -43,6 +43,7 @@ libsigscan_la_SOURCES = \
 	libsigscan_signature.c libsigscan_signature.h \
 	libsigscan_signature_group.c libsigscan_signature_group.h \
 	libsigscan_signature_table.c libsigscan_signature_table.h \
+	libsigscan_signatures_array.c libsigscan_signatures_array.h \
 	libsigscan_skip_table.c libsigscan_skip_table.h \
 	libsigscan_support.c libsigscan_support.h \
 	libsigscan_types.h \

@@ -51,6 +51,7 @@ struct libsigscan_scan_tree_node
 
 int libsigscan_scan_tree_node_initialize(
      libsigscan_scan_tree_node_t **scan_tree_node,
+     off64_t pattern_offset,
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_node_free(
@@ -67,6 +68,14 @@ int libsigscan_scan_tree_node_set_default_value(
      libsigscan_scan_tree_node_t *scan_tree_node,
      libsigscan_scan_object_t *scan_object,
      libcerror_error_t **error );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+
+int libsigscan_scan_tree_node_printf(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     libcerror_error_t **error );
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 #if defined( __cplusplus )
 }

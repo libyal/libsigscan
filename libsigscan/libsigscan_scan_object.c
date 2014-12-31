@@ -25,8 +25,10 @@
 
 #include "libsigscan_definitions.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_scan_object.h"
 #include "libsigscan_scan_tree_node.h"
+#include "libsigscan_signature.h"
 
 /* Creates scan object
  * Make sure the value scan_object is referencing, is set to NULL
@@ -182,4 +184,43 @@ int libsigscan_scan_object_free(
 	}
 	return( result );
 }
+
+#if defined( HAVE_DEBUG_OUTPUT )
+
+/* Prints the scan object
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_object_printf(
+     libsigscan_scan_object_t *scan_object,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_object_printf";
+
+	if( scan_object == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan object.",
+		 function );
+
+		return( -1 );
+	}
+	if( scan_object->type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SCAN_TREE_NODE )
+	{
+		libcnotify_printf(
+		 "scan tree node: 0x%08" PRIjx "",
+		 (intptr_t *) scan_object->value );
+	}
+	else if( scan_object->type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE )
+	{
+		libcnotify_printf(
+		 "signature: %s",
+		 ( (libsigscan_signature_t *) scan_object->value )->identifier );
+	}
+	return( 1 );
+}
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 

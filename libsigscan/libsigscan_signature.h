@@ -68,6 +68,15 @@ int libsigscan_signature_free(
      libsigscan_signature_t **signature,
      libcerror_error_t **error );
 
+int libsigscan_signature_free_clone(
+     libsigscan_signature_t **signature,
+     libcerror_error_t **error );
+
+int libsigscan_signature_clone(
+     libsigscan_signature_t **destination_signature,
+     libsigscan_signature_t *source_signature,
+     libcerror_error_t **error );
+
 int libsigscan_signature_set(
      libsigscan_signature_t *signature,
      const char *identifier,

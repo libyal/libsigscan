@@ -146,6 +146,72 @@ int libsigscan_signature_free(
 	return( 1 );
 }
 
+/* Frees a signature clone
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_free_clone(
+     libsigscan_signature_t **signature,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_free_clone";
+
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( *signature != NULL )
+	{
+		*signature = NULL;
+	}
+	return( 1 );
+}
+
+/* Clones a signature
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_clone(
+     libsigscan_signature_t **destination_signature,
+     libsigscan_signature_t *source_signature,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_clone";
+
+	if( destination_signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid destination signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( *destination_signature != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid destination signature value already set.",
+		 function );
+
+		return( -1 );
+	}
+	/* Clone by reference
+	 */
+	*destination_signature = source_signature;
+
+	return( 1 );
+}
+
 /* Sets the signature values
  * Returns 1 if successful or -1 on error
  */

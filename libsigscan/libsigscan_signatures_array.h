@@ -1,5 +1,5 @@
 /*
- * Scan object functions
+ * The signatures array functions
  *
  * Copyright (c) 2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,49 +19,29 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSIGSCAN_SCAN_OBJECT_H )
-#define _LIBSIGSCAN_SCAN_OBJECT_H
+#if !defined( _LIBSIGSCAN_SIGNATURES_ARRAY_H )
+#define _LIBSIGSCAN_SIGNATURES_ARRAY_H
 
 #include <common.h>
 #include <types.h>
 
+#include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_signature.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-typedef struct libsigscan_scan_object libsigscan_scan_object_t;
-
-struct libsigscan_scan_object
-{
-	/* The type
-	 */
-	uint8_t type;
-
-	/* The value
-	 * Contains a scan tree node or a signature
-	 */
-	intptr_t *value;
-};
-
-int libsigscan_scan_object_initialize(
-     libsigscan_scan_object_t **scan_object,
-     uint8_t type,
-     intptr_t *value,
+int libsigscan_signatures_array_get_number_of_signatures(
+     libcdata_array_t *signatures_array,
+     int *number_of_signatures,
      libcerror_error_t **error );
 
-int libsigscan_scan_object_free(
-     libsigscan_scan_object_t **scan_object,
+int libsigscan_signatures_array_remove_signature(
+     libcdata_array_t *signatures_array,
+     libsigscan_signature_t *signature,
      libcerror_error_t **error );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-
-int libsigscan_scan_object_printf(
-     libsigscan_scan_object_t *scan_object,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 #if defined( __cplusplus )
 }
