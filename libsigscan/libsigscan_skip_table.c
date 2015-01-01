@@ -136,7 +136,7 @@ int libsigscan_skip_table_free(
 	return( 1 );
 }
 
-/* Fill the skip table
+/* Fills the skip table
  * Returns 1 if successful or -1 on error
  */
 int libsigscan_skip_table_fill(

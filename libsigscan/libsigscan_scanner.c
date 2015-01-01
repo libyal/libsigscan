@@ -374,6 +374,7 @@ int libsigscan_scanner_scan_start(
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
 	static char *function                           = "libsigscan_scanner_scan_start";
+	int result                                      = 0;
 
 	if( scanner == NULL )
 	{
@@ -403,11 +404,13 @@ int libsigscan_scanner_scan_start(
 
 			return( -1 );
 		}
-		if( libsigscan_scan_tree_build(
-		     internal_scanner->header_scan_tree,
-		     internal_scanner->signatures_list,
-		     LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
-		     error ) != 1 )
+		result = libsigscan_scan_tree_build(
+		          internal_scanner->header_scan_tree,
+		          internal_scanner->signatures_list,
+		          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+		          error );
+
+		if( result == -1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -438,11 +441,13 @@ int libsigscan_scanner_scan_start(
 
 			return( -1 );
 		}
-		if( libsigscan_scan_tree_build(
-		     internal_scanner->footer_scan_tree,
-		     internal_scanner->signatures_list,
-		     LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END,
-		     error ) != 1 )
+		result = libsigscan_scan_tree_build(
+		          internal_scanner->footer_scan_tree,
+		          internal_scanner->signatures_list,
+		          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END,
+		          error );
+
+		if( result == -1 )
 		{
 			libcerror_error_set(
 			 error,

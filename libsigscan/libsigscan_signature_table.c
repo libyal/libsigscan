@@ -24,6 +24,7 @@
 #include <types.h>
 
 #include "libsigscan_byte_value_group.h"
+#include "libsigscan_definitions.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_libcnotify.h"
@@ -114,6 +115,13 @@ int libsigscan_signature_table_initialize(
 on_error:
 	if( *signature_table != NULL )
 	{
+		if( ( *signature_table )->byte_value_groups_list != NULL )
+		{
+			libcdata_range_list_free(
+			 &( ( *signature_table )->byte_value_groups_list ),
+			 NULL,
+			 NULL );
+		}
 		memory_free(
 		 *signature_table );
 
@@ -169,7 +177,7 @@ int libsigscan_signature_table_free(
 	return( result );
 }
 
-/* Fill the signature table
+/* Fills the signature table
  * Returns 1 if successful or -1 on error
  */
 int libsigscan_signature_table_fill(
@@ -184,8 +192,8 @@ int libsigscan_signature_table_fill(
 	static char *function                 = "libsigscan_signature_table_fill";
 	off64_t pattern_offset                = 0;
 	size_t pattern_index                  = 0;
+	int add_signature                     = 0;
 	int result                            = 0;
-	int signature_index                   = 0;
 
 	if( signature_table == NULL )
 	{
@@ -194,6 +202,19 @@ int libsigscan_signature_table_fill(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid signature table.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_UNBOUND */
+	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported pattern offsets mode.",
 		 function );
 
 		return( -1 );
@@ -239,63 +260,98 @@ int libsigscan_signature_table_fill(
 
 			return( -1 );
 		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
+		switch( pattern_offsets_mode )
 		{
-			libcnotify_printf(
-			 "%s: signature: %s, pattern offset: %" PRIi64 ", pattern:\n",
-			 function,
-			 signature->identifier,
-			 signature->pattern_offset );
-			libcnotify_print_data(
-			 signature->pattern,
-			 signature->pattern_size,
-			 0 );
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
+				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
+				break;
+
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
+				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
+				break;
+
+			case LIBSIGSCAN_PATTERN_OFFSET_UNBOUND:
+				add_signature = 1;
+				break;
+
+			default:
+				add_signature = 0;
+				break;
 		}
-#endif
-		pattern_offset = signature->pattern_offset;
-
-		for( pattern_index = 0;
-		     pattern_index < signature->pattern_size;
-		     pattern_index++ )
+		if( add_signature != 0 )
 		{
-			result = libsigscan_offsets_list_has_offset(
-			          offsets_ignore_list,
-			          pattern_offset,
-			          error );
-
-			if( result == -1 )
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to determine if offsets ignore list contains: %" PRIi64 ".",
+				libcnotify_printf(
+				 "%s: signature: %s, pattern offset: %" PRIi64 ", pattern:\n",
 				 function,
-				 pattern_offset );
-
-				return( -1 );
+				 signature->identifier,
+				 signature->pattern_offset );
+				libcnotify_print_data(
+				 signature->pattern,
+				 signature->pattern_size,
+				 0 );
 			}
-			else if( result == 0 )
+#endif
+			pattern_offset = signature->pattern_offset;
+
+			for( pattern_index = 0;
+			     pattern_index < signature->pattern_size;
+			     pattern_index++ )
 			{
-				if( libsigscan_signature_table_insert_signature(
-				     signature_table,
-				     pattern_offset,
-				     signature->pattern[ pattern_index ],
-				     signature,
-				     error ) != 1 )
+				result = libsigscan_offsets_list_has_offset(
+					  offsets_ignore_list,
+					  pattern_offset,
+					  error );
+
+				if( result == -1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-					 "%s: unable to insert signature into signature table.",
-					 function );
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to determine if offsets ignore list contains: %" PRIi64 ".",
+					 function,
+					 pattern_offset );
 
 					return( -1 );
 				}
+				else if( result == 0 )
+				{
+					if( libsigscan_signature_table_insert_signature(
+					     signature_table,
+					     pattern_offset,
+					     signature->pattern[ pattern_index ],
+					     signature,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+						 "%s: unable to insert signature into signature table.",
+						 function );
+
+						return( -1 );
+					}
+				}
+				pattern_offset++;
 			}
-			pattern_offset++;
 		}
 		if( libcdata_list_element_get_next_element(
 		     list_element,

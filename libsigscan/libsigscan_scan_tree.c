@@ -130,6 +130,19 @@ int libsigscan_scan_tree_initialize(
 
 		return( -1 );
 	}
+	if( libcdata_range_list_initialize(
+	     &( ( *scan_tree )->pattern_range_list ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create pattern range list.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
@@ -197,6 +210,20 @@ int libsigscan_scan_tree_free(
 
 				result = -1;
 			}
+		}
+		if( libcdata_range_list_free(
+		     &( ( *scan_tree )->pattern_range_list ),
+		     NULL,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free pattern range list.",
+			 function );
+
+			result = -1;
 		}
 		memory_free(
 		 *scan_tree );
@@ -994,7 +1021,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			          pattern_offset,
 			          error );
 
-			if( result != 1 )
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
@@ -1015,7 +1042,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			          pattern_offset,
 			          error );
 
-			if( result != 1 )
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
@@ -1037,7 +1064,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 			          pattern_offset,
 			          error );
 
-			if( result != 1 )
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
@@ -1968,7 +1995,7 @@ on_error:
 }
 
 /* Builds the scan tree
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if no such value or -1 on error
  */
 int libsigscan_scan_tree_build(
      libsigscan_scan_tree_t *scan_tree,
@@ -1979,6 +2006,7 @@ int libsigscan_scan_tree_build(
 	libcdata_list_t *offsets_ignore_list          = NULL;
 	libsigscan_signature_table_t *signature_table = NULL;
 	static char *function                         = "libsigscan_scan_tree_build";
+	int number_of_pattern_ranges                  = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -1990,6 +2018,39 @@ int libsigscan_scan_tree_build(
 		 function );
 
 		return( -1 );
+	}
+	if( libsigscan_scan_tree_fill_range_list(
+	     scan_tree,
+	     signatures_list,
+	     pattern_offsets_mode,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to fill range list.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_range_list_get_number_of_elements(
+	     scan_tree->pattern_range_list,
+	     &number_of_pattern_ranges,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of pattern ranges.",
+		 function );
+
+		goto on_error;
+	}
+	if( number_of_pattern_ranges == 0 )
+	{
+		return( 0 );
 	}
 	if( libsigscan_signature_table_initialize(
 	     &signature_table,
@@ -2132,3 +2193,152 @@ on_error:
 	return( -1 );
 }
 
+/* Fills the range list
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_tree_fill_range_list(
+     libsigscan_scan_tree_t *scan_tree,
+     libcdata_list_t *signatures_list,
+     int pattern_offsets_mode,
+     libcerror_error_t **error )
+{
+	libcdata_list_element_t *list_element = NULL;
+	libsigscan_signature_t *signature     = NULL;
+	static char *function                 = "libsigscan_scan_tree_fill_range_list";
+	int add_signature                     = 0;
+
+	if( scan_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_UNBOUND */
+	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported pattern offsets mode.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_get_first_element(
+	     signatures_list,
+	     &list_element,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve first list element.",
+		 function );
+
+		return( -1 );
+	}
+	while( list_element != NULL )
+	{
+		if( libcdata_list_element_get_value(
+		     list_element,
+		     (intptr_t **) &signature,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve signature.",
+			 function );
+
+			return( -1 );
+		}
+		if( signature == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing signature.",
+			 function );
+
+			return( -1 );
+		}
+		switch( pattern_offsets_mode )
+		{
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
+				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
+				break;
+
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
+				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
+				break;
+
+			case LIBSIGSCAN_PATTERN_OFFSET_UNBOUND:
+				add_signature = 1;
+				break;
+
+			default:
+				add_signature = 0;
+				break;
+		}
+		if( add_signature != 0 )
+		{
+			if( libcdata_range_list_insert_range(
+			     scan_tree->pattern_range_list,
+			     signature->pattern_offset,
+			     (size64_t) signature->pattern_size,
+			     NULL,
+			     NULL,
+			     NULL,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to insert pattern range.",
+				 function );
+
+				return( -1 );
+			}
+		}
+		if( libcdata_list_element_get_next_element(
+		     list_element,
+		     &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve next list element.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	return( 1 );
+}

@@ -1,4 +1,6 @@
 TODO:
+* signature table
+  - add support for unbounded signatures (LIBSIGSCAN_PATTERN_OFFSET_UNBOUND)
 * scanner
   - add support for "negative offsets" (relative from end)
   - add support for unbounded signatures
@@ -6,6 +8,7 @@ TODO:
 20150101
 * 2015 update
 * added msvscpp files
+* worked on pattern offset range list
 
 20141231
 * worked on initial version

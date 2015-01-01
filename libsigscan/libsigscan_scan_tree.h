@@ -47,6 +47,10 @@ struct libsigscan_scan_tree
 	/* The skip table
 	 */
 	libsigscan_skip_table_t *skip_table;
+
+	/* The pattern range list
+	 */
+	libcdata_range_list_t *pattern_range_list;
 };
 
 int libsigscan_scan_tree_initialize(
@@ -97,6 +101,12 @@ int libsigscan_scan_tree_build_node(
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_build(
+     libsigscan_scan_tree_t *scan_tree,
+     libcdata_list_t *signatures_list,
+     int pattern_offsets_mode,
+     libcerror_error_t **error );
+
+int libsigscan_scan_tree_fill_range_list(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_list_t *signatures_list,
      int pattern_offsets_mode,
