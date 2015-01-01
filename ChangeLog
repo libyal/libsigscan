@@ -3,6 +3,10 @@ TODO:
   - add support for "negative offsets" (relative from end)
   - add support for unbounded signatures
 
+20150101
+* 2015 update
+* added msvscpp files
+
 20141231
 * worked on initial version
 * worked on skip table
