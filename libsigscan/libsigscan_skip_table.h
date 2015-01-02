@@ -62,6 +62,11 @@ int libsigscan_skip_table_fill(
      libcdata_list_t *signatures_list,
      libcerror_error_t **error );
 
+int libsigscan_skip_table_get_smallest_pattern_size(
+     libsigscan_skip_table_t *skip_table,
+     size_t *smallest_pattern_size,
+     libcerror_error_t **error );
+
 int libsigscan_skip_table_get_skip_value(
      libsigscan_skip_table_t *skip_table,
      uint8_t byte_value,

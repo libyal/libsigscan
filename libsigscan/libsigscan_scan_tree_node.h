@@ -69,6 +69,20 @@ int libsigscan_scan_tree_node_set_default_value(
      libsigscan_scan_object_t *scan_object,
      libcerror_error_t **error );
 
+int libsigscan_scan_tree_node_get_scan_object(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     uint8_t byte_value,
+     libsigscan_scan_object_t **scan_object,
+     libcerror_error_t **error );
+
+int libsigscan_scan_tree_node_scan_buffer(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
+     libsigscan_scan_object_t **scan_object,
+     libcerror_error_t **error );
+
 #if defined( HAVE_DEBUG_OUTPUT )
 
 int libsigscan_scan_tree_node_printf(

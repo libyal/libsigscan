@@ -26,8 +26,9 @@
 #include <types.h>
 
 #include "libsigscan_extern.h"
+#include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
-#include "libsigscan_scan_tree_node.h"
+#include "libsigscan_scan_tree.h"
 #include "libsigscan_types.h"
 
 #if defined( __cplusplus )
@@ -50,9 +51,33 @@ struct libsigscan_internal_scan_state
 	 */
 	size64_t data_size;
 
+	/* The scanned data size
+	 */
+	size64_t scanned_data_size;
+
+	/* The scan tree
+	 */
+	libsigscan_scan_tree_t *scan_tree;
+
 	/* The active scan tree node
 	 */
 	libsigscan_scan_tree_node_t *active_node;
+
+	/* The (scan) buffer
+	 */
+	uint8_t *buffer;
+
+	/* The (scan) buffer size
+	 */
+	size_t buffer_size;
+
+	/* The (scan) buffer data size
+	 */
+	size_t buffer_data_size;
+
+	/* The scan results array
+	 */
+	libcdata_array_t *scan_results_array;
 };
 
 LIBSIGSCAN_EXTERN \
@@ -71,14 +96,21 @@ int libsigscan_scan_state_set_data_size(
      size64_t data_size,
      libcerror_error_t **error );
 
-int libsigscan_scan_state_start(
+int libsigscan_scan_state_get_buffer_size(
      libsigscan_scan_state_t *scan_state,
-     libsigscan_scan_tree_node_t *active_node,
+     size_t *buffer_size,
      libcerror_error_t **error );
 
-int libsigscan_scan_state_update(
+int libsigscan_scan_state_start(
      libsigscan_scan_state_t *scan_state,
-     libsigscan_scan_tree_node_t *active_node,
+     libsigscan_scan_tree_t *scan_tree,
+     size_t scan_buffer_size,
+     libcerror_error_t **error );
+
+int libsigscan_scan_state_scan_buffer(
+     libsigscan_scan_state_t *scan_state,
+     const uint8_t *buffer,
+     size_t buffer_size,
      libcerror_error_t **error );
 
 int libsigscan_scan_state_stop(

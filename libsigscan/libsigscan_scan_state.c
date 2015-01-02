@@ -92,6 +92,20 @@ int libsigscan_scan_state_initialize(
 
 		return( -1 );
 	}
+	if( libcdata_array_initialize(
+	     &( internal_scan_state->scan_results_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scan results array.",
+		 function );
+
+		goto on_error;
+	}
 	internal_scan_state->state = LIBSIGSCAN_SCAN_STATE_INITIALIZED;
 
 	*scan_state = (libsigscan_scan_state_t *) internal_scan_state;
@@ -116,6 +130,7 @@ int libsigscan_scan_state_free(
 {
 	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
 	static char *function                                 = "libsigscan_scan_state_free";
+	int result                                            = 1;
 
 	if( scan_state == NULL )
 	{
@@ -133,10 +148,32 @@ int libsigscan_scan_state_free(
 		internal_scan_state = (libsigscan_internal_scan_state_t *) *scan_state;
 		*scan_state         = NULL;
 
+		/* The scan_tree and active_node are references and freed elsewhere
+		 */
+		if( internal_scan_state->buffer != NULL )
+		{
+			memory_free(
+			 internal_scan_state->buffer );
+		}
+/* TODO: free scan results */
+		if( libcdata_array_free(
+		     &( internal_scan_state->scan_results_array ),
+		     NULL,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free scan results array.",
+			 function );
+
+			result = -1;
+		}
 		memory_free(
 		 internal_scan_state );
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Sets the data size
@@ -190,12 +227,53 @@ int libsigscan_scan_state_set_data_size(
 	return( 1 );
 }
 
+/* Retrieves the buffer size
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_state_get_buffer_size(
+     libsigscan_scan_state_t *scan_state,
+     size_t *buffer_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
+	static char *function                                 = "libsigscan_scan_state_get_buffer_size";
+
+	if( scan_state == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
+
+	if( buffer_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( -1 );
+	}
+	*buffer_size = internal_scan_state->buffer_size;
+
+	return( 1 );
+}
+
 /* Starts the scan state
  * Returns 1 if successful or -1 on error
  */
 int libsigscan_scan_state_start(
      libsigscan_scan_state_t *scan_state,
-     libsigscan_scan_tree_node_t *active_node,
+     libsigscan_scan_tree_t *scan_tree,
+     size_t scan_buffer_size,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
@@ -225,6 +303,17 @@ int libsigscan_scan_state_start(
 
 		return( -1 );
 	}
+	if( internal_scan_state->buffer != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid scan state - buffer value already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_scan_state->data_size == 0 )
 	{
 		libcerror_error_set(
@@ -236,33 +325,74 @@ int libsigscan_scan_state_start(
 
 		return( -1 );
 	}
-	if( active_node == NULL )
+	if( scan_tree == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid active scan tree node.",
+		 "%s: invalid active scan tree.",
 		 function );
 
 		return( -1 );
 	}
-	internal_scan_state->state       = LIBSIGSCAN_SCAN_STATE_STARTED;
-	internal_scan_state->active_node = active_node;
+	if( scan_buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid scan buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_state->buffer = (uint8_t *) memory_allocate(
+	                                           sizeof( uint8_t ) * scan_buffer_size );
+
+	if( internal_scan_state->buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create scan buffer.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_state->buffer_size       = scan_buffer_size;
+	internal_scan_state->buffer_data_size  = 0;
+	internal_scan_state->state             = LIBSIGSCAN_SCAN_STATE_STARTED;
+	internal_scan_state->scan_tree         = scan_tree;
+	internal_scan_state->active_node       = internal_scan_state->scan_tree->root_node;
+	internal_scan_state->scanned_data_size = 0;
 
 	return( 1 );
 }
 
-/* Updates the scan state
- * Returns 1 if successful or -1 on error
+/* Scans the buffer and updates the scan state
+ * Returns 1 if successful, 0 if data size has been reached or -1 on error
  */
-int libsigscan_scan_state_update(
+int libsigscan_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state,
-     libsigscan_scan_tree_node_t *active_node,
+     const uint8_t *buffer,
+     size_t buffer_size,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
-	static char *function                                 = "libsigscan_scan_state_update";
+	libsigscan_scan_object_t *scan_object                 = NULL;
+	libsigscan_signature_t *signature                     = NULL;
+	static char *function                                 = "libsigscan_scan_state_scan_buffer";
+	size_t buffer_offset                                  = 0;
+	size_t read_size                                      = 0;
+	size_t scan_end_offset                                = 0;
+	size_t scan_offset                                    = 0;
+	size_t scan_size                                      = 0;
+	size_t skip_value                                     = 0;
+	size_t smallest_pattern_size                          = 0;
+	uint8_t scan_object_type                              = 0;
+	int result                                            = 0;
 
 	if( scan_state == NULL )
 	{
@@ -288,18 +418,271 @@ int libsigscan_scan_state_update(
 
 		return( -1 );
 	}
-	if( active_node == NULL )
+	if( internal_scan_state->scan_tree == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid scan state - missing scan tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_scan_state->active_node == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid scan state - missing active scan tree node.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid active scan tree node.",
+		 "%s: invalid buffer.",
 		 function );
 
 		return( -1 );
 	}
-	internal_scan_state->active_node = active_node;
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_scan_state->scanned_data_size > internal_scan_state->data_size )
+	{
+		return( 0 );
+	}
+	if( ( (size64_t) buffer_size > internal_scan_state->data_size )
+	 || ( internal_scan_state->scanned_data_size > ( internal_scan_state->data_size - buffer_size ) ) )
+	{
+		buffer_size = (size_t) ( internal_scan_state->data_size - internal_scan_state->scanned_data_size );
+	}
+	read_size = buffer_size;
+
+	if( internal_scan_state->buffer_data_size > 0 )
+	{
+		read_size -= internal_scan_state->buffer_data_size;
+
+		if( memory_copy(
+		     &( internal_scan_state->buffer[ internal_scan_state->buffer_data_size ] ),
+		     buffer,
+		     read_size ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+			 "%s: unable to copy buffer to scan buffer.",
+			 function );
+
+			return( -1 );
+		}
+		internal_scan_state->buffer_data_size += read_size;
+		buffer_offset                         += read_size;
+
+/* TODO scan internal_scan_state->buffer */
+	}
+	if( read_size >= internal_scan_state->buffer_size )
+	{
+		scan_size  = ( read_size / internal_scan_state->buffer_size );
+		scan_size *= internal_scan_state->buffer_size;
+
+/* TODO scan buffer */
+		while( scan_offset < scan_size )
+		{
+			result = libsigscan_scan_tree_node_scan_buffer(
+			          internal_scan_state->active_node,
+			          &( buffer[ buffer_offset ] ),
+			          scan_size,
+			          scan_offset,
+			          &scan_object,
+			          error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to scan buffer.",
+				 function );
+
+				return( -1 );
+			}
+			else if( result != 0 )
+			{
+				if( libsigscan_scan_object_get_type(
+				     scan_object,
+				     &scan_object_type,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve scan object type.",
+					 function );
+
+					return( -1 );
+				}
+				if( scan_object_type != LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+					 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+					 "%s: unsupported scan object type.",
+					 function );
+
+					return( -1 );
+				}
+				if( libsigscan_scan_object_get_value(
+				     scan_object,
+				     (intptr_t **) &signature,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve scan object value.",
+					 function );
+
+					return( -1 );
+				}
+				if( signature == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: missing signature.",
+					 function );
+
+					return( -1 );
+				}
+				result = memory_compare(
+				          &( buffer[ scan_offset ] ),
+				          signature->pattern,
+				          signature->pattern_size );
+
+				result = ( result == 0 );
+
+				if( result != 0 )
+				{
+/* TODO add support for unbounded signatures */
+					result = ( scan_offset == signature->pattern_offset );
+				}
+				if( result != 0 )
+				{
+/* TODO add scan result */
+					skip_value = signature->pattern_size;
+				}
+			}
+			if( result == 0 )
+			{
+				if( libsigscan_skip_table_get_smallest_pattern_size(
+				     internal_scan_state->scan_tree->skip_table,
+				     &smallest_pattern_size,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve number of scan results.",
+					 function );
+
+					return( -1 );
+				}
+				if( smallest_pattern_size > scan_size )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+					 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: invalid smallest pattern size value out of bounds.",
+					 function );
+
+					return( -1 );
+				}
+				scan_end_offset = scan_offset + smallest_pattern_size - 1;
+
+				if( scan_end_offset >= scan_size )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+					 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: invalid scan end offset value out of bounds.",
+					 function );
+
+					return( -1 );
+				}
+				skip_value = 0;
+
+				do
+				{
+					if( libsigscan_skip_table_get_skip_value(
+					     internal_scan_state->scan_tree->skip_table,
+					     buffer[ buffer_offset + scan_end_offset ],
+					     &skip_value,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve number of scan results.",
+						 function );
+
+						return( -1 );
+					}
+					scan_end_offset -= 1;
+				}
+				while( ( scan_end_offset > scan_offset )
+				    && ( skip_value == 0 ) );
+			}
+			scan_offset += skip_value;
+
+			internal_scan_state->active_node = internal_scan_state->scan_tree->root_node;
+		}
+		read_size     -= scan_size;
+		buffer_offset += scan_size;
+	}
+	if( read_size > 0 )
+	{
+		if( memory_copy(
+		     internal_scan_state->buffer,
+		     &( buffer[ buffer_offset ] ),
+		     read_size ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+			 "%s: unable to copy buffer to scan buffer.",
+			 function );
+
+			return( -1 );
+		}
+		internal_scan_state->buffer_data_size = read_size;
+	}
+	internal_scan_state->scanned_data_size += buffer_size;
 
 	return( 1 );
 }
@@ -338,6 +721,15 @@ int libsigscan_scan_state_stop(
 
 		return( -1 );
 	}
+	if( internal_scan_state->buffer != NULL )
+	{
+		memory_free(
+		 internal_scan_state->buffer );
+
+		internal_scan_state->buffer = NULL;
+	}
+/* TODO scan remaining data */
+	internal_scan_state->buffer_size = 0;
 	internal_scan_state->state       = LIBSIGSCAN_SCAN_STATE_STOPPED;
 	internal_scan_state->active_node = NULL;
 
@@ -368,7 +760,20 @@ int libsigscan_scan_state_get_number_of_results(
 	}
 	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
 
-/* TODO */
+	if( libcdata_array_get_number_of_entries(
+	     internal_scan_state->scan_results_array,
+	     number_of_results,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of scan results.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -397,7 +802,24 @@ int libsigscan_scan_state_get_result(
 	}
 	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
 
-/* TODO */
+/* TODO
+	if( libcdata_array_get_entry_by_index(
+	     internal_scan_state->scan_results_array,
+	     result_index,
+	     (intptr_t **) &offset_value,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve scan result: %d.",
+		 function,
+		 result_index );
+
+		return( -1 );
+	}
+ */
 	return( 1 );
 }
 

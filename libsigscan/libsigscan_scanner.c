@@ -114,6 +114,8 @@ int libsigscan_scanner_initialize(
 
 		goto on_error;
 	}
+	internal_scanner->buffer_size = 4 * 1024;
+
 	*scanner = (libsigscan_scanner_t *) internal_scanner;
 
 	return( 1 );
@@ -463,11 +465,10 @@ int libsigscan_scanner_scan_start(
 			return( -1 );
 		}
 	}
-/* TODO determine header spanning range */
-/* TODO determine footer spanning range */
 	if( libsigscan_scan_state_start(
 	     scan_state,
-	     internal_scanner->header_scan_tree->root_node,
+	     internal_scanner->header_scan_tree,
+	     internal_scanner->buffer_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -506,8 +507,6 @@ int libsigscan_scanner_scan_stop(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO check scan state - is the right state */
-/* TODO scan remaining data */
 	if( libsigscan_scan_state_stop(
 	     scan_state,
 	     error ) != 1 )
@@ -550,30 +549,21 @@ int libsigscan_scanner_scan_buffer(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-	if( buffer == NULL )
+	if( libsigscan_scan_state_scan_buffer(
+	     scan_state,
+	     buffer,
+	     buffer_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid buffer.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to scan buffer.",
 		 function );
 
 		return( -1 );
 	}
-	if( buffer_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid buffer size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO check scan state - is the right state */
-/* TODO */
 	return( 1 );
 }
 
@@ -586,6 +576,7 @@ int libsigscan_scanner_scan_file(
      const char *filename,
      libcerror_error_t **error )
 {
+	libbfio_handle_t *file_io_handle                = NULL;
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
 	static char *function                           = "libsigscan_scanner_scan_file";
 
@@ -602,23 +593,101 @@ int libsigscan_scanner_scan_file(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO check scan state - is the right state */
-/* TODO set active node */
-	if( libsigscan_scan_state_update(
-	     scan_state,
-	     NULL,
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( libbfio_file_initialize(
+	     &file_io_handle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set scan state.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file IO handle.",
 		 function );
 
-		return( -1 );
+		goto on_error;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libbfio_handle_set_track_offsets_read(
+	     file_io_handle,
+	     1,
+	     error ) != 1 )
+	{
+                libcerror_error_set(
+                 error,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+                 "%s: unable to set track offsets read in file IO handle.",
+                 function );
+
+		goto on_error;
+	}
+#endif
+	if( libbfio_file_set_name(
+	     file_io_handle,
+	     filename,
+	     libcstring_narrow_string_length(
+	      filename ) + 1,
+	     error ) != 1 )
+	{
+                libcerror_error_set(
+                 error,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+                 "%s: unable to set filename in file IO handle.",
+                 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_file_io_handle(
+	     scanner,
+	     scan_state,
+	     file_io_handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open file: %s.",
+		 function,
+		 filename );
+
+		goto on_error;
+	}
+	if( libbfio_handle_free(
+	     &file_io_handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free file IO handle.",
+		 function );
+
+		goto on_error;
 	}
 	return( 1 );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	return( -1 );
 }
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -632,6 +701,7 @@ int libsigscan_scanner_scan_file_wide(
      const wchar_t *filename,
      libcerror_error_t **error )
 {
+	libbfio_handle_t *file_io_handle                = NULL;
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
 	static char *function                           = "libsigscan_scanner_scan_file_wide";
 
@@ -648,23 +718,101 @@ int libsigscan_scanner_scan_file_wide(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO check scan state - is the right state */
-/* TODO set active node */
-	if( libsigscan_scan_state_update(
-	     scan_state,
-	     NULL,
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( libbfio_file_initialize(
+	     &file_io_handle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set scan state.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file IO handle.",
 		 function );
 
-		return( -1 );
+		goto on_error;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libbfio_handle_set_track_offsets_read(
+	     file_io_handle,
+	     1,
+	     error ) != 1 )
+	{
+                libcerror_error_set(
+                 error,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+                 "%s: unable to set track offsets read in file IO handle.",
+                 function );
+
+		goto on_error;
+	}
+#endif
+	if( libbfio_file_set_name_wide(
+	     file_io_handle,
+	     filename,
+	     libcstring_narrow_string_length(
+	      filename ) + 1,
+	     error ) != 1 )
+	{
+                libcerror_error_set(
+                 error,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+                 "%s: unable to set filename in file IO handle.",
+                 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_file_io_handle(
+	     scanner,
+	     scan_state,
+	     file_io_handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open file: %ls.",
+		 function,
+		 filename );
+
+		goto on_error;
+	}
+	if( libbfio_file_free(
+	     &file_io_handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free file IO handle.",
+		 function );
+
+		goto on_error;
 	}
 	return( 1 );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	return( -1 );
 }
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
@@ -679,7 +827,16 @@ int libsigscan_scanner_scan_file_io_handle(
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
+	uint8_t *buffer                                 = NULL;
 	static char *function                           = "libsigscan_scanner_scan_file_io_handle";
+	size64_t file_size                              = 0;
+	uint64_t aligned_range_size                     = 0;
+	uint64_t aligned_range_start                    = 0;
+	uint64_t range_size                             = 0;
+	uint64_t range_start                            = 0;
+	size_t buffer_size                              = 0;
+	ssize_t read_count                              = 0;
+	int result                                      = 0;
 
 	if( scanner == NULL )
 	{
@@ -694,11 +851,37 @@ int libsigscan_scanner_scan_file_io_handle(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
-/* TODO check scan state - is the right state */
-/* TODO set active node */
-	if( libsigscan_scan_state_update(
+	if( libbfio_handle_get_size(
+	     file_io_handle,
+	     &file_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve file size.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_set_data_size(
 	     scan_state,
-	     NULL,
+	     file_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set data size.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_start(
+	     scanner,
+	     scan_state,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -708,8 +891,246 @@ int libsigscan_scanner_scan_file_io_handle(
 		 "%s: unable to set scan state.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
+	if( internal_scanner->header_scan_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid sacnner - missing header scan tree.",
+		 function );
+
+		goto on_error;
+	}
+	if( internal_scanner->footer_scan_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid sacnner - missing footer scan tree.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_get_buffer_size(
+	     scanner,
+	     &buffer_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to retrieve scan buffer size.",
+		 function );
+
+		goto on_error;
+	}
+	buffer = (uint8_t *) memory_allocate(
+	                      sizeof( uint8_t ) * buffer_size );
+
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create scan buffer.",
+		 function );
+
+		goto on_error;
+	}
+	result = libcdata_range_list_get_spanning_range(
+	          internal_scanner->header_scan_tree->pattern_range_list,
+	          &range_start,
+	          &range_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve header pattern spanning range.",
+		 function );
+
+		goto on_error;
+	}
+	else if( result != 0 )
+	{
+		aligned_range_start = ( range_start / buffer_size );
+		aligned_range_size  = ( range_size / buffer_size );
+
+		if( ( range_size % buffer_size ) != 0 )
+		{
+			aligned_range_size += 1;
+		}
+		aligned_range_start *= buffer_size;
+		aligned_range_size  *= buffer_size;
+
+		if( libbfio_handle_seek_offset(
+		     file_io_handle,
+		     (off64_t) aligned_range_start,
+		     SEEK_SET,
+		     error ) == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
+			 function,
+			 aligned_range_start );
+
+			goto on_error;
+		}
+		while( range_size > 0 )
+		{
+			read_count = libbfio_handle_read_buffer(
+			              file_io_handle,
+			              buffer,
+			              buffer_size,
+			              error );
+
+			if( read_count != (ssize_t) buffer_size )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read buffser.",
+				 function );
+
+				goto on_error;
+			}
+			if( libsigscan_scan_state_scan_buffer(
+			     scan_state,
+			     buffer,
+			     buffer_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GENERIC,
+				 "%s: unable to scan buffer.",
+				 function );
+
+				goto on_error;
+			}
+		}
+	}
+	result = libcdata_range_list_get_spanning_range(
+	          internal_scanner->footer_scan_tree->pattern_range_list,
+	          &range_start,
+	          &range_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve footer pattern spanning range.",
+		 function );
+
+		goto on_error;
+	}
+	else if( result != 0 )
+	{
+		aligned_range_start = ( range_start / buffer_size );
+		aligned_range_size  = ( range_size / buffer_size );
+
+		if( ( range_size % buffer_size ) != 0 )
+		{
+			aligned_range_size += 1;
+		}
+		aligned_range_start *= buffer_size;
+		aligned_range_size  *= buffer_size;
+
+		if( libbfio_handle_seek_offset(
+		     file_io_handle,
+		     (off64_t) aligned_range_start,
+		     SEEK_SET,
+		     error ) == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
+			 function,
+			 aligned_range_start );
+
+			goto on_error;
+		}
+		while( range_size > 0 )
+		{
+			read_count = libbfio_handle_read_buffer(
+			              file_io_handle,
+			              buffer,
+			              buffer_size,
+			              error );
+
+			if( read_count != (ssize_t) buffer_size )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read buffser.",
+				 function );
+
+				goto on_error;
+			}
+			if( libsigscan_scan_state_scan_buffer(
+			     scan_state,
+			     buffer,
+			     buffer_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GENERIC,
+				 "%s: unable to scan buffer.",
+				 function );
+
+				goto on_error;
+			}
+		}
+	}
+	if( libsigscan_scanner_scan_stop(
+	     scanner,
+	     scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		goto on_error;
+	}
+	memory_free(
+	 buffer );
+
 	return( 1 );
+
+on_error:
+/* TODO set scan state to error ? */
+	if( buffer != NULL )
+	{
+		memory_free(
+		 buffer );
+	}
+	return( -1 );
 }
 

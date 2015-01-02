@@ -55,6 +55,16 @@ int libsigscan_scan_object_free(
      libsigscan_scan_object_t **scan_object,
      libcerror_error_t **error );
 
+int libsigscan_scan_object_get_type(
+     libsigscan_scan_object_t *scan_object,
+     uint8_t *type,
+     libcerror_error_t **error );
+
+int libsigscan_scan_object_get_value(
+     libsigscan_scan_object_t *scan_object,
+     intptr_t **value,
+     libcerror_error_t **error );
+
 #if defined( HAVE_DEBUG_OUTPUT )
 
 int libsigscan_scan_object_printf(

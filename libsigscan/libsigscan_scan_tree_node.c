@@ -23,6 +23,7 @@
 #include <memory.h>
 #include <types.h>
 
+#include "libsigscan_definitions.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_libcnotify.h"
 #include "libsigscan_scan_object.h"
@@ -273,6 +274,197 @@ int libsigscan_scan_tree_node_set_default_value(
 	scan_tree_node->default_scan_object = scan_object;
 
 	return( 1 );
+}
+
+/* Retrieves the scan object for a specific byte value or the default if available
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libsigscan_scan_tree_node_get_scan_object(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     uint8_t byte_value,
+     libsigscan_scan_object_t **scan_object,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_tree_node_get_scan_object";
+
+	if( scan_tree_node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree node.",
+		 function );
+
+		return( -1 );
+	}
+	if( scan_object == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan object.",
+		 function );
+
+		return( -1 );
+	}
+	*scan_object = scan_tree_node->scan_objects_table[ byte_value ];
+
+	if( *scan_object != NULL )
+	{
+		return( 1 );
+	}
+	*scan_object = scan_tree_node->default_scan_object;
+
+	if( *scan_object != NULL )
+	{
+		return( 1 );
+	}
+	return( 0 );
+}
+
+/* Scans the buffer for a scan object that matches
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libsigscan_scan_tree_node_scan_buffer(
+     libsigscan_scan_tree_node_t *scan_tree_node,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
+     libsigscan_scan_object_t **scan_object,
+     libcerror_error_t **error )
+{
+	static char *function    = "libsigscan_scan_tree_node_scan_buffer";
+	size_t scan_offset       = 0;
+	uint8_t scan_object_type = 0;
+	int result               = 0;
+
+	if( scan_tree_node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree node.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_offset >= buffer_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid buffer offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( scan_object == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan object.",
+		 function );
+
+		return( -1 );
+	}
+	do
+	{
+		scan_offset = buffer_offset + scan_tree_node->pattern_offset;
+
+		if( scan_offset >= buffer_size )
+		{
+/* TODO support boundary matches ? */
+			*scan_object = NULL;
+
+			return( 1 );
+		}
+		result = libsigscan_scan_tree_node_get_scan_object(
+		          scan_tree_node,
+		          buffer[ scan_offset ],
+		          scan_object,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve scan object.",
+			 function );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			if( libsigscan_scan_object_get_type(
+			     *scan_object,
+			     &scan_object_type,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve scan object type.",
+				 function );
+
+				return( -1 );
+			}
+			if( scan_object_type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SCAN_TREE_NODE )
+			{
+				if( libsigscan_scan_object_get_value(
+				     *scan_object,
+				     (intptr_t **) &scan_tree_node,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve scan object value.",
+					 function );
+
+					return( -1 );
+				}
+			}
+			else if( scan_object_type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE )
+			{
+				break;
+			}
+		}
+	}
+	while( result != 0 );
+
+	return( result );
 }
 
 #if defined( HAVE_DEBUG_OUTPUT )

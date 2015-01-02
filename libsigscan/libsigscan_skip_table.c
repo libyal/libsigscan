@@ -306,6 +306,43 @@ int libsigscan_skip_table_fill(
 	return( 1 );
 }
 
+/* Retrieves the smallest pattern size
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_skip_table_get_smallest_pattern_size(
+     libsigscan_skip_table_t *skip_table,
+     size_t *smallest_pattern_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_skip_table_get_smallest_pattern_size";
+
+	if( skip_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid skip table.",
+		 function );
+
+		return( -1 );
+	}
+	if( smallest_pattern_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid smalles _pattern size.",
+		 function );
+
+		return( -1 );
+	}
+	*smallest_pattern_size = skip_table->smallest_pattern_size;
+
+	return( 1 );
+}
+
 /* Retrieves a specific skip value
  * Returns 1 if successful or -1 on error
  */

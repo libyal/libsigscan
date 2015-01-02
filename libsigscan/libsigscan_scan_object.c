@@ -185,6 +185,80 @@ int libsigscan_scan_object_free(
 	return( result );
 }
 
+/* Retrieves the type
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_object_get_type(
+     libsigscan_scan_object_t *scan_object,
+     uint8_t *type,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_object_get_type";
+
+	if( scan_object == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan object.",
+		 function );
+
+		return( -1 );
+	}
+	if( type == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid type.",
+		 function );
+
+		return( -1 );
+	}
+	*type = scan_object->type;
+
+	return( 1 );
+}
+
+/* Retrieves the value
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_object_get_value(
+     libsigscan_scan_object_t *scan_object,
+     intptr_t **value,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_object_get_value";
+
+	if( scan_object == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan object.",
+		 function );
+
+		return( -1 );
+	}
+	if( value == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid value.",
+		 function );
+
+		return( -1 );
+	}
+	*value = scan_object->value;
+
+	return( 1 );
+}
+
 #if defined( HAVE_DEBUG_OUTPUT )
 
 /* Prints the scan object

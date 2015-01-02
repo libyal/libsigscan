@@ -40,6 +40,10 @@ typedef struct libsigscan_internal_scanner libsigscan_internal_scanner_t;
 
 struct libsigscan_internal_scanner
 {
+	/* The (scan) buffer size
+	 */
+	size_t buffer_size;
+
 	/* The signatures list
 	 */
 	libcdata_list_t *signatures_list;

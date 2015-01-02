@@ -1,9 +1,17 @@
 TODO:
+* is there a pratical need to support signature with patterns that contain pattern gaps?
+* unbounded scan
+  - determine optimal buffer size
+  - buffer size vs scan block size?
 * signature table
   - add support for unbounded signatures (LIBSIGSCAN_PATTERN_OFFSET_UNBOUND)
 * scanner
   - add support for "negative offsets" (relative from end)
   - add support for unbounded signatures
+* add memory aligned reads
+
+20150102
+* worked on initial version
 
 20150101
 * 2015 update
