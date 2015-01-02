@@ -313,12 +313,29 @@ int libsigscan_scan_tree_node_get_scan_object(
 
 	if( *scan_object != NULL )
 	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: byte value: 0x%02" PRIx8 " scan object.\n",
+			 function,
+			 byte_value );
+		}
+#endif
 		return( 1 );
 	}
 	*scan_object = scan_tree_node->default_scan_object;
 
 	if( *scan_object != NULL )
 	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: default scan object.\n",
+			 function );
+		}
+#endif
 		return( 1 );
 	}
 	return( 0 );
@@ -401,17 +418,20 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 		if( scan_offset >= buffer_size )
 		{
-/* TODO support boundary matches ? */
-			*scan_object = NULL;
-
-			return( 1 );
+			/* If the pattern offset exceeds the buffer continue
+			 * with the default scan object if available
+			 */
+			*scan_object = scan_tree_node->default_scan_object;
+			result       = ( *scan_object != NULL );
 		}
-		result = libsigscan_scan_tree_node_get_scan_object(
-		          scan_tree_node,
-		          buffer[ scan_offset ],
-		          scan_object,
-		          error );
-
+		else
+		{
+			result = libsigscan_scan_tree_node_get_scan_object(
+			          scan_tree_node,
+			          buffer[ scan_offset ],
+			          scan_object,
+			          error );
+		}
 		if( result == -1 )
 		{
 			libcerror_error_set(

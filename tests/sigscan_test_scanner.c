@@ -145,21 +145,201 @@ int sigscan_test_scanner_initialize(
 	return( 1 );
 }
 
+/* Tests scanning a buffer of data
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int sigscan_test_scanner_scan_buffer(
+     libsigscan_scanner_t *scanner,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     int expected_number_of_scan_results,
+     libcerror_error_t **error )
+{
+	libsigscan_scan_state_t *scan_state = NULL;
+	static char *function               = "sigscan_test_scanner_scan_buffer";
+	int number_of_scan_results          = 0;
+	int result                          = 0;
+
+	if( scanner == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsigscan_scan_state_initialize(
+	     &scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scan state.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_set_data_size(
+	     scan_state,
+	     buffer_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set data size.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_start(
+	     scanner,
+	     scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to start scan.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_buffer(
+	     scanner,
+	     scan_state,
+	     buffer,
+	     buffer_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to scan buffer.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scanner_scan_stop(
+	     scanner,
+	     scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to stop scan.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_get_number_of_results(
+	     scan_state,
+	     &number_of_scan_results,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to retrieve number of scan results.",
+		 function );
+
+		goto on_error;
+	}
+	result = ( number_of_scan_results == expected_number_of_scan_results );
+
+/* TODO compare scan result signature and offsets */
+	fprintf(
+	 stdout,
+	 "Testing scan\t" );
+
+	if( result == 0 )
+	{
+		fprintf(
+		 stdout,
+		 "(FAIL)" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "(PASS)" );
+	}
+	fprintf(
+	 stdout,
+	 "\n" );
+
+	if( libsigscan_scan_state_free(
+	     &scan_state,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free scan state.",
+		 function );
+
+		goto on_error;
+	}
+	return( result );
+
+on_error:
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
+	}
+	return( -1 );
+}
+
 /* Tests scanning data
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int sigscan_test_scanner_scan(
      void )
 {
-	libcerror_error_t *error            = NULL;
-	libsigscan_scan_state_t *scan_state = NULL;
-	libsigscan_scanner_t *scanner       = NULL;
-	sigscan_signature_t *signature      = NULL;
-	static char *function               = "sigscan_test_scanner_scan";
-	size_t identifier_size              = 0;
-	int expected_result                 = 0;
-	int result                          = 0;
-	int signatures_index                = 0;
+	libcerror_error_t *error       = NULL;
+	libsigscan_scanner_t *scanner  = NULL;
+	sigscan_signature_t *signature = NULL;
+	static char *function          = "sigscan_test_scanner_scan";
+	size_t identifier_size         = 0;
+	int expected_result            = 0;
+	int result                     = 0;
+	int signatures_index           = 0;
 
 	uint8_t _7z_pattern[] = {
 		'7', 'z', 0xbc, 0xaf, 0x27, 0x1c };
@@ -239,15 +419,15 @@ int sigscan_test_scanner_scan(
 
 	/* Random data
 	 */
-	uint8_t test_data1[] = {
+	uint8_t random_data[] = {
 		0x01, 0xfa, 0xe0, 0xbe, 0x99, 0x8e, 0xdb, 0x70, 0xea, 0xcc, 0x6b, 0xae, 0x2f, 0xf5, 0xa2, 0xe4 };
 
 	/* Boundary scan test data
 	 */
-	uint8_t test_data2_part1[] = {
+	uint8_t boundary_data_part1[] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 'P', 'K' };
-	uint8_t test_data2_part2[] = {
+	uint8_t boundary_data_part2[] = {
 		0x07, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 'Z' };
 
@@ -293,57 +473,11 @@ int sigscan_test_scanner_scan(
 		}
 		signature = &( signatures[ signatures_index++ ] );
 	}
-/* TODO move to separate function - start */
-	if( libsigscan_scan_state_initialize(
-	     &scan_state,
-	     &error ) != 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create scan state.",
-		 function );
-
-		goto on_error;
-	}
-	if( libsigscan_scan_state_set_data_size(
-	     scan_state,
-	     20,
-	     &error ) != 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data size.",
-		 function );
-
-		goto on_error;
-	}
-	if( libsigscan_scanner_scan_start(
+	if( sigscan_test_scanner_scan_buffer(
 	     scanner,
-	     scan_state,
-	     &error ) != 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GENERIC,
-		 "%s: unable to start scan.",
-		 function );
-
-		goto on_error;
-	}
-	fprintf(
-	 stdout,
-	 "Testing scan\t" );
-
-	if( libsigscan_scanner_scan_buffer(
-	     scanner,
-	     scan_state,
 	     lnk_pattern,
 	     20,
+	     1,
 	     &error ) != 1 )
 	{
 		libcerror_error_set(
@@ -355,52 +489,55 @@ int sigscan_test_scanner_scan(
 
 		goto on_error;
 	}
-/* TODO */
-	if( result != expected_result )
-	{
-		fprintf(
-		 stdout,
-		 "(FAIL)" );
-	}
-	else
-	{
-		fprintf(
-		 stdout,
-		 "(PASS)" );
-	}
-	fprintf(
-	 stdout,
-	 "\n" );
-
-	if( libsigscan_scanner_scan_stop(
+	if( sigscan_test_scanner_scan_buffer(
 	     scanner,
-	     scan_state,
+	     lnk_pattern,
+	     20,
+	     1,
 	     &error ) != 1 )
 	{
 		libcerror_error_set(
 		 &error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GENERIC,
-		 "%s: unable to stop scan.",
+		 "%s: unable to scan buffer.",
 		 function );
 
 		goto on_error;
 	}
-/* TODO compare scan results */
-	if( libsigscan_scan_state_free(
-	     &scan_state,
-	     &error ) == -1 )
+	if( sigscan_test_scanner_scan_buffer(
+	     scanner,
+	     regf_pattern,
+	     4,
+	     1,
+	     &error ) != 1 )
 	{
 		libcerror_error_set(
 		 &error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free scan state.",
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to scan buffer.",
 		 function );
 
 		goto on_error;
 	}
-/* TODO move to separate function - end */
+	if( sigscan_test_scanner_scan_buffer(
+	     scanner,
+	     random_data,
+	     16,
+	     0,
+	     &error ) != 1 )
+	{
+		libcerror_error_set(
+		 &error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GENERIC,
+		 "%s: unable to scan buffer.",
+		 function );
+
+		goto on_error;
+	}
+/* TODO add more tests */
 	if( libsigscan_scanner_free(
 	     &scanner,
 	     &error ) == -1 )
@@ -440,12 +577,6 @@ on_error:
 
 		libcerror_error_free(
 		 &error );
-	}
-	if( scan_state != NULL )
-	{
-		libsigscan_scan_state_free(
-		 &scan_state,
-		 NULL );
 	}
 	if( scanner != NULL )
 	{

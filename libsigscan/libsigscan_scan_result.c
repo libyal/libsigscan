@@ -33,6 +33,8 @@
  */
 int libsigscan_scan_result_initialize(
      libsigscan_scan_result_t **scan_result,
+     off64_t offset,
+     libsigscan_signature_t *signature,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scan_result_t *internal_scan_result = NULL;
@@ -56,6 +58,28 @@ int libsigscan_scan_result_initialize(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid scan result value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
+		 "%s: invalid offset value zero or less.",
+		 function );
+
+		return( -1 );
+	}
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
 		 function );
 
 		return( -1 );
@@ -91,6 +115,9 @@ int libsigscan_scan_result_initialize(
 
 		return( -1 );
 	}
+	internal_scan_result->offset    = offset;
+	internal_scan_result->signature = signature;
+
 	*scan_result = (libsigscan_scan_result_t *) internal_scan_result;
 
 	return( 1 );
@@ -130,6 +157,8 @@ int libsigscan_scan_result_free(
 		internal_scan_result = (libsigscan_internal_scan_result_t *) *scan_result;
 		*scan_result         = NULL;
 
+		/* The signature is a reference and freed elsewhere
+		 */
 		memory_free(
 		 internal_scan_result );
 	}

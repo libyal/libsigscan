@@ -1024,6 +1024,34 @@ int libsigscan_scanner_scan_file_io_handle(
 			}
 		}
 	}
+	if( libsigscan_scan_state_stop(
+	     scan_state,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_scan_state_start(
+	     scan_state,
+	     internal_scanner->footer_scan_tree,
+	     buffer_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set scan state.",
+		 function );
+
+		goto on_error;
+	}
 	result = libcdata_range_list_get_spanning_range(
 	          internal_scanner->footer_scan_tree->pattern_range_list,
 	          &range_start,

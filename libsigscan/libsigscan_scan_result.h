@@ -27,6 +27,7 @@
 
 #include "libsigscan_extern.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_signature.h"
 #include "libsigscan_types.h"
 
 #if defined( __cplusplus )
@@ -37,14 +38,20 @@ typedef struct libsigscan_internal_scan_result libsigscan_internal_scan_result_t
 
 struct libsigscan_internal_scan_result
 {
-	/* Dummy
+	/* The offset
 	 */
-	int dummy;
+	off64_t offset;
+
+	/* The signature
+	 */
+	libsigscan_signature_t *signature;
 };
 
 LIBSIGSCAN_EXTERN \
 int libsigscan_scan_result_initialize(
      libsigscan_scan_result_t **scan_result,
+     off64_t offset,
+     libsigscan_signature_t *signature,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \

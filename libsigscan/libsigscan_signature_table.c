@@ -117,7 +117,7 @@ on_error:
 	{
 		if( ( *signature_table )->byte_value_groups_list != NULL )
 		{
-			libcdata_range_list_free(
+			libcdata_list_free(
 			 &( ( *signature_table )->byte_value_groups_list ),
 			 NULL,
 			 NULL );

@@ -107,14 +107,21 @@ int libsigscan_scan_state_start(
      size_t scan_buffer_size,
      libcerror_error_t **error );
 
+int libsigscan_scan_state_stop(
+     libsigscan_scan_state_t *scan_state,
+     libcerror_error_t **error );
+
+int libsigscan_internal_scan_state_scan_buffer(
+     libsigscan_internal_scan_state_t *internal_scan_state,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
+     libcerror_error_t **error );
+
 int libsigscan_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state,
      const uint8_t *buffer,
      size_t buffer_size,
-     libcerror_error_t **error );
-
-int libsigscan_scan_state_stop(
-     libsigscan_scan_state_t *scan_state,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
