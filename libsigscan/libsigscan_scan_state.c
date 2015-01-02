@@ -382,7 +382,6 @@ int libsigscan_scan_state_stop(
 {
 	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
 	static char *function                                 = "libsigscan_scan_state_stop";
-	size_t read_size                                      = 0;
 
 	if( scan_state == NULL )
 	{

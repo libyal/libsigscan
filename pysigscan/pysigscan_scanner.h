@@ -56,16 +56,6 @@ extern PyTypeObject pysigscan_scanner_type_object;
 PyObject *pysigscan_scanner_new(
            void );
 
-PyObject *pysigscan_scanner_new_open(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
-PyObject *pysigscan_scanner_new_open_scanner_object(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
 int pysigscan_scanner_init(
      pysigscan_scanner_t *pysigscan_scanner );
 
@@ -75,6 +65,26 @@ void pysigscan_scanner_free(
 PyObject *pysigscan_scanner_signal_abort(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments );
+
+PyObject *pysigscan_scanner_add_signature(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scanner_scan_start(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scanner_scan_stop(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scanner_scan_buffer(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
 
 #if defined( __cplusplus )
 }

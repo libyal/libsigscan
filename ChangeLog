@@ -1,4 +1,6 @@
 TODO:
+* complete initial version of library
+* complete initial version Python bindings
 * is there a pratical need to support signature with patterns that contain pattern gaps?
 * unbounded scan
   - determine optimal buffer size
@@ -8,10 +10,11 @@ TODO:
 * scanner
   - add support for "negative offsets" (relative from end)
   - add support for unbounded signatures
-* add memory aligned reads
+* add memory aligned reads?
 
 20150102
 * worked on initial version
+* worked on Python bindings
 
 20150101
 * 2015 update

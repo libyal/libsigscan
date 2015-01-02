@@ -30,8 +30,6 @@
 #include "pysigscan_file_object_io_handle.h"
 #include "pysigscan_libbfio.h"
 #include "pysigscan_libcerror.h"
-#include "pysigscan_libclocale.h"
-#include "pysigscan_libcstring.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 #include "pysigscan_scanner.h"
@@ -45,6 +43,38 @@ PyMethodDef pysigscan_scanner_object_methods[] = {
 	  "signal_abort() -> None\n"
 	  "\n"
 	  "Signals the scanner to abort the current activity." },
+
+	/* Functions to access signatures */
+
+	{ "add_signature",
+	  (PyCFunction) pysigscan_scanner_add_signature,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "add_signature(identifier, pattern_offset, pattern, signature_flags) -> Boolean\n"
+	  "\n"
+	  "Adds a signature." },
+
+	/* Functions for scanning */
+
+	{ "scan_start",
+	  (PyCFunction) pysigscan_scanner_scan_start,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "scan_start(scan_state) -> None\n"
+	  "\n"
+	  "Starts the scan." },
+
+	{ "scan_stop",
+	  (PyCFunction) pysigscan_scanner_scan_stop,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "scan_stop(scan_state) -> None\n"
+	  "\n"
+	  "Stops the scan." },
+
+	{ "scan_buffer",
+	  (PyCFunction) pysigscan_scanner_scan_buffer,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "scan_buffer(scan_state, buffer) -> None\n"
+	  "\n"
+	  "Scans the buffer." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -352,5 +382,37 @@ PyObject *pysigscan_scanner_signal_abort(
 	 Py_None );
 
 	return( Py_None );
+}
+
+PyObject *pysigscan_scanner_add_signature(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+/* TODO */
+}
+
+PyObject *pysigscan_scanner_scan_start(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+/* TODO */
+}
+
+PyObject *pysigscan_scanner_scan_stop(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+/* TODO */
+}
+
+PyObject *pysigscan_scanner_scan_buffer(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+/* TODO */
 }
 
