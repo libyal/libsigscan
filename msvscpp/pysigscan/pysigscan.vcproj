@@ -186,7 +186,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_result.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_results.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_state.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pysigscan\pysigscan_scanner.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_signature_flags.c"
 				>
 			</File>
 		</Filter>
@@ -236,7 +252,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_result.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_results.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_scan_state.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pysigscan\pysigscan_scanner.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pysigscan\pysigscan_signature_flags.h"
 				>
 			</File>
 			<File

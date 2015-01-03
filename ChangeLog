@@ -1,6 +1,5 @@
 TODO:
-* complete initial version of library
-* complete initial version Python bindings
+* add pysigscan_scanner_scan_file and pysigscan_scanner_scan_file_object
 * is there a pratical need to support signature with patterns that contain pattern gaps?
 * unbounded scan
   - determine optimal buffer size
@@ -8,9 +7,16 @@ TODO:
 * signature table
   - add support for unbounded signatures (LIBSIGSCAN_PATTERN_OFFSET_UNBOUND)
 * scanner
-  - add support for "negative offsets" (relative from end)
   - add support for unbounded signatures
 * add memory aligned reads?
+
+Tests:
+* sigscan_test_scanner
+  - add scan result (signature) identifier check
+  - offsets relative from end
+* pysigscan_test_scanner
+  - fix TODOs
+  - offsets relative from end
 
 20150103
 * worked on Python bindings

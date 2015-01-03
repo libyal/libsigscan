@@ -761,7 +761,7 @@ int libsigscan_scanner_scan_file_wide(
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     filename,
-	     libcstring_narrow_string_length(
+	     libcstring_wide_string_length(
 	      filename ) + 1,
 	     error ) != 1 )
 	{
@@ -790,7 +790,7 @@ int libsigscan_scanner_scan_file_wide(
 
 		goto on_error;
 	}
-	if( libbfio_file_free(
+	if( libbfio_handle_free(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
