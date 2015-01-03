@@ -12,6 +12,9 @@ TODO:
   - add support for unbounded signatures
 * add memory aligned reads?
 
+20150103
+* worked on Python bindings
+
 20150102
 * worked on initial version
 * worked on Python bindings

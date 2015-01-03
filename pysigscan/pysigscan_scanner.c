@@ -33,6 +33,7 @@
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 #include "pysigscan_scanner.h"
+#include "pysigscan_scan_state.h"
 #include "pysigscan_unused.h"
 
 PyMethodDef pysigscan_scanner_object_methods[] = {
@@ -49,7 +50,7 @@ PyMethodDef pysigscan_scanner_object_methods[] = {
 	{ "add_signature",
 	  (PyCFunction) pysigscan_scanner_add_signature,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "add_signature(identifier, pattern_offset, pattern, signature_flags) -> Boolean\n"
+	  "add_signature(identifier, pattern_offset, pattern, signature_flags) -> None\n"
 	  "\n"
 	  "Adds a signature." },
 
@@ -384,35 +385,497 @@ PyObject *pysigscan_scanner_signal_abort(
 	return( Py_None );
 }
 
+/* Adds a signature
+ * Returns a Python object if successful or NULL on error
+ */
 PyObject *pysigscan_scanner_add_signature(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
            PyObject *keywords )
 {
-/* TODO */
+	PyObject *string_object      = NULL;
+	PyObject *utf8_string_object = NULL;
+	libcerror_error_t *error     = NULL;
+	static char *function        = "pysigscan_scanner_add_signature";
+	static char *keyword_list[]  = { "identifier", "pattern_offset", "pattern", "signature_flags", NULL };
+	const char *identifier       = NULL;
+	char *pattern                = NULL;
+	off64_t pattern_offset       = 0;
+	Py_ssize_t identifier_size   = 0;
+	int result                   = 0;
+	int signature_flags          = 0;
+
+#if defined( PY_SSIZE_T_CLEAN )
+	Py_ssize_t pattern_size      = 0;
+#else
+	int pattern_size             = 0;
+#endif
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "OLs#i",
+	     keyword_list,
+	     &string_object,
+	     &pattern_offset,
+	     &pattern,
+	     &pattern_size,
+	     &signature_flags ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          string_object,
+	          (PyObject *) &PyUnicode_Type );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type unicode.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		PyErr_Clear();
+
+		utf8_string_object = PyUnicode_AsUTF8String(
+		                      string_object );
+
+		if( utf8_string_object == NULL )
+		{
+			pysigscan_error_fetch_and_raise(
+			 PyExc_RuntimeError,
+			 "%s: unable to convert unicode string to UTF-8.",
+			 function );
+
+			return( NULL );
+		}
+#if PY_MAJOR_VERSION >= 3
+		identifier = PyBytes_AsString(
+		              utf8_string_object );
+
+		identifier_size = PyBytes_Size(
+		                   utf8_string_object );
+#else
+		identifier = PyString_AsString(
+		              utf8_string_object );
+
+		identifier_size = PyString_Size(
+		                   utf8_string_object );
+#endif
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_add_signature(
+		          pysigscan_scanner->scanner,
+	                  identifier,
+	                  identifier_size,
+	                  pattern_offset,
+	                  (uint8_t *) pattern,
+	                  pattern_size,
+	                  (uint32_t) signature_flags,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		Py_DecRef(
+		 utf8_string_object );
+
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to add signature.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Clear();
+
+#if PY_MAJOR_VERSION >= 3
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyBytes_Type );
+#else
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyString_Type );
+#endif
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type string.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		PyErr_Clear();
+
+#if PY_MAJOR_VERSION >= 3
+		identifier = PyBytes_AsString(
+		              string_object );
+
+		identifier_size = PyBytes_Size(
+		                   string_object );
+#else
+		identifier = PyString_AsString(
+		              string_object );
+
+		identifier_size = PyString_Size(
+		                   string_object );
+#endif
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_add_signature(
+		          pysigscan_scanner->scanner,
+	                  identifier,
+	                  identifier_size,
+	                  pattern_offset,
+	                  (uint8_t *) pattern,
+	                  pattern_size,
+	                  (uint32_t) signature_flags,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to add signature.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Format(
+	 PyExc_TypeError,
+	 "%s: unsupported string object type.",
+	 function );
+
+	return( NULL );
 }
 
+/* Starts the scan
+ * Returns a Python object if successful or NULL on error
+ */
 PyObject *pysigscan_scanner_scan_start(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
            PyObject *keywords )
 {
-/* TODO */
+	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
+	PyObject *state_object                       = NULL;
+	libcerror_error_t *error                     = NULL;
+	static char *function                        = "pysigscan_scanner_scan_start";
+	static char *keyword_list[]                  = { "scan_state", NULL };
+	int result                                   = 0;
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "O",
+	     keyword_list,
+	     &state_object ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          state_object,
+	          (PyObject *) &pysigscan_scan_state_type_object );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if state object is of type pysigscan_scan_state.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_scan_start(
+		          pysigscan_scanner->scanner,
+		          pysigscan_scan_state->scan_state,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to start scan.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Format(
+	 PyExc_TypeError,
+	 "%s: unsupported state object type.",
+	 function );
+
+	return( NULL );
 }
 
+/* Stops the scan
+ * Returns a Python object if successful or NULL on error
+ */
 PyObject *pysigscan_scanner_scan_stop(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
            PyObject *keywords )
 {
-/* TODO */
+	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
+	PyObject *state_object                       = NULL;
+	libcerror_error_t *error                     = NULL;
+	static char *function                        = "pysigscan_scanner_scan_stop";
+	static char *keyword_list[]                  = { "scan_state", NULL };
+	int result                                   = 0;
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "O",
+	     keyword_list,
+	     &state_object ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          state_object,
+	          (PyObject *) &pysigscan_scan_state_type_object );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if state object is of type pysigscan_scan_state.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_scan_stop(
+		          pysigscan_scanner->scanner,
+		          pysigscan_scan_state->scan_state,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to stop scan.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Format(
+	 PyExc_TypeError,
+	 "%s: unsupported state object type.",
+	 function );
+
+	return( NULL );
 }
 
+/* Scans a buffer
+ * Returns a Python object if successful or NULL on error
+ */
 PyObject *pysigscan_scanner_scan_buffer(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
            PyObject *keywords )
 {
-/* TODO */
+	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
+	PyObject *string_object                      = NULL;
+	PyObject *state_object                       = NULL;
+	libcerror_error_t *error                     = NULL;
+	static char *function                        = "pysigscan_scanner_scan_buffer";
+	static char *keyword_list[]                  = { "scan_state", "buffer", NULL };
+	char *buffer                                 = NULL;
+	Py_ssize_t buffer_size                       = 0;
+	int result                                   = 0;
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "OO",
+	     keyword_list,
+	     &state_object,
+	     &string_object ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          state_object,
+	          (PyObject *) &pysigscan_scan_state_type_object );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if state object is of type pysigscan_scan_state.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+
+#if PY_MAJOR_VERSION >= 3
+		buffer = PyBytes_AsString(
+		          string_object );
+
+		buffer_size = PyBytes_Size(
+		               string_object );
+#else
+		buffer = PyString_AsString(
+		          string_object );
+
+		buffer_size = PyString_Size(
+		               string_object );
+#endif
+		if( ( buffer_size < 0 )
+		 || ( buffer_size > (Py_ssize_t) SSIZE_MAX ) )
+		{
+			PyErr_Format(
+			 PyExc_ValueError,
+			 "%s: invalid argument buffer size value out of bounds.",
+			 function );
+
+			return( NULL );
+		}
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_scan_buffer(
+		          pysigscan_scanner->scanner,
+		          pysigscan_scan_state->scan_state,
+		          (uint8_t *) buffer,
+		          buffer_size,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to scan buffer.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Format(
+	 PyExc_TypeError,
+	 "%s: unsupported state object type.",
+	 function );
+
+	return( NULL );
 }
 

@@ -35,6 +35,13 @@
 
 PyMethodDef pysigscan_scan_state_object_methods[] = {
 
+	{ "set_data_size",
+	  (PyCFunction) pysigscan_scanner_set_data_size,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "set_data_size(data_size) -> None\n"
+	  "\n"
+	  "Set the size of the data." },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -291,5 +298,56 @@ void pysigscan_scan_state_free(
 	}
 	ob_type->tp_free(
 	 (PyObject*) pysigscan_scan_state );
+}
+
+/* Sets the size of the data
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scanner_set_data_size(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	libcerror_error_t *error    = NULL;
+	static char *function       = "pysigscan_scanner_set_data_size";
+	static char *keyword_list[] = { "data_size", NULL };
+	size64_t data_size          = 0;
+	int result                  = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "L",
+	     keyword_list,
+	     &data_size ) == 0 )
+	{
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_state_set_data_size(
+	          pysigscan_scan_state->scan_state,
+	          data_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to set data size.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
 }
 

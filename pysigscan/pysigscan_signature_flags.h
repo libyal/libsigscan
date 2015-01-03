@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsigscan scan state
+ * Python object definition of the libsigscan signature flags
  *
  * Copyright (C) 2014-2015, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,13 +19,12 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYSIGSCAN_SCAN_STATE_H )
-#define _PYSIGSCAN_SCAN_STATE_H
+#if !defined( _PYSIGSCAN_ENCRYPTION_TYPES_H )
+#define _PYSIGSCAN_ENCRYPTION_TYPES_H
 
 #include <common.h>
 #include <types.h>
 
-#include "pysigscan_libbfio.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 
@@ -33,35 +32,28 @@
 extern "C" {
 #endif
 
-typedef struct pysigscan_scan_state pysigscan_scan_state_t;
+typedef struct pysigscan_signature_flags pysigscan_signature_flags_t;
 
-struct pysigscan_scan_state
+struct pysigscan_signature_flags
 {
 	/* Python object initialization
 	 */
 	PyObject_HEAD
-
-	/* The libsigscan scan state
-	 */
-	libsigscan_scan_state_t *scan_state;
 };
 
-extern PyMethodDef pysigscan_scan_state_object_methods[];
-extern PyTypeObject pysigscan_scan_state_type_object;
+extern PyTypeObject pysigscan_signature_flags_type_object;
 
-PyObject *pysigscan_scan_state_new(
+int pysigscan_signature_flags_init_type(
+     PyTypeObject *type_object );
+
+PyObject *pysigscan_signature_flags_new(
            void );
 
-int pysigscan_scan_state_init(
-     pysigscan_scan_state_t *pysigscan_scan_state );
+int pysigscan_signature_flags_init(
+     pysigscan_signature_flags_t *pysigscan_signature_flags );
 
-void pysigscan_scan_state_free(
-      pysigscan_scan_state_t *pysigscan_scan_state );
-
-PyObject *pysigscan_scanner_set_data_size(
-           pysigscan_scan_state_t *pysigscan_scan_state,
-           PyObject *arguments,
-           PyObject *keywords );
+void pysigscan_signature_flags_free(
+      pysigscan_signature_flags_t *pysigscan_signature_flags );
 
 #if defined( __cplusplus )
 }

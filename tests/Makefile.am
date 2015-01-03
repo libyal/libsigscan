@@ -15,7 +15,8 @@ AM_CPPFLAGS = \
 	@LIBSIGSCAN_DLL_IMPORT@
 
 if HAVE_PYTHON
-TESTS_PYSIGSCAN =
+TESTS_PYSIGSCAN = \
+	test_pysigscan_scanner.sh
 endif
 
 TESTS = \
@@ -24,6 +25,8 @@ TESTS = \
 	$(TESTS_PYSIGSCAN)
 
 check_SCRIPTS = \
+	pysigscan_test_scanner.py \
+	test_pysigscan_scanner.sh \
 	test_scanner.sh \
 	test_sigscan.sh \
 	test_runner.sh

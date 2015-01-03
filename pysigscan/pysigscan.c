@@ -33,7 +33,10 @@
 #include "pysigscan_libcstring.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
+#include "pysigscan_scan_result.h"
+#include "pysigscan_scan_state.h"
 #include "pysigscan_scanner.h"
+#include "pysigscan_signature_flags.h"
 #include "pysigscan_unused.h"
 
 /* The pysigscan module methods
@@ -120,9 +123,12 @@ PyMODINIT_FUNC initpysigscan(
                 void )
 #endif
 {
-	PyObject *module                  = NULL;
-	PyTypeObject *scanner_type_object = NULL;
-	PyGILState_STATE gil_state        = 0;
+	PyObject *module                          = NULL;
+	PyTypeObject *scan_result_type_object     = NULL;
+	PyTypeObject *scan_state_type_object      = NULL;
+	PyTypeObject *scanner_type_object         = NULL;
+	PyTypeObject *signature_flags_type_object = NULL;
+	PyGILState_STATE gil_state                = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libsigscan_notify_set_stream(
@@ -176,8 +182,70 @@ PyMODINIT_FUNC initpysigscan(
 	 "scanner",
 	 (PyObject *) scanner_type_object );
 
+	/* Setup the scan result type object
+	 */
+	pysigscan_scan_result_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pysigscan_scan_result_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pysigscan_scan_result_type_object );
+
+	scan_result_type_object = &pysigscan_scan_result_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "scan_result",
+	 (PyObject *) scan_result_type_object );
+
+	/* Setup the scan state type object
+	 */
+	pysigscan_scan_state_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pysigscan_scan_state_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pysigscan_scan_state_type_object );
+
+	scan_state_type_object = &pysigscan_scan_state_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "scan_state",
+	 (PyObject *) scan_state_type_object );
+
 	PyGILState_Release(
 	 gil_state );
+
+	/* Setup the signature flags type object
+	 */
+	pysigscan_signature_flags_type_object.tp_new = PyType_GenericNew;
+
+	if( pysigscan_signature_flags_init_type(
+	     &pysigscan_signature_flags_type_object ) != 1 )
+	{
+		goto on_error;
+	}
+	if( PyType_Ready(
+	     &pysigscan_signature_flags_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pysigscan_signature_flags_type_object );
+
+	signature_flags_type_object = &pysigscan_signature_flags_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "signature_flags",
+	 (PyObject *) signature_flags_type_object );
 
 #if PY_MAJOR_VERSION >= 3
 	return( module );

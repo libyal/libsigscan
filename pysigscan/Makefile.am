@@ -27,6 +27,7 @@ pysigscan_la_SOURCES = \
 	pysigscan_scan_result.c pysigscan_scan_result.h \
 	pysigscan_scan_state.c pysigscan_scan_state.h \
 	pysigscan_scanner.c pysigscan_scanner.h \
+	pysigscan_signature_flags.c pysigscan_signature_flags.h \
 	pysigscan_unused.h
 
 pysigscan_la_LIBADD = \
