@@ -1,4 +1,4 @@
-.Dd January  1, 2015
+.Dd January  3, 2015
 .Dt libsigscan 3
 .Os libsigscan
 .Sh NAME
@@ -58,8 +58,12 @@ Scanner functions
 .Fn libsigscan_scanner_scan_buffer "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, const uint8_t *buffer, size_t buffer_size, libsigscan_error_t **error"
 .Ft int
 .Fn libsigscan_scanner_scan_file "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, const char *filename, libsigscan_error_t **error"
+.Pp
+Available when compiled with wide character string support:
 .Ft int
 .Fn libsigscan_scanner_scan_file_wide "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, const wchar_t *filename, libsigscan_error_t **error"
+.Pp
+Available when compiled with libbfio support:
 .Ft int
 .Fn libsigscan_scanner_scan_file_io_handle "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, libbfio_handle_t *file_io_handle, libsigscan_error_t **error"
 .Pp
