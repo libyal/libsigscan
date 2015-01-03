@@ -211,6 +211,43 @@ int libsigscan_byte_value_group_compare(
 	return( LIBCDATA_COMPARE_EQUAL );
 }
 
+/* Retrieves the pattern offset
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_byte_value_group_get_pattern_offset(
+     libsigscan_byte_value_group_t *byte_value_group,
+     off64_t *pattern_offset,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_byte_value_group_get_pattern_offset";
+
+	if( byte_value_group == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid byte value group.",
+		 function );
+
+		return( -1 );
+	}
+	if( pattern_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid pattern offset.",
+		 function );
+
+		return( -1 );
+	}
+	*pattern_offset = byte_value_group->pattern_offset;
+
+	return( 1 );
+}
+
 /* Retrieves a specific signature group
  * Returns 1 if successful, 0 if no such value or -1 on error
  */

@@ -971,9 +971,10 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
      off64_t *pattern_offset,
      libcerror_error_t **error )
 {
-	static char *function    = "libsigscan_scan_tree_get_most_significant_pattern_offset";
-	int number_of_signatures = 0;
-	int result               = 0;
+	libsigscan_byte_value_group_t *byte_value_group = NULL;
+	static char *function                           = "libsigscan_scan_tree_get_most_significant_pattern_offset";
+	int number_of_signatures                        = 0;
+	int result                                      = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -1012,7 +1013,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 	switch( number_of_signatures )
 	{
 		case 0:
-			break;
+			return( 0 );
 
 		case 1:
 			result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
@@ -1076,6 +1077,40 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 				return( -1 );
 			}
 			break;
+	}
+	if( result == 0 )
+	{
+		if( libsigscan_signature_table_get_byte_value_group_by_index(
+		     signature_table,
+		     0,
+		     &byte_value_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve byte value group: 0.",
+			 function );
+
+			return( -1 );
+		}
+		result = libsigscan_byte_value_group_get_pattern_offset(
+		          byte_value_group,
+		          pattern_offset,
+		          error );
+
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve pattern offset from byte value group: 0.",
+			 function );
+
+			return( -1 );
+		}
 	}
 	return( result );
 }

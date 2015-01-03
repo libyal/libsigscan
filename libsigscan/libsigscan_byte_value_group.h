@@ -61,6 +61,11 @@ int libsigscan_byte_value_group_compare(
      libsigscan_byte_value_group_t *second_byte_value_group,
      libcerror_error_t **error );
 
+int libsigscan_byte_value_group_get_pattern_offset(
+     libsigscan_byte_value_group_t *byte_value_group,
+     off64_t *pattern_offset,
+     libcerror_error_t **error );
+
 int libsigscan_byte_value_group_get_signature_group(
      libsigscan_byte_value_group_t *byte_value_group,
      uint8_t byte_value,
