@@ -14,9 +14,11 @@ Tests:
 * sigscan_test_scanner
   - add scan result (signature) identifier check
   - offsets relative from end
+  - scan file and file IO handle
 * pysigscan_test_scanner
   - fix TODOs
   - offsets relative from end
+  - scan file and file object
 
 20150103
 * worked on Python bindings

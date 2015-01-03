@@ -36,6 +36,15 @@
 #include "pysigscan_scan_state.h"
 #include "pysigscan_unused.h"
 
+#if !defined( LIBSIGSCAN_HAVE_BFIO )
+LIBSIGSCAN_EXTERN \
+int libsigscan_scanner_scan_file_io_handle(
+     libsigscan_scanner_t *scanner,
+     libsigscan_scan_state_t *scan_state,
+     libbfio_handle_t *file_io_handle,
+     libsigscan_error_t **error );
+#endif
+
 PyMethodDef pysigscan_scanner_object_methods[] = {
 
 	{ "signal_abort",
@@ -76,6 +85,20 @@ PyMethodDef pysigscan_scanner_object_methods[] = {
 	  "scan_buffer(scan_state, buffer) -> None\n"
 	  "\n"
 	  "Scans the buffer." },
+
+	{ "scan_file",
+	  (PyCFunction) pysigscan_scanner_scan_file,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "scan_file(scan_state, filename) -> None\n"
+	  "\n"
+	  "Scans a file." },
+
+	{ "scan_file_object",
+	  (PyCFunction) pysigscan_scanner_scan_file_object,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "scan_file_object(scan_state, file_object) -> None\n"
+	  "\n"
+	  "Scans a file using a file-like object." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -243,8 +266,7 @@ int pysigscan_scanner_init(
 
 		return( -1 );
 	}
-	pysigscan_scanner->scanner        = NULL;
-	pysigscan_scanner->file_io_handle = NULL;
+	pysigscan_scanner->scanner = NULL;
 
 	if( libsigscan_scanner_initialize(
 	     &( pysigscan_scanner->scanner ),
@@ -598,7 +620,7 @@ PyObject *pysigscan_scanner_scan_start(
            PyObject *keywords )
 {
 	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
-	PyObject *state_object                       = NULL;
+	PyObject *scan_state_object                  = NULL;
 	libcerror_error_t *error                     = NULL;
 	static char *function                        = "pysigscan_scanner_scan_start";
 	static char *keyword_list[]                  = { "scan_state", NULL };
@@ -618,14 +640,14 @@ PyObject *pysigscan_scanner_scan_start(
 	     keywords,
 	     "O",
 	     keyword_list,
-	     &state_object ) == 0 )
+	     &scan_state_object ) == 0 )
 	{
 		return( NULL );
 	}
 	PyErr_Clear();
 
 	result = PyObject_IsInstance(
-	          state_object,
+	          scan_state_object,
 	          (PyObject *) &pysigscan_scan_state_type_object );
 
 	if( result == -1 )
@@ -637,43 +659,43 @@ PyObject *pysigscan_scanner_scan_start(
 
 		return( NULL );
 	}
-	else if( result != 0 )
+	else if( result == 0 )
 	{
-		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported state object type.",
+		 function );
 
-		Py_BEGIN_ALLOW_THREADS
-
-		result = libsigscan_scanner_scan_start(
-		          pysigscan_scanner->scanner,
-		          pysigscan_scan_state->scan_state,
-		          &error );
-
-		Py_END_ALLOW_THREADS
-
-		if( result != 1 )
-		{
-			pysigscan_error_raise(
-			 error,
-			 PyExc_IOError,
-			 "%s: unable to start scan.",
-			 function );
-
-			libcerror_error_free(
-			 &error );
-
-			return( NULL );
-		}
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
+		return( NULL );
 	}
-	PyErr_Format(
-	 PyExc_TypeError,
-	 "%s: unsupported state object type.",
-	 function );
+	pysigscan_scan_state = (pysigscan_scan_state_t *) scan_state_object;
 
-	return( NULL );
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scanner_scan_start(
+	          pysigscan_scanner->scanner,
+	          pysigscan_scan_state->scan_state,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to start scan.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
 }
 
 /* Stops the scan
@@ -685,7 +707,7 @@ PyObject *pysigscan_scanner_scan_stop(
            PyObject *keywords )
 {
 	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
-	PyObject *state_object                       = NULL;
+	PyObject *scan_state_object                  = NULL;
 	libcerror_error_t *error                     = NULL;
 	static char *function                        = "pysigscan_scanner_scan_stop";
 	static char *keyword_list[]                  = { "scan_state", NULL };
@@ -705,14 +727,14 @@ PyObject *pysigscan_scanner_scan_stop(
 	     keywords,
 	     "O",
 	     keyword_list,
-	     &state_object ) == 0 )
+	     &scan_state_object ) == 0 )
 	{
 		return( NULL );
 	}
 	PyErr_Clear();
 
 	result = PyObject_IsInstance(
-	          state_object,
+	          scan_state_object,
 	          (PyObject *) &pysigscan_scan_state_type_object );
 
 	if( result == -1 )
@@ -724,43 +746,43 @@ PyObject *pysigscan_scanner_scan_stop(
 
 		return( NULL );
 	}
-	else if( result != 0 )
+	else if( result == 0 )
 	{
-		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported state object type.",
+		 function );
 
-		Py_BEGIN_ALLOW_THREADS
-
-		result = libsigscan_scanner_scan_stop(
-		          pysigscan_scanner->scanner,
-		          pysigscan_scan_state->scan_state,
-		          &error );
-
-		Py_END_ALLOW_THREADS
-
-		if( result != 1 )
-		{
-			pysigscan_error_raise(
-			 error,
-			 PyExc_IOError,
-			 "%s: unable to stop scan.",
-			 function );
-
-			libcerror_error_free(
-			 &error );
-
-			return( NULL );
-		}
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
+		return( NULL );
 	}
-	PyErr_Format(
-	 PyExc_TypeError,
-	 "%s: unsupported state object type.",
-	 function );
+	pysigscan_scan_state = (pysigscan_scan_state_t *) scan_state_object;
 
-	return( NULL );
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scanner_scan_stop(
+		  pysigscan_scanner->scanner,
+		  pysigscan_scan_state->scan_state,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to stop scan.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
 }
 
 /* Scans a buffer
@@ -773,7 +795,7 @@ PyObject *pysigscan_scanner_scan_buffer(
 {
 	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
 	PyObject *string_object                      = NULL;
-	PyObject *state_object                       = NULL;
+	PyObject *scan_state_object                  = NULL;
 	libcerror_error_t *error                     = NULL;
 	static char *function                        = "pysigscan_scanner_scan_buffer";
 	static char *keyword_list[]                  = { "scan_state", "buffer", NULL };
@@ -795,7 +817,7 @@ PyObject *pysigscan_scanner_scan_buffer(
 	     keywords,
 	     "OO",
 	     keyword_list,
-	     &state_object,
+	     &scan_state_object,
 	     &string_object ) == 0 )
 	{
 		return( NULL );
@@ -803,7 +825,7 @@ PyObject *pysigscan_scanner_scan_buffer(
 	PyErr_Clear();
 
 	result = PyObject_IsInstance(
-	          state_object,
+	          scan_state_object,
 	          (PyObject *) &pysigscan_scan_state_type_object );
 
 	if( result == -1 )
@@ -815,40 +837,263 @@ PyObject *pysigscan_scanner_scan_buffer(
 
 		return( NULL );
 	}
-	else if( result != 0 )
+	else if( result == 0 )
 	{
-		pysigscan_scan_state = (pysigscan_scan_state_t *) state_object;
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported state object type.",
+		 function );
+
+		return( NULL );
+	}
+	pysigscan_scan_state = (pysigscan_scan_state_t *) scan_state_object;
 
 #if PY_MAJOR_VERSION >= 3
-		buffer = PyBytes_AsString(
-		          string_object );
+	buffer = PyBytes_AsString(
+		  string_object );
 
-		buffer_size = PyBytes_Size(
-		               string_object );
+	buffer_size = PyBytes_Size(
+		       string_object );
 #else
-		buffer = PyString_AsString(
-		          string_object );
+	buffer = PyString_AsString(
+		  string_object );
 
-		buffer_size = PyString_Size(
-		               string_object );
+	buffer_size = PyString_Size(
+		       string_object );
 #endif
-		if( ( buffer_size < 0 )
-		 || ( buffer_size > (Py_ssize_t) SSIZE_MAX ) )
+	if( ( buffer_size < 0 )
+	 || ( buffer_size > (Py_ssize_t) SSIZE_MAX ) )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid argument buffer size value out of bounds.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scanner_scan_buffer(
+		  pysigscan_scanner->scanner,
+		  pysigscan_scan_state->scan_state,
+		  (uint8_t *) buffer,
+		  buffer_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to scan buffer.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
+}
+
+/* Scans a file
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scanner_scan_file(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
+	PyObject *string_object                      = NULL;
+	PyObject *scan_state_object                  = NULL;
+	libcerror_error_t *error                     = NULL;
+	static char *function                        = "pysigscan_scanner_scan_file";
+	static char *keyword_list[]                  = { "scan_state", "filename", NULL };
+	const char *filename_narrow                  = NULL;
+	int result                                   = 0;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	const wchar_t *filename_wide                 = NULL;
+#else
+	PyObject *utf8_string_object                 = NULL;
+#endif
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	/* Note that PyArg_ParseTupleAndKeywords with "s" will force Unicode strings to be converted to narrow character string.
+	 * On Windows the narrow character strings contains an extended ASCII string with a codepage. Hence we get a conversion
+	 * exception. This will also fail if the default encoding is not set correctly. We cannot use "u" here either since that
+	 * does not allow us to pass non Unicode string objects and Python (at least 2.7) does not seems to automatically upcast them.
+	 */
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "OO",
+	     keyword_list,
+	     &scan_state_object,
+	     &string_object ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          scan_state_object,
+	          (PyObject *) &pysigscan_scan_state_type_object );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if state object is of type pysigscan_scan_state.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported state object type.",
+		 function );
+
+		return( NULL );
+	}
+	pysigscan_scan_state = (pysigscan_scan_state_t *) scan_state_object;
+
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          string_object,
+	          (PyObject *) &PyUnicode_Type );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type unicode.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		PyErr_Clear();
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
+		                             string_object );
+
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_scan_file_wide(
+		          pysigscan_scanner->scanner,
+		          pysigscan_scan_state->scan_state,
+	                  filename_wide,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+#else
+		utf8_string_object = PyUnicode_AsUTF8String(
+		                      string_object );
+
+		if( utf8_string_object == NULL )
 		{
-			PyErr_Format(
-			 PyExc_ValueError,
-			 "%s: invalid argument buffer size value out of bounds.",
+			pysigscan_error_fetch_and_raise(
+			 PyExc_RuntimeError,
+			 "%s: unable to convert unicode string to UTF-8.",
 			 function );
 
 			return( NULL );
 		}
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   utf8_string_object );
+#else
+		filename_narrow = PyString_AsString(
+				   utf8_string_object );
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
-		result = libsigscan_scanner_scan_buffer(
+		result = libsigscan_scanner_scan_file(
 		          pysigscan_scanner->scanner,
 		          pysigscan_scan_state->scan_state,
-		          (uint8_t *) buffer,
-		          buffer_size,
+	                  filename_narrow,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		Py_DecRef(
+		 utf8_string_object );
+#endif
+		if( result != 1 )
+		{
+			pysigscan_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to scan file.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	PyErr_Clear();
+
+#if PY_MAJOR_VERSION >= 3
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyBytes_Type );
+#else
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyString_Type );
+#endif
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type string.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result != 0 )
+	{
+		PyErr_Clear();
+
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   string_object );
+#else
+		filename_narrow = PyString_AsString(
+				   string_object );
+#endif
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsigscan_scanner_scan_file(
+		          pysigscan_scanner->scanner,
+		          pysigscan_scan_state->scan_state,
+	                  filename_narrow,
 		          &error );
 
 		Py_END_ALLOW_THREADS
@@ -858,7 +1103,7 @@ PyObject *pysigscan_scanner_scan_buffer(
 			pysigscan_error_raise(
 			 error,
 			 PyExc_IOError,
-			 "%s: unable to scan buffer.",
+			 "%s: unable to scan file.",
 			 function );
 
 			libcerror_error_free(
@@ -873,9 +1118,146 @@ PyObject *pysigscan_scanner_scan_buffer(
 	}
 	PyErr_Format(
 	 PyExc_TypeError,
-	 "%s: unsupported state object type.",
+	 "%s: unsupported string object type.",
 	 function );
 
+	return( NULL );
+}
+
+/* Scans a file using a file-like object
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scanner_scan_file_object(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	libbfio_handle_t *file_io_handle             = NULL;
+	pysigscan_scan_state_t *pysigscan_scan_state = NULL;
+	PyObject *file_object                        = NULL;
+	PyObject *scan_state_object                  = NULL;
+	libcerror_error_t *error                     = NULL;
+	static char *keyword_list[]                  = { "scan_state", "file_object", NULL };
+	static char *function                        = "pysigscan_scanner_scan_file_object";
+	int result                                   = 0;
+
+	if( pysigscan_scanner == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "OO",
+	     keyword_list,
+	     &scan_state_object,
+	     &file_object ) == 0 )
+	{
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_IsInstance(
+	          scan_state_object,
+	          (PyObject *) &pysigscan_scan_state_type_object );
+
+	if( result == -1 )
+	{
+		pysigscan_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if state object is of type pysigscan_scan_state.",
+		 function );
+
+		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported state object type.",
+		 function );
+
+		return( NULL );
+	}
+	pysigscan_scan_state = (pysigscan_scan_state_t *) scan_state_object;
+
+	if( pysigscan_file_object_initialize(
+	     &file_io_handle,
+	     file_object,
+	     &error ) != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_MemoryError,
+		 "%s: unable to initialize file IO handle.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scanner_scan_file_io_handle(
+	          pysigscan_scanner->scanner,
+	          pysigscan_scan_state->scan_state,
+	          file_io_handle,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to scan file.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libbfio_handle_free(
+	          &file_io_handle,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to free libbfio file IO handle.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
 	return( NULL );
 }
 

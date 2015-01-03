@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pysigscan_libbfio.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 
@@ -44,10 +43,6 @@ struct pysigscan_scanner
 	/* The libsigscan scanner
 	 */
 	libsigscan_scanner_t *scanner;
-
-	/* The libbfio file IO handle
-	 */
-	libbfio_handle_t *file_io_handle;
 };
 
 extern PyMethodDef pysigscan_scanner_object_methods[];
@@ -82,6 +77,16 @@ PyObject *pysigscan_scanner_scan_stop(
            PyObject *keywords );
 
 PyObject *pysigscan_scanner_scan_buffer(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scanner_scan_file(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scanner_scan_file_object(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
            PyObject *keywords );
