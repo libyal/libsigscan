@@ -42,6 +42,10 @@ struct libsigscan_signature_table
 	/* The byte value groups list sorted by offset and byte value
 	 */
 	libcdata_list_t *byte_value_groups_list;
+
+	/* The list of signatures in the table
+	 */
+	libcdata_list_t *signatures_list;
 };
 
 int libsigscan_signature_table_initialize(
@@ -74,6 +78,16 @@ int libsigscan_signature_table_get_byte_value_group_by_offset(
      libsigscan_signature_table_t *signature_table,
      off64_t pattern_offset,
      libsigscan_byte_value_group_t **byte_value_group,
+     libcerror_error_t **error );
+
+int libsigscan_signature_table_get_number_of_signatures(
+     libsigscan_signature_table_t *signature_table,
+     int *number_of_signatures,
+     libcerror_error_t **error );
+
+int libsigscan_signature_table_get_signatures_list_clone(
+     libsigscan_signature_table_t *signature_table,
+     libcdata_list_t **signatures_list,
      libcerror_error_t **error );
 
 int libsigscan_signature_table_insert_signature(

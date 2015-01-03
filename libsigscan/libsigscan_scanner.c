@@ -114,7 +114,7 @@ int libsigscan_scanner_initialize(
 
 		goto on_error;
 	}
-	internal_scanner->buffer_size = 4 * 1024;
+	internal_scanner->buffer_size = LIBSIGSCAN_DEFAULT_SCAN_BUFFER_SIZE;
 
 	*scanner = (libsigscan_scanner_t *) internal_scanner;
 
@@ -835,6 +835,7 @@ int libsigscan_scanner_scan_file_io_handle(
 	uint64_t range_size                             = 0;
 	uint64_t range_start                            = 0;
 	size_t buffer_size                              = 0;
+	size_t read_size                                = 0;
 	ssize_t read_count                              = 0;
 	int result                                      = 0;
 
@@ -916,7 +917,7 @@ int libsigscan_scanner_scan_file_io_handle(
 		goto on_error;
 	}
 	if( libsigscan_scan_state_get_buffer_size(
-	     scanner,
+	     scan_state,
 	     &buffer_size,
 	     error ) != 1 )
 	{
@@ -990,19 +991,27 @@ int libsigscan_scanner_scan_file_io_handle(
 		}
 		while( range_size > 0 )
 		{
+			if( range_size > buffer_size )
+			{
+				read_size = buffer_size;
+			}
+			else
+			{
+				read_size = range_size;
+			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
 			              buffer,
-			              buffer_size,
+			              read_size,
 			              error );
 
-			if( read_count != (ssize_t) buffer_size )
+			if( read_count != (ssize_t) read_size )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read buffser.",
+				 "%s: unable to read buffer.",
 				 function );
 
 				goto on_error;
@@ -1010,7 +1019,7 @@ int libsigscan_scanner_scan_file_io_handle(
 			if( libsigscan_scan_state_scan_buffer(
 			     scan_state,
 			     buffer,
-			     buffer_size,
+			     read_size,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1022,6 +1031,7 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
+			range_size -= read_size;
 		}
 	}
 	if( libsigscan_scan_state_stop(
@@ -1099,19 +1109,27 @@ int libsigscan_scanner_scan_file_io_handle(
 		}
 		while( range_size > 0 )
 		{
+			if( range_size > buffer_size )
+			{
+				read_size = buffer_size;
+			}
+			else
+			{
+				read_size = range_size;
+			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
 			              buffer,
-			              buffer_size,
+			              read_size,
 			              error );
 
-			if( read_count != (ssize_t) buffer_size )
+			if( read_count != (ssize_t) read_size )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read buffser.",
+				 "%s: unable to read buffer.",
 				 function );
 
 				goto on_error;
@@ -1119,7 +1137,7 @@ int libsigscan_scanner_scan_file_io_handle(
 			if( libsigscan_scan_state_scan_buffer(
 			     scan_state,
 			     buffer,
-			     buffer_size,
+			     read_size,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1131,6 +1149,7 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
+			range_size -= read_size;
 		}
 	}
 	if( libsigscan_scanner_scan_stop(

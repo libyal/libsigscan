@@ -407,21 +407,24 @@ int libsigscan_scan_state_stop(
 
 		return( -1 );
 	}
-	if( libsigscan_internal_scan_state_scan_buffer(
-	     internal_scan_state,
-	     internal_scan_state->buffer,
-	     internal_scan_state->buffer_data_size,
-	     0,
-	     error ) != 1 )
+	if( internal_scan_state->buffer_data_size > 0 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to scan buffer.",
-		 function );
+		if( libsigscan_internal_scan_state_scan_buffer(
+		     internal_scan_state,
+		     internal_scan_state->buffer,
+		     internal_scan_state->buffer_data_size,
+		     0,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to scan buffer.",
+			 function );
 
-		return( -1 );
+			return( -1 );
+		}
 	}
 	if( internal_scan_state->buffer != NULL )
 	{
@@ -600,7 +603,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 				}
 #endif
 /* TODO add support for unbounded signatures */
-				result = ( buffer_offset == signature->pattern_offset );
+				result = ( (off64_t) buffer_offset == signature->pattern_offset );
 			}
 			if( result != 0 )
 			{
@@ -674,14 +677,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 			if( buffer_end_offset >= buffer_size )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-				 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: invalid scan end offset value out of bounds.",
-				 function );
-
-				goto on_error;
+				buffer_end_offset = buffer_size - 1;
 			}
 			skip_value = 0;
 
@@ -817,14 +813,19 @@ int libsigscan_scan_state_scan_buffer(
 	}
 	read_size = buffer_size;
 
-	if( internal_scan_state->buffer_data_size == internal_scan_state->buffer_size )
+	if( ( internal_scan_state->buffer_data_size > 0 )
+	 && ( internal_scan_state->buffer_data_size < internal_scan_state->buffer_size ) )
 	{
-		read_size -= internal_scan_state->buffer_data_size;
+		scan_size = internal_scan_state->buffer_size - internal_scan_state->buffer_data_size;
 
+		if( scan_size > read_size )
+		{
+			scan_size = read_size;
+		}
 		if( memory_copy(
 		     &( internal_scan_state->buffer[ internal_scan_state->buffer_data_size ] ),
 		     buffer,
-		     read_size ) == NULL )
+		     scan_size ) == NULL )
 		{
 			libcerror_error_set(
 			 error,
@@ -835,13 +836,15 @@ int libsigscan_scan_state_scan_buffer(
 
 			return( -1 );
 		}
-		internal_scan_state->buffer_data_size += read_size;
-		buffer_offset                         += read_size;
-
+		internal_scan_state->buffer_data_size += scan_size;
+		buffer_offset                         += scan_size;
+	}
+	if( internal_scan_state->buffer_data_size == internal_scan_state->buffer_size )
+	{
 		if( libsigscan_internal_scan_state_scan_buffer(
 		     internal_scan_state,
 		     internal_scan_state->buffer,
-		     internal_scan_state->buffer_size,
+		     internal_scan_state->buffer_data_size,
 		     0,
 		     error ) != 1 )
 		{

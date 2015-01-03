@@ -964,7 +964,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
  */
 int libsigscan_scan_tree_get_most_significant_pattern_offset(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_list_t *signatures_list,
+     libsigscan_signature_table_t *signature_table,
      libsigscan_pattern_weights_t *similarity_weights,
      libsigscan_pattern_weights_t *occurrence_weights,
      libsigscan_pattern_weights_t *byte_value_weights,
@@ -986,8 +986,8 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 
 		return( -1 );
 	}
-	if( libcdata_list_get_number_of_elements(
-	     signatures_list,
+	if( libsigscan_signature_table_get_number_of_signatures(
+	     signature_table,
 	     &number_of_signatures,
 	     error ) != 1 )
 	{
@@ -1104,7 +1104,7 @@ int libsigscan_scan_tree_build_node(
 	libsigscan_signature_table_t *sub_signature_table = NULL;
 	intptr_t *scan_object_value                       = NULL;
 	static char *function                             = "libsigscan_scan_tree_build_node";
-	off64_t pattern_offset                            = -1;
+	off64_t pattern_offset                            = 0;
 	uint8_t byte_value                                = 0;
 	uint8_t scan_object_type                          = 0;
 	int byte_value_group_index                        = 0;
@@ -1112,6 +1112,7 @@ int libsigscan_scan_tree_build_node(
 	int number_of_remaining_signatures                = 0;
 	int number_of_signature_groups                    = 0;
 	int number_of_signatures                          = 0;
+	int result                                        = 0;
 	int signature_group_index                         = 0;
 	int signature_index                               = 0;
 
@@ -1148,11 +1149,9 @@ int libsigscan_scan_tree_build_node(
 
 		return( -1 );
 	}
-	if( libcdata_list_clone(
+	if( libsigscan_signature_table_get_signatures_list_clone(
+	     signature_table,
 	     &remaining_signatures_list,
-	     signatures_list,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
-	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libsigscan_signature_clone,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1373,14 +1372,16 @@ int libsigscan_scan_tree_build_node(
 			}
 		}
 	}
-	if( libsigscan_scan_tree_get_most_significant_pattern_offset(
-	     scan_tree,
-	     signatures_list,
-	     similarity_weights,
-	     occurrence_weights,
-	     byte_value_weights,
-	     &pattern_offset,
-	     error ) != 1 )
+	result = libsigscan_scan_tree_get_most_significant_pattern_offset(
+	          scan_tree,
+	          signature_table,
+	          similarity_weights,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1394,10 +1395,19 @@ int libsigscan_scan_tree_build_node(
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
-		libcnotify_printf(
-		 "%s: most significant pattern offset: %" PRIi64 "\n",
-		 function,
-		 pattern_offset );
+		if( result == 0 )
+		{
+			libcnotify_printf(
+			 "%s: most significant pattern offset: N/A\n",
+			 function );
+		}
+		else
+		{
+			libcnotify_printf(
+			 "%s: most significant pattern offset: %" PRIi64 "\n",
+			 function,
+			 pattern_offset );
+		}
 	}
 #endif
 	if( libsigscan_pattern_weights_free(
@@ -1453,36 +1463,39 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
-	if( libsigscan_signature_table_get_byte_value_group_by_offset(
-	     signature_table,
-	     pattern_offset,
-	     &byte_value_group,
-	     error ) != 1 )
+	if( result != 0 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve byte value group for pattern offset: %" PRIi64 ".",
-		 function,
-		 pattern_offset );
+		if( libsigscan_signature_table_get_byte_value_group_by_offset(
+		     signature_table,
+		     pattern_offset,
+		     &byte_value_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve byte value group for pattern offset: %" PRIi64 ".",
+			 function,
+			 pattern_offset );
 
-		goto on_error;
-	}
-	if( libsigscan_byte_value_group_get_number_of_signature_groups(
-	     byte_value_group,
-	     &number_of_signature_groups,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve byte value group for pattern offset: %" PRIi64 ".",
-		 function,
-		 pattern_offset );
+			goto on_error;
+		}
+		if( libsigscan_byte_value_group_get_number_of_signature_groups(
+		     byte_value_group,
+		     &number_of_signature_groups,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve byte value group for pattern offset: %" PRIi64 ".",
+			 function,
+			 pattern_offset );
 
-		goto on_error;
+			goto on_error;
+		}
 	}
 	if( libsigscan_scan_tree_node_initialize(
 	     scan_tree_node,
@@ -1760,6 +1773,15 @@ int libsigscan_scan_tree_build_node(
 
 		return( -1 );
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of remaining signatures: %d\n",
+		 function,
+		 number_of_remaining_signatures );
+	}
+#endif
 	if( number_of_remaining_signatures == 1 )
 	{
 		if( libsigscan_signature_group_get_signature_by_index(

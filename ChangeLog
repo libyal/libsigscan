@@ -1,4 +1,6 @@
 TODO:
+* fix filtering of signatures list
+
 * add pysigscan_scanner_scan_file and pysigscan_scanner_scan_file_object
 * is there a pratical need to support signature with patterns that contain pattern gaps?
 * unbounded scan
@@ -15,10 +17,12 @@ Tests:
   - add scan result (signature) identifier check
   - offsets relative from end
   - scan file and file IO handle
+  - build scan tree with no signatures, single signature, multiple signatures
 * pysigscan_test_scanner
   - fix TODOs
   - offsets relative from end
   - scan file and file object
+  - build scan tree with no signatures, single signature, multiple signatures
 
 20150103
 * worked on Python bindings

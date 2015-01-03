@@ -84,7 +84,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
 
 int libsigscan_scan_tree_get_most_significant_pattern_offset(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_list_t *signatures_list,
+     libsigscan_signature_table_t *signature_table,
      libsigscan_pattern_weights_t *similarity_weights,
      libsigscan_pattern_weights_t *occurrence_weights,
      libsigscan_pattern_weights_t *byte_value_weights,

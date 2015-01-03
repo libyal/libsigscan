@@ -110,6 +110,19 @@ int libsigscan_signature_table_initialize(
 
 		goto on_error;
 	}
+	if( libcdata_list_initialize(
+	     &( ( *signature_table )->signatures_list ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create signatures list.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
@@ -153,8 +166,6 @@ int libsigscan_signature_table_free(
 	}
 	if( *signature_table != NULL )
 	{
-		/* The signatures_list is references and freed somewhere else
-		 */
 		if( libcdata_list_free(
 		     &( ( *signature_table )->byte_value_groups_list ),
 		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_byte_value_group_free,
@@ -165,6 +176,22 @@ int libsigscan_signature_table_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free byte value groups list.",
+			 function );
+
+			result = -1;
+		}
+		/* The signatures in the list are references and freed elsewhere
+		 */
+		if( libcdata_list_free(
+		     &( ( *signature_table )->signatures_list ),
+		     NULL,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free signatures list.",
 			 function );
 
 			result = -1;
@@ -351,6 +378,20 @@ int libsigscan_signature_table_fill(
 					}
 				}
 				pattern_offset++;
+			}
+			if( libcdata_list_append_value(
+			     signature_table->signatures_list,
+			     (intptr_t *) signature,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to append signature.",
+				 function );
+
+				return( -1 );
 			}
 		}
 		if( libcdata_list_element_get_next_element(
@@ -556,6 +597,84 @@ int libsigscan_signature_table_get_byte_value_group_by_offset(
 		*byte_value_group = NULL;
 	}
 	return( result );
+}
+
+/* Retrieves the number of signatures
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_table_get_number_of_signatures(
+     libsigscan_signature_table_t *signature_table,
+     int *number_of_signatures,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_table_get_number_of_signatures";
+
+	if( signature_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature table.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_get_number_of_elements(
+	     signature_table->signatures_list,
+	     number_of_signatures,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of signatures.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a clone of the signatures list
+ * Returns 1 if successful, 0 if no such value or -1 on error
+ */
+int libsigscan_signature_table_get_signatures_list_clone(
+     libsigscan_signature_table_t *signature_table,
+     libcdata_list_t **signatures_list,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_table_get_signatures_list_clone";
+
+	if( signature_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature table.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_list_clone(
+	     signatures_list,
+	     signature_table->signatures_list,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libsigscan_signature_clone,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to clone remaining signatures list.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
 }
 
 /* Inserts a signature for a specific pattern offset and byte value
