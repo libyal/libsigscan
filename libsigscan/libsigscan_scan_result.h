@@ -59,6 +59,23 @@ int libsigscan_scan_result_free(
      libsigscan_scan_result_t **scan_result,
      libcerror_error_t **error );
 
+int libsigscan_internal_scan_result_free(
+     libsigscan_internal_scan_result_t **internal_scan_result,
+     libcerror_error_t **error );
+
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_result_get_identifier_size(
+     libsigscan_scan_result_t *scan_result,
+     size_t *identifier_size,
+     libcerror_error_t **error );
+
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_result_get_identifier(
+     libsigscan_scan_result_t *scan_result,
+     char *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

@@ -46,9 +46,10 @@ def pysigscan_test_scan_buffer(scanner, buffer, expected_scan_results):
   scanner.scan_stop(scan_state)
 
   scan_results = []
-  # TODO: get scan results.
+  for scan_result in scan_state.scan_results:
+    scan_results.append(scan_result.identifier)
 
-  if len(scan_results) == len(expected_scan_results):
+  if sorted(scan_results) == sorted(expected_scan_results):
     result = True
   else:
     result = False

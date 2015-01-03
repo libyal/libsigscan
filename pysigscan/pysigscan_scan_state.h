@@ -63,6 +63,23 @@ PyObject *pysigscan_scanner_set_data_size(
            PyObject *arguments,
            PyObject *keywords );
 
+PyObject *pysigscan_scan_state_get_number_of_scan_results(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments );
+
+PyObject *pysigscan_scan_state_get_scan_result_by_index(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           int result_index );
+
+PyObject *pysigscan_scan_state_get_scan_result(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysigscan_scan_state_get_scan_results(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments );
+
 #if defined( __cplusplus )
 }
 #endif

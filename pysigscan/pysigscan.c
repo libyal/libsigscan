@@ -34,6 +34,7 @@
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 #include "pysigscan_scan_result.h"
+#include "pysigscan_scan_results.h"
 #include "pysigscan_scan_state.h"
 #include "pysigscan_scanner.h"
 #include "pysigscan_signature_flags.h"
@@ -125,6 +126,7 @@ PyMODINIT_FUNC initpysigscan(
 {
 	PyObject *module                          = NULL;
 	PyTypeObject *scan_result_type_object     = NULL;
+	PyTypeObject *scan_results_type_object    = NULL;
 	PyTypeObject *scan_state_type_object      = NULL;
 	PyTypeObject *scanner_type_object         = NULL;
 	PyTypeObject *signature_flags_type_object = NULL;
@@ -182,25 +184,6 @@ PyMODINIT_FUNC initpysigscan(
 	 "scanner",
 	 (PyObject *) scanner_type_object );
 
-	/* Setup the scan result type object
-	 */
-	pysigscan_scan_result_type_object.tp_new = PyType_GenericNew;
-
-	if( PyType_Ready(
-	     &pysigscan_scan_result_type_object ) < 0 )
-	{
-		goto on_error;
-	}
-	Py_IncRef(
-	 (PyObject *) &pysigscan_scan_result_type_object );
-
-	scan_result_type_object = &pysigscan_scan_result_type_object;
-
-	PyModule_AddObject(
-	 module,
-	 "scan_result",
-	 (PyObject *) scan_result_type_object );
-
 	/* Setup the scan state type object
 	 */
 	pysigscan_scan_state_type_object.tp_new = PyType_GenericNew;
@@ -222,6 +205,44 @@ PyMODINIT_FUNC initpysigscan(
 
 	PyGILState_Release(
 	 gil_state );
+
+	/* Setup the scan results type object
+	 */
+	pysigscan_scan_results_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pysigscan_scan_results_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pysigscan_scan_results_type_object );
+
+	scan_results_type_object = &pysigscan_scan_results_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "_scan_results",
+	 (PyObject *) scan_results_type_object );
+
+	/* Setup the scan result type object
+	 */
+	pysigscan_scan_result_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pysigscan_scan_result_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pysigscan_scan_result_type_object );
+
+	scan_result_type_object = &pysigscan_scan_result_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "scan_result",
+	 (PyObject *) scan_result_type_object );
 
 	/* Setup the signature flags type object
 	 */

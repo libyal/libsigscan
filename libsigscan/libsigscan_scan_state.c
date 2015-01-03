@@ -159,7 +159,7 @@ int libsigscan_scan_state_free(
 		}
 		if( libcdata_array_free(
 		     &( internal_scan_state->scan_results_array ),
-		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_scan_result_free,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_internal_scan_result_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -716,8 +716,8 @@ int libsigscan_internal_scan_state_scan_buffer(
 on_error:
 	if( scan_result != NULL )
 	{
-		libsigscan_scan_result_free(
-		 &scan_result,
+		libsigscan_internal_scan_result_free(
+		 (libsigscan_internal_scan_result_t **) &scan_result,
 		 NULL );
 	}
 	return( -1 );
@@ -968,11 +968,10 @@ int libsigscan_scan_state_get_result(
 	}
 	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
 
-/* TODO
 	if( libcdata_array_get_entry_by_index(
 	     internal_scan_state->scan_results_array,
 	     result_index,
-	     (intptr_t **) &offset_value,
+	     (intptr_t **) scan_result,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -985,7 +984,6 @@ int libsigscan_scan_state_get_result(
 
 		return( -1 );
 	}
- */
 	return( 1 );
 }
 

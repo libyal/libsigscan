@@ -82,7 +82,7 @@ LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_add_signature(
      libsigscan_scanner_t *scanner,
      const char *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,

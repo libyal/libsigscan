@@ -219,7 +219,7 @@ int libsigscan_signature_clone(
 int libsigscan_signature_set(
      libsigscan_signature_t *signature,
      const char *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,
@@ -251,14 +251,14 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-	if( ( identifier_size == 0 )
-	 || ( identifier_size > (size_t) SSIZE_MAX ) )
+	if( ( identifier_length == 0 )
+	 || ( identifier_length > (size_t) SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid identifier size value out of bounds.",
+		 "%s: invalid identifier length value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -316,8 +316,12 @@ int libsigscan_signature_set(
 		signature->pattern      = NULL;
 		signature->pattern_size = 0;
 	}
+	if( identifier[ identifier_length - 1 ] != 0 )
+	{
+		identifier_length += 1;
+	}
 	signature->identifier = (char *) memory_allocate(
-	                                  sizeof( char ) * identifier_size );
+	                                  sizeof( char ) * identifier_length );
 
 	if( signature->identifier == NULL )
 	{
@@ -330,12 +334,12 @@ int libsigscan_signature_set(
 
 		goto on_error;
 	}
-	signature->identifier_size = identifier_size;
+	signature->identifier_size = identifier_length;
 
 	if( memory_copy(
 	     signature->identifier,
 	     identifier,
-	     identifier_size ) == NULL )
+	     signature->identifier_size ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -400,5 +404,116 @@ on_error:
 		signature->identifier_size = 0;
 	}
 	return( -1 );
+}
+
+/* Retrieves the size of the identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_get_identifier_size(
+     libsigscan_signature_t *signature,
+     size_t *identifier_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_get_identifier_size";
+
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid identifier size.",
+		 function );
+
+		return( -1 );
+	}
+	*identifier_size = signature->identifier_size;
+
+	return( 1 );
+}
+
+/* Retrieves the identifier
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_get_identifier(
+     libsigscan_signature_t *signature,
+     char *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_get_identifier";
+
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid identifier.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid identifier size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier_size < signature->identifier_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 "%s: invalid identifier value too small.",
+		 function );
+
+		return( -1 );
+	}
+	if( memory_copy(
+	     identifier,
+	     signature->identifier,
+	     signature->identifier_size ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to copy identifier.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
 }
 

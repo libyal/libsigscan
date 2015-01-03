@@ -77,10 +77,21 @@ int libsigscan_signature_clone(
      libsigscan_signature_t *source_signature,
      libcerror_error_t **error );
 
+int libsigscan_signature_get_identifier_size(
+     libsigscan_signature_t *signature,
+     size_t *identifier_size,
+     libcerror_error_t **error );
+
+int libsigscan_signature_get_identifier(
+     libsigscan_signature_t *signature,
+     char *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error );
+
 int libsigscan_signature_set(
      libsigscan_signature_t *signature,
      const char *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,

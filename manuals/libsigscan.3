@@ -49,7 +49,7 @@ Scanner functions
 .Ft int
 .Fn libsigscan_scanner_signal_abort "libsigscan_scanner_t *scanner, libsigscan_error_t **error"
 .Ft int
-.Fn libsigscan_scanner_add_signature "libsigscan_scanner_t *scanner, const char *identifier, size_t identifier_size, off64_t pattern_offset, const uint8_t *pattern, size_t pattern_size, uint32_t signature_flags, libsigscan_error_t **error"
+.Fn libsigscan_scanner_add_signature "libsigscan_scanner_t *scanner, const char *identifier, size_t identifier_length, off64_t pattern_offset, const uint8_t *pattern, size_t pattern_size, uint32_t signature_flags, libsigscan_error_t **error"
 .Ft int
 .Fn libsigscan_scanner_scan_start "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, libsigscan_error_t **error"
 .Ft int
@@ -67,10 +67,6 @@ Available when compiled with libbfio support:
 .Ft int
 .Fn libsigscan_scanner_scan_file_io_handle "libsigscan_scanner_t *scanner, libsigscan_scan_state_t *scan_state, libbfio_handle_t *file_io_handle, libsigscan_error_t **error"
 .Pp
-Scan result functions
-.Ft int
-.Fn libsigscan_scan_result_free "libsigscan_scan_result_t **scan_result, libsigscan_error_t **error"
-.Pp
 Scan state functions
 .Ft int
 .Fn libsigscan_scan_state_initialize "libsigscan_scan_state_t **scan_state, libsigscan_error_t **error"
@@ -82,6 +78,14 @@ Scan state functions
 .Fn libsigscan_scan_state_get_number_of_results "libsigscan_scan_state_t *scan_state, int *number_of_results, libsigscan_error_t **error"
 .Ft int
 .Fn libsigscan_scan_state_get_result "libsigscan_scan_state_t *scan_state, int result_index, libsigscan_scan_result_t **scan_result, libsigscan_error_t **error"
+.Pp
+Scan result functions
+.Ft int
+.Fn libsigscan_scan_result_free "libsigscan_scan_result_t **scan_result, libsigscan_error_t **error"
+.Ft int
+.Fn libsigscan_scan_result_get_identifier_size "libsigscan_scan_result_t *scan_result, size_t *identifier_size, libsigscan_error_t **error"
+.Ft int
+.Fn libsigscan_scan_result_get_identifier "libsigscan_scan_result_t *scan_result, char *identifier, size_t identifier_size, libsigscan_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libsigscan_get_version

@@ -138,8 +138,7 @@ int libsigscan_scan_result_free(
      libsigscan_scan_result_t **scan_result,
      libcerror_error_t **error )
 {
-	libsigscan_internal_scan_result_t *internal_scan_result = NULL;
-	static char *function                                   = "libsigscan_scan_result_free";
+	static char *function = "libsigscan_scan_result_free";
 
 	if( scan_result == NULL )
 	{
@@ -154,13 +153,125 @@ int libsigscan_scan_result_free(
 	}
 	if( *scan_result != NULL )
 	{
-		internal_scan_result = (libsigscan_internal_scan_result_t *) *scan_result;
-		*scan_result         = NULL;
+		*scan_result = NULL;
+	}
+	return( 1 );
+}
 
+/* Frees a scan result
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_internal_scan_result_free(
+     libsigscan_internal_scan_result_t **internal_scan_result,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_internal_scan_result_free";
+
+	if( internal_scan_result == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan result.",
+		 function );
+
+		return( -1 );
+	}
+	if( *internal_scan_result != NULL )
+	{
 		/* The signature is a reference and freed elsewhere
 		 */
 		memory_free(
-		 internal_scan_result );
+		 *internal_scan_result );
+
+		*internal_scan_result = NULL;
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_result_get_identifier_size(
+     libsigscan_scan_result_t *scan_result,
+     size_t *identifier_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scan_result_t *internal_scan_result = NULL;
+	static char *function                                   = "libsigscan_scan_result_get_identifier_size";
+
+	if( scan_result == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan result.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_result = (libsigscan_internal_scan_result_t *) scan_result;
+
+	if( libsigscan_signature_get_identifier_size(
+	     internal_scan_result->signature,
+	     identifier_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the identifier
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_result_get_identifier(
+     libsigscan_scan_result_t *scan_result,
+     char *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scan_result_t *internal_scan_result = NULL;
+	static char *function                                   = "libsigscan_scan_result_get_identifier";
+
+	if( scan_result == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan result.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_result = (libsigscan_internal_scan_result_t *) scan_result;
+
+	if( libsigscan_signature_get_identifier(
+	     internal_scan_result->signature,
+	     identifier,
+	     identifier_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier.",
+		 function );
+
+		return( -1 );
 	}
 	return( 1 );
 }

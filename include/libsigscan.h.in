@@ -193,7 +193,7 @@ LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_add_signature(
      libsigscan_scanner_t *scanner,
      const char *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      off64_t pattern_offset,
      const uint8_t *pattern,
      size_t pattern_size,
@@ -268,18 +268,6 @@ int libsigscan_scanner_scan_file_io_handle(
 #endif /* defined( LIBSIGSCAN_HAVE_BFIO ) */
 
 /* -------------------------------------------------------------------------
- * Scan result functions
- * ------------------------------------------------------------------------- */
-
-/* Frees a scan result
- * Returns 1 if successful or -1 on error
- */
-LIBSIGSCAN_EXTERN \
-int libsigscan_scan_result_free(
-     libsigscan_scan_result_t **scan_result,
-     libsigscan_error_t **error );
-
-/* -------------------------------------------------------------------------
  * Scan state functions
  * ------------------------------------------------------------------------- */
 
@@ -326,6 +314,39 @@ int libsigscan_scan_state_get_result(
      libsigscan_scan_state_t *scan_state,
      int result_index,
      libsigscan_scan_result_t **scan_result,
+     libsigscan_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Scan result functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees a scan result
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_result_free(
+     libsigscan_scan_result_t **scan_result,
+     libsigscan_error_t **error );
+
+/* Retrieves the size of the identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_result_get_identifier_size(
+     libsigscan_scan_result_t *scan_result,
+     size_t *identifier_size,
+     libsigscan_error_t **error );
+
+/* Retrieves the identifier
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scan_result_get_identifier(
+     libsigscan_scan_result_t *scan_result,
+     char *identifier,
+     size_t identifier_size,
      libsigscan_error_t **error );
 
 #if defined( __cplusplus )

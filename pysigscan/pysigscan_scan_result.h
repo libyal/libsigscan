@@ -28,6 +28,7 @@
 #include "pysigscan_libbfio.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
+#include "pysigscan_scan_state.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -44,19 +45,28 @@ struct pysigscan_scan_result
 	/* The libsigscan scan result
 	 */
 	libsigscan_scan_result_t *scan_result;
+
+	/* The scan state object
+	 */
+	pysigscan_scan_state_t *scan_state_object;
 };
 
 extern PyMethodDef pysigscan_scan_result_object_methods[];
 extern PyTypeObject pysigscan_scan_result_type_object;
 
 PyObject *pysigscan_scan_result_new(
-           void );
+           libsigscan_scan_result_t *scan_result,
+           pysigscan_scan_state_t *scan_state_object );
 
 int pysigscan_scan_result_init(
      pysigscan_scan_result_t *pysigscan_scan_result );
 
 void pysigscan_scan_result_free(
       pysigscan_scan_result_t *pysigscan_scan_result );
+
+PyObject *pysigscan_scan_result_get_identifier(
+           pysigscan_scan_result_t *pysigscan_scan_result,
+           PyObject *arguments );
 
 #if defined( __cplusplus )
 }

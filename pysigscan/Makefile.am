@@ -25,6 +25,7 @@ pysigscan_la_SOURCES = \
 	pysigscan_libsigscan.h \
 	pysigscan_python.h \
 	pysigscan_scan_result.c pysigscan_scan_result.h \
+	pysigscan_scan_results.c pysigscan_scan_results.h \
 	pysigscan_scan_state.c pysigscan_scan_state.h \
 	pysigscan_scanner.c pysigscan_scanner.h \
 	pysigscan_signature_flags.c pysigscan_signature_flags.h \

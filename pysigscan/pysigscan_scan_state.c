@@ -30,6 +30,8 @@
 #include "pysigscan_libcerror.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
+#include "pysigscan_scan_result.h"
+#include "pysigscan_scan_results.h"
 #include "pysigscan_scan_state.h"
 #include "pysigscan_unused.h"
 
@@ -42,11 +44,39 @@ PyMethodDef pysigscan_scan_state_object_methods[] = {
 	  "\n"
 	  "Set the size of the data." },
 
+	/* Functions to access the scan results */
+
+	{ "get_number_of_scan_results",
+	  (PyCFunction) pysigscan_scan_state_get_number_of_scan_results,
+	  METH_NOARGS,
+	  "get_number_of_scan_results() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of scan results." },
+
+	{ "get_scan_result",
+	  (PyCFunction) pysigscan_scan_state_get_scan_result,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_scan_result(result_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific scan result." },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
 
 PyGetSetDef pysigscan_scan_state_object_get_set_definitions[] = {
+
+	{ "number_of_scan_results",
+	  (getter) pysigscan_scan_state_get_number_of_scan_results,
+	  (setter) 0,
+	  "The number of scan results.",
+	  NULL },
+
+	{ "scan_results",
+	  (getter) pysigscan_scan_state_get_scan_results,
+	  (setter) 0,
+	  "The scan results",
+	  NULL },
 
 	/* Sentinel */
 	{ NULL, NULL, NULL, NULL, NULL }
@@ -349,5 +379,224 @@ PyObject *pysigscan_scanner_set_data_size(
 	 Py_None );
 
 	return( Py_None );
+}
+
+/* Retrieves the number of scan results
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scan_state_get_number_of_scan_results(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments PYSIGSCAN_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pysigscan_scan_state_get_number_of_scan_results";
+	int number_of_results    = 0;
+	int result               = 0;
+
+	PYSIGSCAN_UNREFERENCED_PARAMETER( arguments )
+
+	if( pysigscan_scan_state == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_state_get_number_of_results(
+	          pysigscan_scan_state->scan_state,
+	          &number_of_results,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of scan results.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_results );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_results );
+#endif
+	return( integer_object );
+}
+
+/* Retrieves a specific scan result by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scan_state_get_scan_result_by_index(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           int result_index )
+{
+	libcerror_error_t *error              = NULL;
+	libsigscan_scan_result_t *scan_result = NULL;
+	PyObject *scan_result_object          = NULL;
+	static char *function                 = "pysigscan_scan_state_get_scan_result_by_index";
+	int result                            = 0;
+
+	if( pysigscan_scan_state == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_state_get_result(
+	          pysigscan_scan_state->scan_state,
+	          result_index,
+	          &scan_result,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve scan result: %d.",
+		 function,
+		 result_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	scan_result_object = pysigscan_scan_result_new(
+	                      scan_result,
+	                      pysigscan_scan_state );
+
+	if( scan_result_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create scan result object.",
+		 function );
+
+		goto on_error;
+	}
+	return( scan_result_object );
+
+on_error:
+	if( scan_result != NULL )
+	{
+		libsigscan_scan_result_free(
+		 &scan_result,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific scan result
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scan_state_get_scan_result(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *scan_result_object = NULL;
+	static char *keyword_list[]  = { "result_index", NULL };
+	int result_index             = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &result_index ) == 0 )
+	{
+		return( NULL );
+	}
+	scan_result_object = pysigscan_scan_state_get_scan_result_by_index(
+	                      pysigscan_scan_state,
+	                      result_index );
+
+	return( scan_result_object );
+}
+
+/* Retrieves a scan results sequence and iterator object for the scan results
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scan_state_get_scan_results(
+           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *arguments PYSIGSCAN_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error      = NULL;
+	PyObject *scan_results_object = NULL;
+	static char *function         = "pysigscan_scan_state_get_scan_results";
+	int number_of_results         = 0;
+	int result                    = 0;
+
+	PYSIGSCAN_UNREFERENCED_PARAMETER( arguments )
+
+	if( pysigscan_scan_state == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_state_get_number_of_results(
+	          pysigscan_scan_state->scan_state,
+	          &number_of_results,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of scan results.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	scan_results_object = pysigscan_scan_results_new(
+	                       pysigscan_scan_state,
+	                       &pysigscan_scan_state_get_scan_result_by_index,
+	                       number_of_results );
+
+	if( scan_results_object == NULL )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_MemoryError,
+		 "%s: unable to create scan results object.",
+		 function );
+
+		return( NULL );
+	}
+	return( scan_results_object );
 }
 

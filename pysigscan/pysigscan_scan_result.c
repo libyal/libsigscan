@@ -31,15 +31,29 @@
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 #include "pysigscan_scan_result.h"
+#include "pysigscan_scan_state.h"
 #include "pysigscan_unused.h"
 
 PyMethodDef pysigscan_scan_result_object_methods[] = {
+
+	{ "get_identifier",
+	  (PyCFunction) pysigscan_scan_result_get_identifier,
+	  METH_NOARGS,
+	  "get_identifier() -> Unicode string or None\n"
+	  "\n"
+	  "Retrieves the identifier." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
 
 PyGetSetDef pysigscan_scan_result_object_get_set_definitions[] = {
+
+	{ "identifier",
+	  (getter) pysigscan_scan_result_get_identifier,
+	  (setter) 0,
+	  "The identifier.",
+	  NULL },
 
 	/* Sentinel */
 	{ NULL, NULL, NULL, NULL, NULL }
@@ -144,11 +158,21 @@ PyTypeObject pysigscan_scan_result_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pysigscan_scan_result_new(
-           void )
+           libsigscan_scan_result_t *scan_result,
+           pysigscan_scan_state_t *scan_state_object )
 {
 	pysigscan_scan_result_t *pysigscan_scan_result = NULL;
 	static char *function                          = "pysigscan_scan_result_new";
 
+	if( scan_result == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid scan result.",
+		 function );
+
+		return( NULL );
+	}
 	pysigscan_scan_result = PyObject_New(
 	                         struct pysigscan_scan_result,
 	                         &pysigscan_scan_result_type_object );
@@ -172,6 +196,12 @@ PyObject *pysigscan_scan_result_new(
 
 		goto on_error;
 	}
+	pysigscan_scan_result->scan_result       = scan_result;
+	pysigscan_scan_result->scan_state_object = scan_state_object;
+
+	Py_IncRef(
+	 (PyObject *) pysigscan_scan_result->scan_state_object );
+
 	return( (PyObject *) pysigscan_scan_result );
 
 on_error:
@@ -189,8 +219,7 @@ on_error:
 int pysigscan_scan_result_init(
      pysigscan_scan_result_t *pysigscan_scan_result )
 {
-	static char *function    = "pysigscan_scan_result_init";
-	libcerror_error_t *error = NULL;
+	static char *function = "pysigscan_scan_result_init";
 
 	if( pysigscan_scan_result == NULL )
 	{
@@ -201,25 +230,10 @@ int pysigscan_scan_result_init(
 
 		return( -1 );
 	}
+	/* Make sure libsigscan scan result is set to NULL
+	 */
 	pysigscan_scan_result->scan_result = NULL;
 
-/* TODO
-	if( libsigscan_scan_result_initialize(
-	     &( pysigscan_scan_result->scan_result ),
-	     &error ) != 1 )
-	{
-		pysigscan_error_raise(
-		 error,
-		 PyExc_MemoryError,
-		 "%s: unable to initialize scan result.",
-		 function );
-
-		libcerror_error_free(
-		 &error );
-
-		return( -1 );
-	}
-*/
 	return( 0 );
 }
 
@@ -291,7 +305,126 @@ void pysigscan_scan_result_free(
 		libcerror_error_free(
 		 &error );
 	}
+	if( pysigscan_scan_result->scan_state_object != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pysigscan_scan_result->scan_state_object );
+	}
 	ob_type->tp_free(
 	 (PyObject*) pysigscan_scan_result );
+}
+
+/* Retrieves the identifier
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scan_result_get_identifier(
+           pysigscan_scan_result_t *pysigscan_scan_result,
+           PyObject *arguments PYSIGSCAN_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *string_object  = NULL;
+	const char *errors       = NULL;
+	char *identifier         = NULL;
+	static char *function    = "pysigscan_scan_result_get_identifier";
+	size_t identifier_size   = 0;
+	int result               = 0;
+
+	PYSIGSCAN_UNREFERENCED_PARAMETER( arguments )
+
+	if( pysigscan_scan_result == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid scan result.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_result_get_identifier_size(
+	          pysigscan_scan_result->scan_result,
+	          &identifier_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve identifier size.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( identifier_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	identifier = (char *) PyMem_Malloc(
+	                       sizeof( char ) * identifier_size );
+
+	if( identifier == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create identifier.",
+		 function );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scan_result_get_identifier(
+		  pysigscan_scan_result->scan_result,
+		  identifier,
+		  identifier_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve identifier.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
+	 */
+	string_object = PyUnicode_DecodeUTF8(
+			 identifier,
+			 (Py_ssize_t) identifier_size - 1,
+			 errors );
+
+	PyMem_Free(
+	 identifier );
+
+	return( string_object );
+
+on_error:
+	if( identifier != NULL )
+	{
+		PyMem_Free(
+		 identifier );
+	}
+	return( NULL );
 }
 
