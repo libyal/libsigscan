@@ -36,7 +36,7 @@ int libsigscan_signatures_list_remove_signature(
      libcerror_error_t **error )
 {
 	libcdata_list_element_t *list_element = NULL;
-	libsigscan_signature_t *list_value    = NULL;
+	intptr_t *list_value                  = NULL;
 	static char *function                 = "libsigscan_signatures_list_remove_signature";
 
 	if( libcdata_list_get_first_element(
@@ -82,7 +82,7 @@ int libsigscan_signatures_list_remove_signature(
 		}
 		/* Using a pointer comparison here since the signatures are cloned by reference
 		 */
-		if( signature != list_value )
+		if( (intptr_t *) signature == list_value )
 		{
 			if( libcdata_list_remove_element(
 			     signatures_list,

@@ -1,11 +1,12 @@
 TODO:
-* fix filtering of signatures list
+* make sure scan buffer is sufficient large for bounded scan
+* make sure to handle offsets from end of file
 
-* add pysigscan_scanner_scan_file and pysigscan_scanner_scan_file_object
 * is there a pratical need to support signature with patterns that contain pattern gaps?
 * unbounded scan
   - determine optimal buffer size
   - buffer size vs scan block size?
+  - handle boundary matches
 * signature table
   - add support for unbounded signatures (LIBSIGSCAN_PATTERN_OFFSET_UNBOUND)
 * scanner
@@ -23,6 +24,9 @@ Tests:
   - offsets relative from end
   - scan file and file object
   - build scan tree with no signatures, single signature, multiple signatures
+
+20150104
+* worked on initial version
 
 20150103
 * worked on Python bindings

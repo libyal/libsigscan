@@ -77,6 +77,8 @@ int libsigscan_scan_tree_node_get_scan_object(
 
 int libsigscan_scan_tree_node_scan_buffer(
      libsigscan_scan_tree_node_t *scan_tree_node,
+     off64_t data_offset,
+     size64_t data_size,
      const uint8_t *buffer,
      size_t buffer_size,
      size_t buffer_offset,

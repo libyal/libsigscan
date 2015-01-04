@@ -454,7 +454,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 	libsigscan_scan_result_t *scan_result = NULL;
 	libsigscan_signature_t *signature     = NULL;
 	static char *function                 = "libsigscan_internal_scan_state_scan_buffer";
-	off64_t scan_result_offset            = 0;
+	off64_t data_offset                   = 0;
 	size_t buffer_end_offset              = 0;
 	size_t skip_value                     = 0;
 	size_t smallest_pattern_size          = 0;
@@ -506,10 +506,16 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 		return( -1 );
 	}
+	data_offset = internal_scan_state->scanned_data_size
+	            - internal_scan_state->buffer_data_size
+	            + buffer_offset;
+
 	while( buffer_offset < buffer_size )
 	{
 		result = libsigscan_scan_tree_node_scan_buffer(
 		          internal_scan_state->active_node,
+		          data_offset,
+		          internal_scan_state->data_size,
 		          buffer,
 		          buffer_size,
 		          buffer_offset,
@@ -579,72 +585,38 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 				goto on_error;
 			}
-			result = memory_compare(
-				  &( buffer[ buffer_offset ] ),
-				  signature->pattern,
-				  signature->pattern_size );
-
-			result = ( result == 0 );
-
-			if( result != 0 )
+			if( libsigscan_scan_result_initialize(
+			     &scan_result,
+			     data_offset,
+			     signature,
+			     error ) != 1 )
 			{
-#if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
-				{
-					scan_result_offset = internal_scan_state->scanned_data_size
-					                   + buffer_offset
-					                   - internal_scan_state->buffer_data_size;
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to create scan result.",
+				 function );
 
-					libcnotify_printf(
-					 "%s: match for signature: %s at offset: %" PRIi64 ".\n",
-					 function,
-					 signature->identifier,
-					 scan_result_offset );
-				}
-#endif
-/* TODO add support for unbounded signatures */
-				result = ( (off64_t) buffer_offset == signature->pattern_offset );
+				goto on_error;
 			}
-			if( result != 0 )
+			if( libcdata_array_append_entry(
+			     internal_scan_state->scan_results_array,
+			     &entry_index,
+			     (intptr_t *) scan_result,
+			     error ) != 1 )
 			{
-				scan_result_offset = internal_scan_state->scanned_data_size
-				                   + buffer_offset
-				                   - internal_scan_state->buffer_data_size;
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to append scan result.",
+				 function );
 
-				if( libsigscan_scan_result_initialize(
-				     &scan_result,
-				     scan_result_offset,
-				     signature,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-					 "%s: unable to create scan result.",
-					 function );
-
-					goto on_error;
-				}
-				if( libcdata_array_append_entry(
-				     internal_scan_state->scan_results_array,
-				     &entry_index,
-				     (intptr_t *) scan_result,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-					 "%s: unable to append scan result.",
-					 function );
-
-					goto on_error;
-				}
-				scan_result = NULL;
-
-				skip_value = signature->pattern_size;
+				goto on_error;
 			}
+			scan_result = NULL;
+			skip_value  = signature->pattern_size;
 		}
 		if( result == 0 )
 		{
@@ -703,9 +675,15 @@ int libsigscan_internal_scan_state_scan_buffer(
 			while( ( buffer_end_offset > buffer_offset )
 			    && ( skip_value == 0 ) );
 		}
+
+		if( internal_scan_state->scan_tree->pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_UNBOUND )
+		{
+			break;
+		}
 		internal_scan_state->active_node = internal_scan_state->scan_tree->root_node;
 
 		buffer_offset += skip_value;
+		data_offset   += skip_value;
 	}
 	return( 1 );
 

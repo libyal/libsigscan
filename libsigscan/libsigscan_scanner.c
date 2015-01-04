@@ -27,6 +27,7 @@
 #include "libsigscan_libbfio.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_scanner.h"
 #include "libsigscan_scan_state.h"
 #include "libsigscan_scan_tree.h"
@@ -239,6 +240,47 @@ int libsigscan_scanner_signal_abort(
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
 	internal_scanner->abort = 1;
+
+	return( 1 );
+}
+
+/* Sets the scan buffer size
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scanner_set_scan_buffer_size(
+     libsigscan_scanner_t *scanner,
+     size_t scan_buffer_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scanner_t *internal_scanner = NULL;
+	static char *function                           = "libsigscan_scanner_set_scan_buffer_size";
+
+	if( scanner == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scanner.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
+
+	if( ( scan_buffer_size == 0 )
+	 || ( scan_buffer_size > (size_t) SSIZE_MAX ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid scan buffer size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scanner->buffer_size = scan_buffer_size;
 
 	return( 1 );
 }
@@ -973,6 +1015,21 @@ int libsigscan_scanner_scan_file_io_handle(
 		aligned_range_start *= buffer_size;
 		aligned_range_size  *= buffer_size;
 
+		if( ( aligned_range_size > file_size )
+		 || ( aligned_range_start > ( file_size - aligned_range_size ) ) )
+		{
+			aligned_range_size = file_size - aligned_range_start;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: scanning range: %" PRIi64 " - %" PRIi64 " for header signatures.\n",
+			 function,
+			 aligned_range_start,
+			 aligned_range_start + (off64_t) aligned_range_size );
+		}
+#endif
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
 		     (off64_t) aligned_range_start,
@@ -989,15 +1046,15 @@ int libsigscan_scanner_scan_file_io_handle(
 
 			goto on_error;
 		}
-		while( range_size > 0 )
+		while( aligned_range_size > 0 )
 		{
-			if( range_size > buffer_size )
+			if( aligned_range_size > buffer_size )
 			{
 				read_size = buffer_size;
 			}
 			else
 			{
-				read_size = range_size;
+				read_size = (size_t) aligned_range_size;
 			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
@@ -1031,7 +1088,7 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
-			range_size -= read_size;
+			aligned_range_size -= read_size;
 		}
 	}
 	if( libsigscan_scan_state_stop(
@@ -1091,6 +1148,21 @@ int libsigscan_scanner_scan_file_io_handle(
 		aligned_range_start *= buffer_size;
 		aligned_range_size  *= buffer_size;
 
+		if( ( aligned_range_size > file_size )
+		 || ( aligned_range_start > ( file_size - aligned_range_size ) ) )
+		{
+			aligned_range_size = file_size - aligned_range_start;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: scanning range: %" PRIi64 " - %" PRIi64 " for footer signatures.\n",
+			 function,
+			 aligned_range_start,
+			 aligned_range_start + (off64_t) aligned_range_size );
+		}
+#endif
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
 		     (off64_t) aligned_range_start,
@@ -1107,15 +1179,15 @@ int libsigscan_scanner_scan_file_io_handle(
 
 			goto on_error;
 		}
-		while( range_size > 0 )
+		while( aligned_range_size > 0 )
 		{
-			if( range_size > buffer_size )
+			if( aligned_range_size > buffer_size )
 			{
 				read_size = buffer_size;
 			}
 			else
 			{
-				read_size = range_size;
+				read_size = (size_t) aligned_range_size;
 			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
@@ -1149,7 +1221,7 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
-			range_size -= read_size;
+			aligned_range_size -= read_size;
 		}
 	}
 	if( libsigscan_scanner_scan_stop(

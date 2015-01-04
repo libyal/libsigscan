@@ -79,6 +79,12 @@ int libsigscan_scanner_signal_abort(
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \
+int libsigscan_scanner_set_scan_buffer_size(
+     libsigscan_scanner_t *scanner,
+     size_t scan_buffer_size,
+     libcerror_error_t **error );
+
+LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_add_signature(
      libsigscan_scanner_t *scanner,
      const char *identifier,

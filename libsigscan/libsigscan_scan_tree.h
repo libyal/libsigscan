@@ -40,6 +40,10 @@ typedef struct libsigscan_scan_tree libsigscan_scan_tree_t;
 
 struct libsigscan_scan_tree
 {
+	/* The pattern offsets mode
+	 */
+	int pattern_offsets_mode;
+
 	/* The root (scan tree) node
 	 */
 	libsigscan_scan_tree_node_t *root_node;
@@ -93,7 +97,6 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 
 int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_list_t *signatures_list,
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,

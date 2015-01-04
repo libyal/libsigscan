@@ -1120,7 +1120,6 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
  */
 int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
-     libcdata_list_t *signatures_list,
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,
@@ -1682,7 +1681,6 @@ int libsigscan_scan_tree_build_node(
 			}
 			if( libsigscan_scan_tree_build_node(
 			     scan_tree,
-			     signature_group->signatures_list,
 			     sub_signature_table,
 			     sub_offsets_ignore_list,
 			     pattern_offsets_mode,
@@ -1777,7 +1775,7 @@ int libsigscan_scan_tree_build_node(
 			}
 			if( libsigscan_signatures_list_remove_signature(
 			     remaining_signatures_list,
-			     (libsigscan_signature_t *) scan_object_value,
+			     signature,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1819,20 +1817,18 @@ int libsigscan_scan_tree_build_node(
 #endif
 	if( number_of_remaining_signatures == 1 )
 	{
-		if( libsigscan_signature_group_get_signature_by_index(
-		     signature_group,
+		if( libcdata_list_get_value_by_index(
+		     remaining_signatures_list,
 		     0,
-		     (libsigscan_signature_t **) &scan_object_value,
+		     &scan_object_value,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve signature: 0.",
-			 function,
-			 pattern_offset,
-			 signature_group_index );
+			 "%s: invalid remaining signatures list - unable to retrieve signature: 0.",
+			 function );
 
 			goto on_error;
 		}
@@ -1871,7 +1867,6 @@ int libsigscan_scan_tree_build_node(
 		}
 		if( libsigscan_scan_tree_build_node(
 		     scan_tree,
-		     remaining_signatures_list,
 		     sub_signature_table,
 		     sub_offsets_ignore_list,
 		     pattern_offsets_mode,
@@ -2153,7 +2148,6 @@ int libsigscan_scan_tree_build(
 	}
 	if( libsigscan_scan_tree_build_node(
 	     scan_tree,
-	     signatures_list,
 	     signature_table,
 	     offsets_ignore_list,
 	     pattern_offsets_mode,
@@ -2225,6 +2219,8 @@ int libsigscan_scan_tree_build(
 
 		goto on_error;
 	}
+	scan_tree->pattern_offsets_mode = pattern_offsets_mode;
+
 	return( 1 );
 
 on_error:
