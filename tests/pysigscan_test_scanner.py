@@ -65,6 +65,7 @@ def pysigscan_test_scan_buffer(scanner, buffer, expected_scan_results):
 
 def main():
   RELATIVE_FROM_START = pysigscan.signature_flags.RELATIVE_FROM_START
+  RELATIVE_FROM_END = pysigscan.signature_flags.RELATIVE_FROM_END
 
   evt_pattern = b"\x30\x00\x00\x00LfLe\x01\x00\x00\x00\x01\x00\x00\x00"
   lnk_pattern = (
@@ -74,6 +75,7 @@ def main():
   olecf_pattern = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
   olecf_beta_pattern = b"\x0e\x11\xfc\x0d\xd0\xcf\x11\x0e"
   regf_pattern = b"regf"
+  vhdi_pattern = b"conectix"
 
   signatures = [
       Signature("7z", 0, b"7z\xbc\xaf\x27\x1c", RELATIVE_FROM_START),
@@ -91,6 +93,8 @@ def main():
       Signature("qcow", 0, b"QFI\xfb", RELATIVE_FROM_START),
       Signature("rar", 0, b"Rar!\x1a\x07\x00", RELATIVE_FROM_START),
       Signature("regf", 0, b"regf", RELATIVE_FROM_START),
+      Signature("vhdi_header", 0, vhdi_pattern, RELATIVE_FROM_START),
+      Signature("vhdi_footer", 512, vhdi_pattern, RELATIVE_FROM_END),
       Signature("wtcdb_cache", 0, b"CMMM", RELATIVE_FROM_START),
       Signature("wtcdb_index", 0, b"IMMM", RELATIVE_FROM_START)]
 

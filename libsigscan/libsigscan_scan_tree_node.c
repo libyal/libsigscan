@@ -401,7 +401,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 		return( -1 );
 	}
-	data_size -= data_offset - buffer_offset;
+	data_size -= data_offset;
 
 	do
 	{
@@ -552,6 +552,15 @@ int libsigscan_scan_tree_node_scan_buffer(
 				}
 				scan_offset = buffer_offset + signature->pattern_offset;
 
+				if( ( (size64_t) signature->pattern_size > data_size )
+				 || ( (size64_t) scan_offset > ( data_size - signature->pattern_size ) ) )
+				{
+					/* If the pattern size exceeds the data size were are done scanning.
+					 */
+					result = 0;
+
+					break;
+				}
 				if( ( signature->pattern_size > buffer_size )
 				 || ( scan_offset > ( buffer_size - signature->pattern_size ) ) )
 				{
@@ -573,6 +582,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					break;
 				}
+/* TODO fix offset comparison */
 				scan_offset = data_offset + signature->pattern_offset;
 
 #if defined( HAVE_DEBUG_OUTPUT )

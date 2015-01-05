@@ -95,6 +95,12 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
      off64_t *pattern_offset,
      libcerror_error_t **error );
 
+int libsigscan_scan_tree_get_spanning_range(
+     libsigscan_scan_tree_t *scan_tree,
+     uint64_t *range_start,
+     uint64_t *range_size,
+     libcerror_error_t **error );
+
 int libsigscan_scan_tree_build_node(
      libsigscan_scan_tree_t *scan_tree,
      libsigscan_signature_table_t *signature_table,

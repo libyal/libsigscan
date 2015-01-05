@@ -51,15 +51,51 @@ struct libsigscan_internal_scan_state
 	 */
 	size64_t data_size;
 
-	/* The scanned data size
+	/* The header (offset relative from start) scan tree
 	 */
-	size64_t scanned_data_size;
+	libsigscan_scan_tree_t *header_scan_tree;
 
-	/* The scan tree
+	/* The active header (scan tree) node
+	 */
+	libsigscan_scan_tree_node_t *active_header_node;
+
+	/* The footer (offset relative from start) range start
+	 */
+	uint64_t header_range_start;
+
+	/* The footer (offset relative from start) range end
+	 */
+	uint64_t header_range_end;
+
+	/* The footer (offset relative from start) range size
+	 */
+	uint64_t header_range_size;
+
+	/* The footer (offset relative from start) scan tree
+	 */
+	libsigscan_scan_tree_t *footer_scan_tree;
+
+	/* The active footer (scan tree) node
+	 */
+	libsigscan_scan_tree_node_t *active_footer_node;
+
+	/* The footer (offset relative from start) range start
+	 */
+	uint64_t footer_range_start;
+
+	/* The footer (offset relative from start) range end
+	 */
+	uint64_t footer_range_end;
+
+	/* The footer (offset relative from start) range size
+	 */
+	uint64_t footer_range_size;
+
+	/* The (unbounded) scan tree
 	 */
 	libsigscan_scan_tree_t *scan_tree;
 
-	/* The active scan tree node
+	/* The active (unbounded scan tree) node
 	 */
 	libsigscan_scan_tree_node_t *active_node;
 
@@ -103,12 +139,25 @@ int libsigscan_scan_state_get_buffer_size(
 
 int libsigscan_scan_state_start(
      libsigscan_scan_state_t *scan_state,
+     libsigscan_scan_tree_t *header_scan_tree,
+     libsigscan_scan_tree_t *footer_scan_tree,
      libsigscan_scan_tree_t *scan_tree,
      size_t scan_buffer_size,
      libcerror_error_t **error );
 
 int libsigscan_scan_state_stop(
      libsigscan_scan_state_t *scan_state,
+     libcerror_error_t **error );
+
+int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+     libsigscan_internal_scan_state_t *internal_scan_state,
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_scan_tree_node_t **active_node,
+     off64_t data_offset,
+     size64_t data_size,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
      libcerror_error_t **error );
 
 int libsigscan_internal_scan_state_scan_buffer(

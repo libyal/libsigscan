@@ -1115,6 +1115,49 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 	return( result );
 }
 
+/* Retrieves the range spanning the pattern offset and sizes in the scan tree
+ * Returns 1 if present, 0 if not present or -1 on error
+ */
+int libsigscan_scan_tree_get_spanning_range(
+     libsigscan_scan_tree_t *scan_tree,
+     uint64_t *range_start,
+     uint64_t *range_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_scan_tree_get_spanning_range";
+	int result            = 0;
+
+	if( scan_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree.",
+		 function );
+
+		return( -1 );
+	}
+	result = libcdata_range_list_get_spanning_range(
+	          scan_tree->pattern_range_list,
+	          range_start,
+	          range_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve pattern range list spanning range.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
+}
+
 /* Builds a scan tree node
  * Returns 1 if successful or -1 on error
  */

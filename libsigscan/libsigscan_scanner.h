@@ -48,15 +48,17 @@ struct libsigscan_internal_scanner
 	 */
 	libcdata_list_t *signatures_list;
 
-	/* The header (signatures) scan tree
-	 * Header signatures are signatures with a pattern offset relative from the start of the data.
+	/* The header (offset relative from start) scan tree
 	 */
 	libsigscan_scan_tree_t *header_scan_tree;
 
-	/* The footer (signatures) scan tree
-	 * Footer signatures are signatures with a pattern offset relative from the end of the data.
+	/* The footer (offset relative from start) scan tree
 	 */
 	libsigscan_scan_tree_t *footer_scan_tree;
+
+	/* The (unbounded) scan tree
+	 */
+	libsigscan_scan_tree_t *scan_tree;
 
 	/* Value to indicate if abort was signalled
 	 */

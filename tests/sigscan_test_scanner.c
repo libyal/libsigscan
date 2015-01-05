@@ -388,33 +388,36 @@ int sigscan_test_scanner_scan(
 	uint8_t regf_pattern[] = {
 		'r', 'e', 'g', 'f' };
 
+	uint8_t vhdi_pattern[] = {
+		'c', 'o', 'n', 'e', 'c', 't', 'i', 'x' };
+
 	uint8_t wtcdb_cache_pattern[] = {
 		'C', 'M', 'M', 'M' };
 
 	uint8_t wtcdb_index_pattern[] = {
 		'I', 'M', 'M', 'M' };
 
-/* TODO zip patterns */
-
 	sigscan_signature_t signatures[] = {
-		{ "7z",			0, _7z_pattern,			6,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "esedb",		4, esedb_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "evt",		0, evt_pattern,			16,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "evtx",		0, evtx_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "ewf_e01",		0, ewf_e01_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "ewf_l01",		0, ewf_l01_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "lnk",		0, lnk_pattern,			20,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "msiecf",		0, msiecf_pattern,		24,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "nk2",		0, nk2_pattern,			12,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "olecf",		0, olecf_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "olecf_beta",		0, olecf_beta_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "pff",		0, pff_pattern,			4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "qcow",		0, qcow_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "rar",		0, rar_pattern,			7,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "regf",		0, regf_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "wtcdb_cache",	0, wtcdb_cache_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ "wtcdb_index",	0, wtcdb_index_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
-		{ NULL,			0, NULL, 			0,	0 },
+		{ "7z",			0,	_7z_pattern,		6,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "esedb",		4,	esedb_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "evt",		0,	evt_pattern,		16,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "evtx",		0,	evtx_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "ewf_e01",		0,	ewf_e01_pattern,	8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "ewf_l01",		0,	ewf_l01_pattern,	8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "lnk",		0,	lnk_pattern,		20,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "msiecf",		0,	msiecf_pattern,		24,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "nk2",		0,	nk2_pattern,		12,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "olecf",		0,	olecf_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "olecf_beta",		0,	olecf_beta_pattern,	8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "pff",		0,	pff_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "qcow",		0,	qcow_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "rar",		0,	rar_pattern,		7,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "regf",		0,	regf_pattern,		4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "vhdi_header",	0,	vhdi_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "vhdi_footer",	512,	vhdi_pattern,		8,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END },
+		{ "wtcdb_cache",	0,	wtcdb_cache_pattern,	4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ "wtcdb_index",	0,	wtcdb_index_pattern,	4,	LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START },
+		{ NULL,			0,	NULL, 			0,	0 },
 	};
 
 	/* Random data
