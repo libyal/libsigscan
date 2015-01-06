@@ -279,6 +279,8 @@ int scan_handle_scan_results_fprint(
 {
 	libsigscan_scan_result_t *scan_result = NULL;
 	static char *function                 = "scan_handle_scan_results_fprint";
+	char *identifier                      = NULL;
+	size_t identifier_size                = 0;
 	int number_of_results                 = 0;
 	int result_index                      = 0;
 
@@ -347,28 +349,70 @@ int scan_handle_scan_results_fprint(
 
 				goto on_error;
 			}
-#ifdef TODO
-			if( libsigscan_scan_result_get_identifier(
+			if( libsigscan_scan_result_get_identifier_size(
 			     scan_result,
-			     identifier,
-			     identifier_size,
+			     &identifier_size,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve scan result: %d identifier.",
+				 "%s: unable to retrieve scan result: %d identifier size.",
 				 function,
 				 result_index );
 
 				goto on_error;
 			}
-			fprintf(
-			 scan_handle->notify_stream,
-			 "\tIdentifier\t\t\t: %s\n",
-			 identifier );
-#endif /* TODO */
+			if( identifier_size == 0 )
+			{
+				fprintf(
+				 scan_handle->notify_stream,
+				 "\tIdentifier\t\t\t: %s\n",
+				 identifier );
+			}
+			else
+			{
+				identifier = (char *) memory_allocate(
+				                       sizeof( char ) * identifier_size );
+
+				if( identifier == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_MEMORY,
+					 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+					 "%s: unable to create info handle.",
+					 function );
+
+					 goto on_error;
+				}
+				if( libsigscan_scan_result_get_identifier(
+				     scan_result,
+				     identifier,
+				     identifier_size,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve scan result: %d identifier.",
+					 function,
+					 result_index );
+
+					goto on_error;
+				}
+				fprintf(
+				 scan_handle->notify_stream,
+				 "\tIdentifier\t\t\t: %s\n",
+				 identifier );
+
+				memory_free(
+				 identifier );
+
+				identifier = NULL;
+			}
 			if( libsigscan_scan_result_free(
 			     &scan_result,
 			     error ) != 1 )
@@ -390,6 +434,11 @@ int scan_handle_scan_results_fprint(
 	return( 1 );
 
 on_error:
+	if( identifier != NULL )
+	{
+		memory_free(
+		 identifier );
+	}
 	if( scan_result != NULL )
 	{
 		libsigscan_scan_result_free(

@@ -16,6 +16,11 @@ TODO:
   - add support for unbounded signatures
 * add memory aligned reads?
 
+Tools:
+* sigscan/scan_handle
+  - read signatures
+  - print result offset
+
 Tests:
 * sigscan_test_scanner
   - add scan result (signature) identifier check
@@ -28,6 +33,8 @@ Tests:
   - offsets relative from end
   - scan file and file object
   - build scan tree with no signatures, single signature, multiple signatures
+* sigscan
+  - add test
 
 20150106
 * worked on initial version
