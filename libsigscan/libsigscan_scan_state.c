@@ -270,6 +270,112 @@ int libsigscan_scan_state_get_buffer_size(
 	return( 1 );
 }
 
+/* Retrieves the header range
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_state_get_header_range(
+     libsigscan_scan_state_t *scan_state,
+     uint64_t *header_range_start,
+     uint64_t *header_range_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
+	static char *function                                 = "libsigscan_scan_state_get_header_range";
+
+	if( scan_state == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
+
+	if( header_range_start == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid header range start.",
+		 function );
+
+		return( -1 );
+	}
+	if( header_range_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid header range size.",
+		 function );
+
+		return( -1 );
+	}
+	*header_range_start = internal_scan_state->header_range_start;
+	*header_range_size  = internal_scan_state->header_range_size;
+
+	return( 1 );
+}
+
+/* Retrieves the footer range
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_state_get_footer_range(
+     libsigscan_scan_state_t *scan_state,
+     uint64_t *footer_range_start,
+     uint64_t *footer_range_size,
+     libcerror_error_t **error )
+{
+	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
+	static char *function                                 = "libsigscan_scan_state_get_footer_range";
+
+	if( scan_state == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan state.",
+		 function );
+
+		return( -1 );
+	}
+	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
+
+	if( footer_range_start == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid footer range start.",
+		 function );
+
+		return( -1 );
+	}
+	if( footer_range_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid footer range size.",
+		 function );
+
+		return( -1 );
+	}
+	*footer_range_start = internal_scan_state->footer_range_start;
+	*footer_range_size  = internal_scan_state->footer_range_size;
+
+	return( 1 );
+}
+
 /* Starts the scan state
  * Returns 1 if successful or -1 on error
  */

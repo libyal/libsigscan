@@ -929,8 +929,6 @@ int libsigscan_scanner_scan_file_io_handle(
 	uint8_t *buffer                                 = NULL;
 	static char *function                           = "libsigscan_scanner_scan_file_io_handle";
 	size64_t file_size                              = 0;
-	uint64_t aligned_range_size                     = 0;
-	uint64_t aligned_range_start                    = 0;
 	uint64_t range_size                             = 0;
 	uint64_t range_start                            = 0;
 	size_t buffer_size                              = 0;
@@ -1043,8 +1041,8 @@ int libsigscan_scanner_scan_file_io_handle(
 
 		goto on_error;
 	}
-	result = libcdata_range_list_get_spanning_range(
-	          internal_scanner->header_scan_tree->pattern_range_list,
+	result = libsigscan_scan_state_get_header_range(
+	          scan_state,
 	          &range_start,
 	          &range_size,
 	          error );
@@ -1055,41 +1053,26 @@ int libsigscan_scanner_scan_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve header pattern spanning range.",
+		 "%s: unable to retrieve header range.",
 		 function );
 
 		goto on_error;
 	}
 	else if( result != 0 )
 	{
-		aligned_range_start = ( range_start / buffer_size );
-		aligned_range_size  = ( range_size / buffer_size );
-
-		if( ( range_size % buffer_size ) != 0 )
-		{
-			aligned_range_size += 1;
-		}
-		aligned_range_start *= buffer_size;
-		aligned_range_size  *= buffer_size;
-
-		if( ( aligned_range_size > file_size )
-		 || ( aligned_range_start > ( file_size - aligned_range_size ) ) )
-		{
-			aligned_range_size = file_size - aligned_range_start;
-		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: scanning range: %" PRIi64 " - %" PRIi64 " for header signatures.\n",
+			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for header signatures.\n",
 			 function,
-			 aligned_range_start,
-			 aligned_range_start + (off64_t) aligned_range_size );
+			 range_start,
+			 range_start + range_size );
 		}
 #endif
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
-		     (off64_t) aligned_range_start,
+		     (off64_t) range_start,
 		     SEEK_SET,
 		     error ) == -1 )
 		{
@@ -1099,19 +1082,19 @@ int libsigscan_scanner_scan_file_io_handle(
 			 LIBCERROR_IO_ERROR_SEEK_FAILED,
 			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
 			 function,
-			 aligned_range_start );
+			 range_start );
 
 			goto on_error;
 		}
-		while( aligned_range_size > 0 )
+		while( range_size > 0 )
 		{
-			if( aligned_range_size > buffer_size )
+			if( range_size > buffer_size )
 			{
 				read_size = buffer_size;
 			}
 			else
 			{
-				read_size = (size_t) aligned_range_size;
+				read_size = (size_t) range_size;
 			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
@@ -1145,12 +1128,12 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
-			aligned_range_size -= read_size;
+			range_size -= read_size;
 		}
 	}
-/* TODO */
-	result = libcdata_range_list_get_spanning_range(
-	          internal_scanner->footer_scan_tree->pattern_range_list,
+#if TODO
+	result = libsigscan_scan_state_get_footer_range(
+	          scan_state,
 	          &range_start,
 	          &range_size,
 	          error );
@@ -1161,41 +1144,26 @@ int libsigscan_scanner_scan_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve footer pattern spanning range.",
+		 "%s: unable to retrieve footer range.",
 		 function );
 
 		goto on_error;
 	}
 	else if( result != 0 )
 	{
-		aligned_range_start = ( range_start / buffer_size );
-		aligned_range_size  = ( range_size / buffer_size );
-
-		if( ( range_size % buffer_size ) != 0 )
-		{
-			aligned_range_size += 1;
-		}
-		aligned_range_start *= buffer_size;
-		aligned_range_size  *= buffer_size;
-
-		if( ( aligned_range_size > file_size )
-		 || ( aligned_range_start > ( file_size - aligned_range_size ) ) )
-		{
-			aligned_range_size = file_size - aligned_range_start;
-		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: scanning range: %" PRIi64 " - %" PRIi64 " for footer signatures.\n",
+			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for footer signatures.\n",
 			 function,
-			 aligned_range_start,
-			 aligned_range_start + (off64_t) aligned_range_size );
+			 range_start,
+			 range_start + range_size );
 		}
 #endif
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
-		     (off64_t) aligned_range_start,
+		     (off64_t) range_start,
 		     SEEK_SET,
 		     error ) == -1 )
 		{
@@ -1205,19 +1173,19 @@ int libsigscan_scanner_scan_file_io_handle(
 			 LIBCERROR_IO_ERROR_SEEK_FAILED,
 			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
 			 function,
-			 aligned_range_start );
+			 range_start );
 
 			goto on_error;
 		}
-		while( aligned_range_size > 0 )
+		while( range_size > 0 )
 		{
-			if( aligned_range_size > buffer_size )
+			if( range_size > buffer_size )
 			{
 				read_size = buffer_size;
 			}
 			else
 			{
-				read_size = (size_t) aligned_range_size;
+				read_size = (size_t) range_size;
 			}
 			read_count = libbfio_handle_read_buffer(
 			              file_io_handle,
@@ -1251,9 +1219,10 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
-			aligned_range_size -= read_size;
+			range_size -= read_size;
 		}
 	}
+#endif
 	if( libsigscan_scanner_scan_stop(
 	     scanner,
 	     scan_state,

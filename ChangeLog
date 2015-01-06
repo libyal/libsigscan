@@ -1,5 +1,6 @@
 TODO:
 * make sure scan buffer is sufficient large for bounded scan
+* scanner handle overlapping header and footer ranges
 * make sure to handle offsets from end of file
   - need scan buffer to look for both
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes
@@ -28,6 +29,9 @@ Tests:
   - offsets relative from end
   - scan file and file object
   - build scan tree with no signatures, single signature, multiple signatures
+
+20150106
+* worked on initial version
 
 20150105
 * worked on initial version
