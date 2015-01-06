@@ -276,6 +276,7 @@ int libsigscan_scan_state_get_buffer_size(
 int libsigscan_scan_state_get_header_range(
      libsigscan_scan_state_t *scan_state,
      uint64_t *header_range_start,
+     uint64_t *header_range_end,
      uint64_t *header_range_size,
      libcerror_error_t **error )
 {
@@ -306,6 +307,17 @@ int libsigscan_scan_state_get_header_range(
 
 		return( -1 );
 	}
+	if( header_range_end == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid header range end.",
+		 function );
+
+		return( -1 );
+	}
 	if( header_range_size == NULL )
 	{
 		libcerror_error_set(
@@ -318,6 +330,7 @@ int libsigscan_scan_state_get_header_range(
 		return( -1 );
 	}
 	*header_range_start = internal_scan_state->header_range_start;
+	*header_range_end   = internal_scan_state->header_range_end;
 	*header_range_size  = internal_scan_state->header_range_size;
 
 	return( 1 );
@@ -329,6 +342,7 @@ int libsigscan_scan_state_get_header_range(
 int libsigscan_scan_state_get_footer_range(
      libsigscan_scan_state_t *scan_state,
      uint64_t *footer_range_start,
+     uint64_t *footer_range_end,
      uint64_t *footer_range_size,
      libcerror_error_t **error )
 {
@@ -359,6 +373,17 @@ int libsigscan_scan_state_get_footer_range(
 
 		return( -1 );
 	}
+	if( footer_range_end == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid footer range end.",
+		 function );
+
+		return( -1 );
+	}
 	if( footer_range_size == NULL )
 	{
 		libcerror_error_set(
@@ -371,6 +396,7 @@ int libsigscan_scan_state_get_footer_range(
 		return( -1 );
 	}
 	*footer_range_start = internal_scan_state->footer_range_start;
+	*footer_range_end   = internal_scan_state->footer_range_end;
 	*footer_range_size  = internal_scan_state->footer_range_size;
 
 	return( 1 );

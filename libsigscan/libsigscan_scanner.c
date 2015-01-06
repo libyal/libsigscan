@@ -929,11 +929,17 @@ int libsigscan_scanner_scan_file_io_handle(
 	uint8_t *buffer                                 = NULL;
 	static char *function                           = "libsigscan_scanner_scan_file_io_handle";
 	size64_t file_size                              = 0;
-	uint64_t range_size                             = 0;
-	uint64_t range_start                            = 0;
+	uint64_t footer_range_end                       = 0;
+	uint64_t footer_range_size                      = 0;
+	uint64_t footer_range_start                     = 0;
+	uint64_t header_range_end                       = 0;
+	uint64_t header_range_size                      = 0;
+	uint64_t header_range_start                     = 0;
 	size_t buffer_size                              = 0;
 	size_t read_size                                = 0;
 	ssize_t read_count                              = 0;
+	int has_footer_range                            = 0;
+	int has_header_range                            = 0;
 	int result                                      = 0;
 
 	if( scanner == NULL )
@@ -1043,8 +1049,9 @@ int libsigscan_scanner_scan_file_io_handle(
 	}
 	result = libsigscan_scan_state_get_header_range(
 	          scan_state,
-	          &range_start,
-	          &range_size,
+	          &header_range_start,
+	          &header_range_end,
+	          &header_range_size,
 	          error );
 
 	if( result == -1 )
@@ -1058,84 +1065,13 @@ int libsigscan_scanner_scan_file_io_handle(
 
 		goto on_error;
 	}
-	else if( result != 0 )
-	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for header signatures.\n",
-			 function,
-			 range_start,
-			 range_start + range_size );
-		}
-#endif
-		if( libbfio_handle_seek_offset(
-		     file_io_handle,
-		     (off64_t) range_start,
-		     SEEK_SET,
-		     error ) == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
-			 function,
-			 range_start );
+	has_header_range = result;
 
-			goto on_error;
-		}
-		while( range_size > 0 )
-		{
-			if( range_size > buffer_size )
-			{
-				read_size = buffer_size;
-			}
-			else
-			{
-				read_size = (size_t) range_size;
-			}
-			read_count = libbfio_handle_read_buffer(
-			              file_io_handle,
-			              buffer,
-			              read_size,
-			              error );
-
-			if( read_count != (ssize_t) read_size )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read buffer.",
-				 function );
-
-				goto on_error;
-			}
-			if( libsigscan_scan_state_scan_buffer(
-			     scan_state,
-			     buffer,
-			     read_size,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GENERIC,
-				 "%s: unable to scan buffer.",
-				 function );
-
-				goto on_error;
-			}
-			range_size -= read_size;
-		}
-	}
-#if TODO
 	result = libsigscan_scan_state_get_footer_range(
 	          scan_state,
-	          &range_start,
-	          &range_size,
+	          &footer_range_start,
+	          &footer_range_end,
+	          &footer_range_size,
 	          error );
 
 	if( result == -1 )
@@ -1149,80 +1085,194 @@ int libsigscan_scanner_scan_file_io_handle(
 
 		goto on_error;
 	}
-	else if( result != 0 )
+	has_footer_range = result;
+
+	if( has_footer_range != 0 )
 	{
+		if( footer_range_start < header_range_start )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid footer range value out of bounds.",
+			 function );
+
+			return( -1 );
+		}
+		if( ( footer_range_start >= header_range_start )
+		 && ( footer_range_start <= header_range_end ) )
+		{
+			if( footer_range_end >= header_range_end )
+			{
+				header_range_end = footer_range_end;
+				has_footer_range = 0;
+			}
+		}
+	}
+	if( has_header_range != 0 )
+	{
+		if( header_range_end > file_size )
+		{
+			header_range_size = (size64_t) header_range_end - file_size;
+			header_range_end  = (off64_t) file_size;
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for footer signatures.\n",
+			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for signatures.\n",
 			 function,
-			 range_start,
-			 range_start + range_size );
+			 header_range_start,
+			 header_range_end );
 		}
 #endif
-		if( libbfio_handle_seek_offset(
-		     file_io_handle,
-		     (off64_t) range_start,
-		     SEEK_SET,
-		     error ) == -1 )
+		if( header_range_size > 0 )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
-			 function,
-			 range_start );
-
-			goto on_error;
-		}
-		while( range_size > 0 )
-		{
-			if( range_size > buffer_size )
-			{
-				read_size = buffer_size;
-			}
-			else
-			{
-				read_size = (size_t) range_size;
-			}
-			read_count = libbfio_handle_read_buffer(
-			              file_io_handle,
-			              buffer,
-			              read_size,
-			              error );
-
-			if( read_count != (ssize_t) read_size )
+			if( libbfio_handle_seek_offset(
+			     file_io_handle,
+			     (off64_t) header_range_start,
+			     SEEK_SET,
+			     error ) == -1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read buffer.",
-				 function );
+				 LIBCERROR_IO_ERROR_SEEK_FAILED,
+				 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
+				 function,
+				 header_range_start );
 
 				goto on_error;
 			}
-			if( libsigscan_scan_state_scan_buffer(
-			     scan_state,
-			     buffer,
-			     read_size,
-			     error ) != 1 )
+			while( header_range_size > 0 )
+			{
+				if( header_range_size > buffer_size )
+				{
+					read_size = buffer_size;
+				}
+				else
+				{
+					read_size = (size_t) header_range_size;
+				}
+				read_count = libbfio_handle_read_buffer(
+					      file_io_handle,
+					      buffer,
+					      read_size,
+					      error );
+
+				if( read_count != (ssize_t) read_size )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_READ_FAILED,
+					 "%s: unable to read buffer.",
+					 function );
+
+					goto on_error;
+				}
+				if( libsigscan_scan_state_scan_buffer(
+				     scan_state,
+				     buffer,
+				     read_size,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GENERIC,
+					 "%s: unable to scan buffer.",
+					 function );
+
+					goto on_error;
+				}
+				header_range_size -= read_size;
+			}
+		}
+	}
+/* TODO scan unbound */
+	if( has_footer_range != 0 )
+	{
+		if( footer_range_end > file_size )
+		{
+			footer_range_size = (size64_t) footer_range_end - file_size;
+			footer_range_end  = (off64_t) file_size;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: scanning range: %" PRIu64 " - %" PRIu64 " for signatures.\n",
+			 function,
+			 footer_range_start,
+			 footer_range_end );
+		}
+#endif
+		if( footer_range_size > 0 )
+		{
+			if( libbfio_handle_seek_offset(
+			     file_io_handle,
+			     (off64_t) footer_range_start,
+			     SEEK_SET,
+			     error ) == -1 )
 			{
 				libcerror_error_set(
 				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GENERIC,
-				 "%s: unable to scan buffer.",
-				 function );
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_SEEK_FAILED,
+				 "%s: unable to seek file header offset: 0x%08" PRIx64 ".",
+				 function,
+				 footer_range_start );
 
 				goto on_error;
 			}
-			range_size -= read_size;
+			while( footer_range_size > 0 )
+			{
+				if( footer_range_size > buffer_size )
+				{
+					read_size = buffer_size;
+				}
+				else
+				{
+					read_size = (size_t) footer_range_size;
+				}
+				read_count = libbfio_handle_read_buffer(
+					      file_io_handle,
+					      buffer,
+					      read_size,
+					      error );
+
+				if( read_count != (ssize_t) read_size )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_READ_FAILED,
+					 "%s: unable to read buffer.",
+					 function );
+
+					goto on_error;
+				}
+				if( libsigscan_scan_state_scan_buffer(
+				     scan_state,
+				     buffer,
+				     read_size,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GENERIC,
+					 "%s: unable to scan buffer.",
+					 function );
+
+					goto on_error;
+				}
+				footer_range_size -= read_size;
+			}
 		}
 	}
-#endif
 	if( libsigscan_scanner_scan_stop(
 	     scanner,
 	     scan_state,

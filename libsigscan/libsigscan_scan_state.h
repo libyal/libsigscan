@@ -140,7 +140,15 @@ int libsigscan_scan_state_get_buffer_size(
 int libsigscan_scan_state_get_header_range(
      libsigscan_scan_state_t *scan_state,
      uint64_t *header_range_start,
+     uint64_t *header_range_end,
      uint64_t *header_range_size,
+     libcerror_error_t **error );
+
+int libsigscan_scan_state_get_footer_range(
+     libsigscan_scan_state_t *scan_state,
+     uint64_t *footer_range_start,
+     uint64_t *footer_range_end,
+     uint64_t *footer_range_size,
      libcerror_error_t **error );
 
 int libsigscan_scan_state_start(
