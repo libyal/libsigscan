@@ -1,7 +1,7 @@
 /*
  * Scans a file for binary signatures
  *
- * Copyright (c) 2014, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2014-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -55,10 +55,13 @@ void usage_fprint(
 	}
 	fprintf( stream, "Use sigscan to scan a file for binary signatures.\n\n" );
 
-	fprintf( stream, "Usage: sigscan [ -hvV ] source\n\n" );
+	fprintf( stream, "Usage: sigscan [ -c configuration_file ] [ -hvV ]\n"
+	                 "               source\n\n" );
 
 	fprintf( stream, "\tsource: the source file\n\n" );
 
+	fprintf( stream, "\t-c:     specify the configuration file, defaults\n"
+	                 "\t        to: sigscan.conf\n" );
 	fprintf( stream, "\t-h:     shows this help\n" );
 	fprintf( stream, "\t-v:     verbose output to stderr\n" );
 	fprintf( stream, "\t-V:     print version\n" );
@@ -111,12 +114,13 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcerror_error_t *error              = NULL;
-	libcstring_system_character_t *source = NULL;
-	libsigscan_scan_state_t *scan_state   = NULL;
-	char *program                         = "sigscan";
-	libcstring_system_integer_t option    = 0;
-	int verbose                           = 0;
+	libcerror_error_t *error                                 = NULL;
+	libcstring_system_character_t *option_configuration_file = _LIBCSTRING_SYSTEM_STRING( "sigscan.conf" );
+	libcstring_system_character_t *source                    = NULL;
+	libsigscan_scan_state_t *scan_state                      = NULL;
+	char *program                                            = "sigscan";
+	libcstring_system_integer_t option                       = 0;
+	int verbose                                              = 0;
 
 	libcnotify_stream_set(
 	 stderr,
@@ -151,7 +155,7 @@ int main( int argc, char * const argv[] )
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "hvV" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _LIBCSTRING_SYSTEM_STRING( "c:hvV" ) ) ) != (libcstring_system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -166,6 +170,11 @@ int main( int argc, char * const argv[] )
 				 stdout );
 
 				return( EXIT_FAILURE );
+
+			case (libcstring_system_integer_t) 'c':
+				option_configuration_file = optarg;
+
+				break;
 
 			case (libcstring_system_integer_t) 'h':
 				usage_fprint(

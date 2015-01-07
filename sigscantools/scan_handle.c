@@ -1,7 +1,7 @@
 /*
  * Scan handle
  *
- * Copyright (c) 2014, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -31,7 +31,7 @@
 
 #define SCAN_HANDLE_NOTIFY_STREAM		stdout
 
-/* Creates an info handle
+/* Creates a scan handle
  * Make sure the value scan_handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
@@ -47,7 +47,7 @@ int scan_handle_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid info handle.",
+		 "%s: invalid scan handle.",
 		 function );
 
 		return( -1 );
@@ -58,7 +58,7 @@ int scan_handle_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid info handle value already set.",
+		 "%s: invalid scan handle value already set.",
 		 function );
 
 		return( -1 );
@@ -72,7 +72,7 @@ int scan_handle_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create info handle.",
+		 "%s: unable to create scan handle.",
 		 function );
 
 		goto on_error;
@@ -86,10 +86,15 @@ int scan_handle_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear info handle.",
+		 "%s: unable to clear scan handle.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 *scan_handle );
+
+		*scan_handle = NULL;
+
+		return( -1 );
 	}
 	if( libsigscan_scanner_initialize(
 	     &( ( *scan_handle )->scanner ),
@@ -119,7 +124,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees an info handle
+/* Frees a scan handle
  * Returns 1 if successful or -1 on error
  */
 int scan_handle_free(
@@ -135,7 +140,7 @@ int scan_handle_free(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid info handle.",
+		 "%s: invalid scan handle.",
 		 function );
 
 		return( -1 );
@@ -166,7 +171,7 @@ int scan_handle_free(
 	return( result );
 }
 
-/* Signals the info handle to abort
+/* Signals the scan handle to abort
  * Returns 1 if successful or -1 on error
  */
 int scan_handle_signal_abort(
@@ -181,7 +186,7 @@ int scan_handle_signal_abort(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid info handle.",
+		 "%s: invalid scan handle.",
 		 function );
 
 		return( -1 );
@@ -224,7 +229,7 @@ int scan_handle_scan_input(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid info handle.",
+		 "%s: invalid scan handle.",
 		 function );
 
 		return( -1 );
@@ -290,7 +295,7 @@ int scan_handle_scan_results_fprint(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid info handle.",
+		 "%s: invalid scan handle.",
 		 function );
 
 		return( -1 );
@@ -382,7 +387,7 @@ int scan_handle_scan_results_fprint(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_MEMORY,
 					 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-					 "%s: unable to create info handle.",
+					 "%s: unable to create scan handle.",
 					 function );
 
 					 goto on_error;

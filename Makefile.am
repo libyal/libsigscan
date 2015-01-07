@@ -47,7 +47,11 @@ SPEC_FILES = \
 	libsigscan.spec \
 	libsigscan.spec.in
 
+sysconf_DATA = \
+	etc/sigscan.conf
+
 EXTRA_DIST = \
+	etc \
 	$(DPKG_FILES) \
 	$(GETTEXT_FILES) \
 	$(PKGCONFIG_FILES) \

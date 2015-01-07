@@ -21,9 +21,11 @@ bin_PROGRAMS = \
 
 sigscan_SOURCES = \
 	scan_handle.c scan_handle.h \
+	signature_definitions.c signature_definitions.h \
 	sigscan.c \
 	sigscanoutput.c sigscanoutput.h \
 	sigscantools_libbfio.h \
+	sigscantools_libcdata.h \
 	sigscantools_libcerror.h \
 	sigscantools_libclocale.h \
 	sigscantools_libcnotify.h \

@@ -1,5 +1,5 @@
 /*
- * The internal libcerror header
+ * Signature definitions
  *
  * Copyright (C) 2014-2015, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,31 +19,37 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EXETOOLS_LIBCERROR_H )
-#define _EXETOOLS_LIBCERROR_H
+#if !defined( _SIGNATURE_DEFINITIONS_H )
+#define _SIGNATURE_DEFINITIONS_H
 
 #include <common.h>
+#include <types.h>
 
-/* Define HAVE_LOCAL_LIBCERROR for local use of libcerror
- */
-#if defined( HAVE_LOCAL_LIBCERROR )
+#include "sigscantools_libcerror.h"
 
-#include <libcerror_definitions.h>
-#include <libcerror_error.h>
-#include <libcerror_system.h>
-#include <libcerror_types.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBCERROR_DLL_IMPORT
- * before including libcerror.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBCERROR_DLL_IMPORT
+#if defined( __cplusplus )
+extern "C" {
 #endif
 
-#include <libcerror.h>
+typedef struct signature_definitions signature_definitions_t;
 
+struct signature_definitions
+{
+	/* Dummy
+	 */
+	int dummy;
+};
+
+int signature_definitions_initialize(
+     signature_definitions_t **signature_definitions,
+     libcerror_error_t **error );
+
+int signature_definitions_free(
+     signature_definitions_t **signature_definitions,
+     libcerror_error_t **error );
+
+#if defined( __cplusplus )
+}
 #endif
 
 #endif
