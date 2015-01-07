@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "sigscantools_libcdata.h"
 #include "sigscantools_libcerror.h"
 
 #if defined( __cplusplus )
@@ -35,9 +36,9 @@ typedef struct signature_definitions signature_definitions_t;
 
 struct signature_definitions
 {
-	/* Dummy
+	/* The signatures array
 	 */
-	int dummy;
+	libcdata_array_t *signatures_array;
 };
 
 int signature_definitions_initialize(
@@ -46,6 +47,11 @@ int signature_definitions_initialize(
 
 int signature_definitions_free(
      signature_definitions_t **signature_definitions,
+     libcerror_error_t **error );
+
+int signature_definitions_read(
+     signature_definitions_t *signature_definitions,
+     const libcstring_system_character_t *filename,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

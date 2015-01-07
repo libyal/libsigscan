@@ -27,6 +27,7 @@ sigscan_SOURCES = \
 	sigscantools_libbfio.h \
 	sigscantools_libcdata.h \
 	sigscantools_libcerror.h \
+	sigscantools_libcfile.h \
 	sigscantools_libclocale.h \
 	sigscantools_libcnotify.h \
 	sigscantools_libcstring.h \
