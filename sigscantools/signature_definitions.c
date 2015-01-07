@@ -28,16 +28,16 @@
 #include "sigscantools_libsigscan.h"
 
 /* Creates signature definitions
- * Make sure the value signatures_definitions is referencing, is set to NULL
+ * Make sure the value signature_definitions is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
-int signatures_definitions_initialize(
-     signatures_definitions_t **signatures_definitions,
+int signature_definitions_initialize(
+     signature_definitions_t **signature_definitions,
      libcerror_error_t **error )
 {
-	static char *function = "signatures_definitions_initialize";
+	static char *function = "signature_definitions_initialize";
 
-	if( signatures_definitions == NULL )
+	if( signature_definitions == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -48,7 +48,7 @@ int signatures_definitions_initialize(
 
 		return( -1 );
 	}
-	if( *signatures_definitions != NULL )
+	if( *signature_definitions != NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -59,10 +59,10 @@ int signatures_definitions_initialize(
 
 		return( -1 );
 	}
-	*signatures_definitions = memory_allocate_structure(
-	                           signatures_definitions_t );
+	*signature_definitions = memory_allocate_structure(
+	                          signature_definitions_t );
 
-	if( *signatures_definitions == NULL )
+	if( *signature_definitions == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -74,9 +74,9 @@ int signatures_definitions_initialize(
 		goto on_error;
 	}
 	if( memory_set(
-	     *signatures_definitions,
+	     *signature_definitions,
 	     0,
-	     sizeof( signatures_definitions_t ) ) == NULL )
+	     sizeof( signature_definitions_t ) ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -86,21 +86,21 @@ int signatures_definitions_initialize(
 		 function );
 
 		memory_free(
-		 *signatures_definitions );
+		 *signature_definitions );
 
-		*signatures_definitions = NULL;
+		*signature_definitions = NULL;
 
 		return( -1 );
 	}
 	return( 1 );
 
 on_error:
-	if( *signatures_definitions != NULL )
+	if( *signature_definitions != NULL )
 	{
 		memory_free(
-		 *signatures_definitions );
+		 *signature_definitions );
 
-		*signatures_definitions = NULL;
+		*signature_definitions = NULL;
 	}
 	return( -1 );
 }
@@ -108,14 +108,14 @@ on_error:
 /* Frees signature definitions
  * Returns 1 if successful or -1 on error
  */
-int signatures_definitions_free(
-     signatures_definitions_t **signatures_definitions,
+int signature_definitions_free(
+     signature_definitions_t **signature_definitions,
      libcerror_error_t **error )
 {
-	static char *function = "signatures_definitions_free";
+	static char *function = "signature_definitions_free";
 	int result            = 1;
 
-	if( signatures_definitions == NULL )
+	if( signature_definitions == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -126,12 +126,12 @@ int signatures_definitions_free(
 
 		return( -1 );
 	}
-	if( *signatures_definitions != NULL )
+	if( *signature_definitions != NULL )
 	{
 		memory_free(
-		 *signatures_definitions );
+		 *signature_definitions );
 
-		*signatures_definitions = NULL;
+		*signature_definitions = NULL;
 	}
 	return( result );
 }

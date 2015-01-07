@@ -1,4 +1,5 @@
 TODO:
+* fix libsigscan_scan_state.c:1203:17: warning: self-comparison always evaluates to
 * make sure scan buffer is sufficient large for bounded scan
 * make sure to handle offsets from end of file
   - need scan buffer to look for both
