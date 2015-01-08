@@ -180,6 +180,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\sigscantools\signature_definitions.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\sigscantools\sigscan.c"
 				>
 			</File>
@@ -198,6 +202,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\sigscantools\signature_definitions.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\sigscantools\sigscanoutput.h"
 				>
 			</File>
@@ -206,7 +214,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\sigscantools\sigscantools_libcdata.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\sigscantools\sigscantools_libcerror.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\sigscantools\sigscantools_libcfile.h"
 				>
 			</File>
 			<File
