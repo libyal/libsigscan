@@ -839,11 +839,11 @@ int scan_handle_read_signature_definitions(
 			}
 			if( pattern_offset < 0 )
 			{
-				signature_flags = LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END;
+				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END;
 			}
 			else
 			{
-				signature_flags = LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START;
+				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START;
 			}
 			if( libsigscan_scanner_add_signature(
 			     scan_handle->scanner,
