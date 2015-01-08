@@ -840,6 +840,7 @@ int scan_handle_read_signature_definitions(
 			if( pattern_offset < 0 )
 			{
 				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END;
+				pattern_offset *= -1;
 			}
 			else
 			{
