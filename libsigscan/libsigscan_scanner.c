@@ -938,6 +938,7 @@ int libsigscan_scanner_scan_file_io_handle(
 	size_t buffer_size                              = 0;
 	size_t read_size                                = 0;
 	ssize_t read_count                              = 0;
+	int file_io_handle_is_open                      = 0;
 	int has_footer_range                            = 0;
 	int has_header_range                            = 0;
 	int result                                      = 0;
@@ -955,6 +956,38 @@ int libsigscan_scanner_scan_file_io_handle(
 	}
 	internal_scanner = (libsigscan_internal_scanner_t *) scanner;
 
+	file_io_handle_is_open = libbfio_handle_is_open(
+	                          file_io_handle,
+	                          error );
+
+	if( file_io_handle_is_open == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to determine if file IO handle is open.",
+		 function );
+
+		goto on_error;
+	}
+	else if( file_io_handle_is_open == 0 )
+	{
+		if( libbfio_handle_open(
+		     file_io_handle,
+		     LIBBFIO_ACCESS_FLAG_READ,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to open file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
 	if( libbfio_handle_get_size(
 	     file_io_handle,
 	     &file_size,
@@ -1290,6 +1323,24 @@ int libsigscan_scanner_scan_file_io_handle(
 	memory_free(
 	 buffer );
 
+	buffer = NULL;
+
+	if( file_io_handle_is_open != 0 )
+	{
+		if( libbfio_handle_close(
+		     file_io_handle,
+		     error ) != 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
 	return( 1 );
 
 on_error:
@@ -1298,6 +1349,12 @@ on_error:
 	{
 		memory_free(
 		 buffer );
+	}
+	if( file_io_handle_is_open != 0 )
+	{
+		libbfio_handle_close(
+		 file_io_handle,
+		 NULL );
 	}
 	return( -1 );
 }

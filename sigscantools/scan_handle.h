@@ -63,6 +63,19 @@ int scan_handle_signal_abort(
      scan_handle_t *scan_handle,
      libcerror_error_t **error );
 
+int scan_handle_copy_string_to_offset(
+     const uint8_t *string,
+     size_t string_size,
+     off64_t *offset,
+     libcerror_error_t **error );
+
+int scan_handle_copy_string_to_pattern(
+     const uint8_t *string,
+     size_t string_size,
+     uint8_t **pattern,
+     size_t *pattern_size,
+     libcerror_error_t **error );
+
 int scan_handle_read_signature_definitions(
      scan_handle_t *scan_handle,
      const libcstring_system_character_t *filename,

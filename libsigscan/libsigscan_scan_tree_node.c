@@ -357,7 +357,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 		return( -1 );
 	}
 	if( ( data_offset < 0 )
-	 || ( data_offset >= data_size ) )
+	 || ( (size64_t) data_offset >= data_size ) )
 	{
 		libcerror_error_set(
 		 error,

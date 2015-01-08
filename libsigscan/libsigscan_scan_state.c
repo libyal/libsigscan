@@ -1035,22 +1035,22 @@ int libsigscan_internal_scan_state_scan_buffer(
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
 
-		if( ( ( range_start_offset >= internal_scan_state->header_range_start )
-		  && ( range_start_offset < internal_scan_state->header_range_end ) )
-		 ||  ( ( range_end_offset >= internal_scan_state->header_range_start )
-		  && ( range_end_offset < internal_scan_state->header_range_end ) ) )
+		if( ( ( range_start_offset >= (off64_t) internal_scan_state->header_range_start )
+		  && ( range_start_offset < (off64_t) internal_scan_state->header_range_end ) )
+		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->header_range_start )
+		  && ( range_end_offset < (off64_t) internal_scan_state->header_range_end ) ) )
 		{
 			range_size = buffer_size;
 
-			if( range_start_offset < internal_scan_state->header_range_start )
+			if( range_start_offset < (off64_t) internal_scan_state->header_range_start )
 			{
 				buffer_offset      = (size_t) ( internal_scan_state->header_range_start - range_start_offset );
-				range_start_offset = internal_scan_state->header_range_start;
+				range_start_offset = (off64_t) internal_scan_state->header_range_start;
 			}
-			if( range_end_offset > internal_scan_state->header_range_end )
+			if( range_end_offset > (off64_t) internal_scan_state->header_range_end )
 			{
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->header_range_end );
-				range_end_offset = internal_scan_state->header_range_end;
+				range_end_offset = (off64_t) internal_scan_state->header_range_end;
 			}
 			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 			     internal_scan_state,
@@ -1079,22 +1079,22 @@ int libsigscan_internal_scan_state_scan_buffer(
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
 
-		if( ( ( range_start_offset >= internal_scan_state->footer_range_start )
-		  && ( range_start_offset < internal_scan_state->footer_range_end ) )
-		 ||  ( ( range_end_offset >= internal_scan_state->footer_range_start )
-		  && ( range_end_offset < internal_scan_state->footer_range_end ) ) )
+		if( ( ( range_start_offset >= (off64_t) internal_scan_state->footer_range_start )
+		  && ( range_start_offset < (off64_t) internal_scan_state->footer_range_end ) )
+		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->footer_range_start )
+		  && ( range_end_offset < (off64_t) internal_scan_state->footer_range_end ) ) )
 		{
 			range_size = buffer_size;
 
-			if( range_start_offset < internal_scan_state->footer_range_start )
+			if( range_start_offset < (off64_t) internal_scan_state->footer_range_start )
 			{
 				buffer_offset      = (size_t) ( internal_scan_state->footer_range_start - range_start_offset );
-				range_start_offset = internal_scan_state->footer_range_start;
+				range_start_offset = (off64_t) internal_scan_state->footer_range_start;
 			}
-			if( range_end_offset > internal_scan_state->footer_range_end )
+			if( range_end_offset > (off64_t) internal_scan_state->footer_range_end )
 			{
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->footer_range_end );
-				range_end_offset = internal_scan_state->footer_range_end;
+				range_end_offset = (off64_t) internal_scan_state->footer_range_end;
 			}
 			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 			     internal_scan_state,
@@ -1184,12 +1184,12 @@ int libsigscan_scan_state_scan_buffer(
 
 		return( -1 );
 	}
-	if( internal_scan_state->data_offset >= internal_scan_state->data_size )
+	if( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size )
 	{
 		return( 0 );
 	}
 	if( ( (size64_t) buffer_size > internal_scan_state->data_size )
-	 || ( internal_scan_state->data_offset > ( internal_scan_state->data_size - buffer_size ) ) )
+	 || ( (size64_t) internal_scan_state->data_offset > ( internal_scan_state->data_size - buffer_size ) ) )
 	{
 		buffer_size = (size_t) ( internal_scan_state->data_size - internal_scan_state->data_offset );
 	}
