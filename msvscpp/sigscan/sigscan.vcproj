@@ -180,10 +180,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\sigscantools\signature_definitions.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\sigscantools\sigscan.c"
 				>
 			</File>
@@ -199,10 +195,6 @@
 			>
 			<File
 				RelativePath="..\..\sigscantools\scan_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\sigscantools\signature_definitions.h"
 				>
 			</File>
 			<File

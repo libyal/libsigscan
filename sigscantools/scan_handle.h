@@ -63,6 +63,11 @@ int scan_handle_signal_abort(
      scan_handle_t *scan_handle,
      libcerror_error_t **error );
 
+int scan_handle_read_signature_definitions(
+     scan_handle_t *scan_handle,
+     const libcstring_system_character_t *filename,
+     libcerror_error_t **error );
+
 int scan_handle_scan_input(
      scan_handle_t *scan_handle,
      libsigscan_scan_state_t *scan_state,

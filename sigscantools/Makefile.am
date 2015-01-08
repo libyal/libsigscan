@@ -21,7 +21,6 @@ bin_PROGRAMS = \
 
 sigscan_SOURCES = \
 	scan_handle.c scan_handle.h \
-	signature_definitions.c signature_definitions.h \
 	sigscan.c \
 	sigscanoutput.c sigscanoutput.h \
 	sigscantools_libbfio.h \
@@ -37,6 +36,7 @@ sigscan_SOURCES = \
 
 sigscan_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCNOTIFY_LIBADD@ \

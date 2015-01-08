@@ -26,9 +26,11 @@
 
 #include "scan_handle.h"
 #include "sigscantools_libcerror.h"
+#include "sigscantools_libcfile.h"
 #include "sigscantools_libcstring.h"
 #include "sigscantools_libsigscan.h"
 
+#define SCAN_HANDLE_BUFFER_SIZE			16 * 1024 * 1024
 #define SCAN_HANDLE_NOTIFY_STREAM		stdout
 
 /* Creates a scan handle
@@ -210,6 +212,388 @@ int scan_handle_signal_abort(
 		}
 	}
 	return( 1 );
+}
+
+/* Read the signature definitions from file
+ * Returns 1 if successful or -1 on error
+ */
+int scan_handle_read_signature_definitions(
+     scan_handle_t *scan_handle,
+     const libcstring_system_character_t *filename,
+     libcerror_error_t **error )
+{
+	libcfile_file_t *file             = NULL;
+	uint8_t *buffer                   = NULL;
+	uint8_t *identifier               = NULL;
+	uint8_t *pattern                  = NULL;
+	uint8_t *pattern_offset_string    = NULL;
+	uint8_t *pattern_string           = NULL;
+	static char *function             = "scan_handle_read_signature_definitions";
+	off64_t pattern_offset            = 0;
+	size_t buffer_offset              = 0;
+	size_t identifier_size            = 0;
+	size_t line_offset                = 0;
+	size_t pattern_offset_string_size = 0;
+	size_t pattern_size               = 0;
+	size_t pattern_string_size        = 0;
+	size_t read_size                  = 0;
+	ssize_t read_count                = 0;
+	uint32_t signature_flags          = 0;
+
+	if( scan_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan handle.",
+		 function );
+
+		return( -1 );
+	}
+	buffer = (uint8_t *) memory_allocate(
+	                      sizeof( uint8_t ) * SCAN_HANDLE_BUFFER_SIZE );
+
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create buffer.",
+		 function );
+
+		 goto on_error;
+	}
+	if( libcfile_file_initialize(
+	     &file,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize file.",
+		 function );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcfile_file_open_wide(
+	     file,
+	     filename,
+	     LIBCFILE_OPEN_READ,
+	     error ) != 1 )
+#else
+	if( libcfile_file_open(
+	     file,
+	     filename,
+	     LIBCFILE_OPEN_READ,
+	     error ) != 1 )
+#endif
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open file.",
+		 function );
+
+		goto on_error;
+	}
+	do
+	{
+		read_size = SCAN_HANDLE_BUFFER_SIZE - buffer_offset;
+
+		read_count = libcfile_file_read_buffer(
+		              file,
+		              &( buffer[ buffer_offset ] ),
+		              read_size,
+		              error );
+
+		if( read_count < 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read buffer from file.",
+			 function );
+
+			goto on_error;
+		}
+		read_size   = read_count + buffer_offset;
+		line_offset = 0;
+
+		for( buffer_offset = 0;
+		     buffer_offset < ( read_size - 1 );
+		     buffer_offset++ )
+		{
+			if( ( buffer_offset < ( read_size - 1 ) )
+			 && ( buffer[ buffer_offset ] != '\n' ) )
+			{
+				continue;
+			}
+			if( line_offset >= read_size )
+			{
+				break;
+			}
+			/* Ignore lines of comment and empty lines
+			 */
+			if( ( buffer[ line_offset ] == '\n' )
+			 || ( buffer[ line_offset ] == '\r' )
+			 || ( buffer[ line_offset ] == '#' ) )
+			{
+				line_offset = buffer_offset + 1;
+
+				continue;
+			}
+			identifier      = &( buffer[ line_offset ] );
+			identifier_size = line_offset;
+
+			/* The identifier should be formatted as [a-zA-Z0-9_]+
+			 */
+			while( ( ( buffer[ line_offset ] >= 'a' )
+			     &&  ( buffer[ line_offset ] <= 'i' ) )
+			    || ( ( buffer[ line_offset ] >= 'j' )
+			     &&  ( buffer[ line_offset ] <= 'r' ) )
+			    || ( ( buffer[ line_offset ] >= 's' )
+			     &&  ( buffer[ line_offset ] <= 'z' ) )
+			    || ( ( buffer[ line_offset ] >= 'A' )
+			     &&  ( buffer[ line_offset ] <= 'I' ) )
+			    || ( ( buffer[ line_offset ] >= 'J' )
+			     &&  ( buffer[ line_offset ] <= 'R' ) )
+			    || ( ( buffer[ line_offset ] >= 'S' )
+			     &&  ( buffer[ line_offset ] <= 'Z' ) )
+			    || ( ( buffer[ line_offset ] >= '0' )
+			     &&  ( buffer[ line_offset ] <= '9' ) )
+			    || ( buffer[ line_offset ] == '_' ) )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse identifier.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			identifier_size = line_offset - identifier_size + 1;
+
+			while( ( buffer[ line_offset ] == ' ' )
+			    || ( buffer[ line_offset ] == '\t' ) )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse identifier and offset separator.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			pattern_offset_string      = &( buffer[ line_offset ] );
+			pattern_offset_string_size = line_offset;
+
+			if( buffer[ line_offset ] == '-' )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse identifier.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			/* The offset should be formatted as [-]?[0-9]+
+			 */
+			while( ( buffer[ line_offset ] >= '0' )
+			    && ( buffer[ line_offset ] <= '9' ) )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse offset.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			pattern_offset_string_size = line_offset - pattern_offset_string_size + 1;
+
+			while( ( buffer[ line_offset ] == ' ' )
+			    || ( buffer[ line_offset ] == '\t' ) )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse offset and pattern separator.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			pattern_string      = &( buffer[ line_offset ] );
+			pattern_string_size = line_offset;
+
+			/* The pattern should be formatted as [^ \n\r\t]+
+			 */
+			while( ( buffer[ line_offset ] != ' ' )
+			    && ( buffer[ line_offset ] != '\n' )
+			    && ( buffer[ line_offset ] != '\r' )
+			    && ( buffer[ line_offset ] != '\t' ) )
+			{
+				line_offset += 1;
+
+				if( line_offset > buffer_offset )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: unable to parse pattern.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			pattern_string_size = line_offset - pattern_string_size + 1;
+
+/* TODO ignore trailing whitespace */
+
+/* TODO check for trailing data */
+
+			identifier[ identifier_size - 1 ]                       = 0;
+			pattern_offset_string[ pattern_offset_string_size - 1 ] = 0;
+			pattern_string[ pattern_string_size - 1 ]               = 0;
+
+/* TODO convert pattern_offset_string to pattern_offset */
+
+/* TODO convert pattern_string to pattern */
+
+/* TODO read line */
+
+#ifdef TODO
+			if( libsigscan_scanner_add_signature(
+			     scanner,
+			     (char *) identifier,
+			     identifier_size,
+			     pattern_offset,
+			     pattern,
+			     pattern_size,
+			     signature_flags,
+			     &error ) != 1 )
+			{
+				libcerror_error_set(
+				 &error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to append signature: %s.",
+				 function,
+				 (char *) identifier );
+
+				goto on_error;
+			}
+#endif
+			line_offset = buffer_offset + 1;
+		}
+		read_size = SCAN_HANDLE_BUFFER_SIZE - buffer_offset;
+
+		if( buffer_offset >= SCAN_HANDLE_BUFFER_SIZE )
+		{
+			buffer_offset = 0;
+		}
+		else
+		{
+			if( memory_copy(
+			     buffer,
+			     &( buffer[ buffer_offset ] ),
+			     read_size ) == NULL )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_MEMORY,
+				 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+				 "%s: unable to copy remaining data in buffer.",
+				 function );
+
+				goto on_error;
+			}
+			buffer_offset = read_size;
+		}
+	}
+	while( read_count != 0 );
+
+	if( libcfile_file_close(
+	     file,
+	     error ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+		 "%s: unable to close file.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcfile_file_free(
+	     &file,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free file.",
+		 function );
+
+		goto on_error;
+	}
+	memory_free(
+	 buffer );
+
+	return( 1 );
+
+on_error:
+	if( file != NULL )
+	{
+		libcfile_file_free(
+		 &file,
+		 NULL );
+	}
+	if( buffer != NULL )
+	{
+		memory_free(
+		 buffer );
+	}
+	return( -1 );
 }
 
 /* Scans the input

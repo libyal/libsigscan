@@ -55,8 +55,7 @@ void usage_fprint(
 	}
 	fprintf( stream, "Use sigscan to scan a file for binary signatures.\n\n" );
 
-	fprintf( stream, "Usage: sigscan [ -c configuration_file ] [ -hvV ]\n"
-	                 "               source\n\n" );
+	fprintf( stream, "Usage: sigscan [ -c configuration_file ] [ -hvV ] source\n\n" );
 
 	fprintf( stream, "\tsource: the source file\n\n" );
 
@@ -215,6 +214,8 @@ int main( int argc, char * const argv[] )
 	libsigscan_notify_set_verbose(
 	 verbose );
 
+/* TODO check if option_configuration_file exists */
+
 	if( scan_handle_initialize(
 	     &sigscan_scan_handle,
 	     &error ) != 1 )
@@ -232,6 +233,18 @@ int main( int argc, char * const argv[] )
 		fprintf(
 		 stderr,
 		 "Unable to create scan state.\n" );
+
+		goto on_error;
+	}
+	if( scan_handle_read_signature_definitions(
+	     sigscan_scan_handle,
+	     option_configuration_file,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read signatures from: %" PRIs_LIBCSTRING_SYSTEM ".\n",
+		 option_configuration_file );
 
 		goto on_error;
 	}
