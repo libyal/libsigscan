@@ -837,6 +837,14 @@ int scan_handle_read_signature_definitions(
 
 				goto on_error;
 			}
+			if( pattern_offset < 0 )
+			{
+				signature_flags = LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END;
+			}
+			else
+			{
+				signature_flags = LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START;
+			}
 			if( libsigscan_scanner_add_signature(
 			     scan_handle->scanner,
 			     (char *) identifier,
