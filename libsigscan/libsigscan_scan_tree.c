@@ -1166,6 +1166,7 @@ int libsigscan_scan_tree_build_node(
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,
+     uint64_t pattern_offsets_range_size,
      libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error )
 {
@@ -1711,6 +1712,7 @@ int libsigscan_scan_tree_build_node(
 			     signature_group->signatures_list,
 			     sub_offsets_ignore_list,
 			     pattern_offsets_mode,
+			     pattern_offsets_range_size,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1727,6 +1729,7 @@ int libsigscan_scan_tree_build_node(
 			     sub_signature_table,
 			     sub_offsets_ignore_list,
 			     pattern_offsets_mode,
+			     pattern_offsets_range_size,
 			     (libsigscan_scan_tree_node_t **) &scan_object_value,
 			     error ) != 1 )
 			{
@@ -1897,6 +1900,7 @@ int libsigscan_scan_tree_build_node(
 		     remaining_signatures_list,
 		     sub_offsets_ignore_list,
 		     pattern_offsets_mode,
+		     pattern_offsets_range_size,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1913,6 +1917,7 @@ int libsigscan_scan_tree_build_node(
 		     sub_signature_table,
 		     sub_offsets_ignore_list,
 		     pattern_offsets_mode,
+		     pattern_offsets_range_size,
 		     (libsigscan_scan_tree_node_t **) &scan_object_value,
 		     error ) != 1 )
 		{
@@ -2101,7 +2106,10 @@ int libsigscan_scan_tree_build(
 	libcdata_list_t *offsets_ignore_list          = NULL;
 	libsigscan_signature_table_t *signature_table = NULL;
 	static char *function                         = "libsigscan_scan_tree_build";
+	uint64_t range_size                           = 0;
+	uint64_t range_start                          = 0;
 	int number_of_pattern_ranges                  = 0;
+	int result                                    = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -2110,6 +2118,19 @@ int libsigscan_scan_tree_build(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid scan tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported pattern offsets mode.",
 		 function );
 
 		return( -1 );
@@ -2147,6 +2168,23 @@ int libsigscan_scan_tree_build(
 	{
 		return( 0 );
 	}
+	result = libcdata_range_list_get_spanning_range(
+	          scan_tree->pattern_range_list,
+	          &range_start,
+	          &range_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve pattern range list spanning range.",
+		 function );
+
+		return( -1 );
+	}
 	if( libsigscan_signature_table_initialize(
 	     &signature_table,
 	     error ) != 1 )
@@ -2173,11 +2211,16 @@ int libsigscan_scan_tree_build(
 
 		goto on_error;
 	}
+	if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	{
+		range_size = range_start;
+	}
 	if( libsigscan_signature_table_fill(
 	     signature_table,
 	     signatures_list,
 	     offsets_ignore_list,
 	     pattern_offsets_mode,
+	     range_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -2194,6 +2237,7 @@ int libsigscan_scan_tree_build(
 	     signature_table,
 	     offsets_ignore_list,
 	     pattern_offsets_mode,
+	     range_size,
 	     &( scan_tree->root_node ),
 	     error ) != 1 )
 	{
@@ -2314,7 +2358,7 @@ int libsigscan_scan_tree_fill_range_list(
 
 		return( -1 );
 	}
-/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_UNBOUND */
+/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND */
 	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
 	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END ) )
 	{
@@ -2392,7 +2436,7 @@ int libsigscan_scan_tree_fill_range_list(
 				}
 				break;
 
-			case LIBSIGSCAN_PATTERN_OFFSET_UNBOUND:
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
 				add_signature = 1;
 				break;
 

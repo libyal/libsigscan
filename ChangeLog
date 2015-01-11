@@ -1,8 +1,6 @@
 TODO:
-* fix libsigscan_scan_state.c:1203:17: warning: self-comparison always evaluates to
 * make sure scan buffer is sufficient large for bounded scan
 * make sure to handle offsets from end of file
-  - need scan buffer to look for both
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes
 
 * is there a pratical need to support signature with patterns that contain pattern gaps?
@@ -36,6 +34,12 @@ Tests:
   - build scan tree with no signatures, single signature, multiple signatures
 * sigscan
   - add test
+
+20150111
+* worked on offsets from end of file
+
+20150108
+* worked on initial version
 
 20150107
 * worked on initial version

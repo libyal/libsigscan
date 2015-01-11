@@ -106,6 +106,7 @@ int libsigscan_scan_tree_build_node(
      libsigscan_signature_table_t *signature_table,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,
+     uint64_t pattern_offsets_range_size,
      libsigscan_scan_tree_node_t **scan_tree_node,
      libcerror_error_t **error );
 

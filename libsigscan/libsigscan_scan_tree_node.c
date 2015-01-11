@@ -330,6 +330,7 @@ int libsigscan_scan_tree_node_get_scan_object(
  */
 int libsigscan_scan_tree_node_scan_buffer(
      libsigscan_scan_tree_node_t *scan_tree_node,
+     int pattern_offsets_mode,
      off64_t data_offset,
      size64_t data_size,
      const uint8_t *buffer,
@@ -340,7 +341,8 @@ int libsigscan_scan_tree_node_scan_buffer(
 {
 	libsigscan_signature_t *signature = NULL;
 	static char *function             = "libsigscan_scan_tree_node_scan_buffer";
-	size_t scan_offset                = 0;
+	off64_t pattern_offset            = 0;
+	off64_t scan_offset               = 0;
 	uint8_t byte_value                = 0;
 	uint8_t scan_object_type          = 0;
 	int result                        = 0;
@@ -352,6 +354,19 @@ int libsigscan_scan_tree_node_scan_buffer(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid scan tree node.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported pattern offsets mode.",
 		 function );
 
 		return( -1 );
@@ -416,7 +431,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 			return( -1 );
 		}
-		scan_offset = buffer_offset + scan_tree_node->pattern_offset;
+		scan_offset = (off64_t) ( buffer_offset + scan_tree_node->pattern_offset );
 
 		if( (size64_t) scan_offset >= data_size )
 		{
@@ -426,7 +441,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 			*scan_object = scan_tree_node->default_scan_object;
 			result       = ( *scan_object != NULL );
 		}
-		else if( scan_offset >= buffer_size )
+		else if( scan_offset >= (off64_t) buffer_size )
 		{
 			libcerror_error_set(
 			 error,
@@ -562,7 +577,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 					break;
 				}
 				if( ( signature->pattern_size > buffer_size )
-				 || ( scan_offset > ( buffer_size - signature->pattern_size ) ) )
+				 || ( (size64_t) scan_offset > ( buffer_size - signature->pattern_size ) ) )
 				{
 					libcerror_error_set(
 					 error,
@@ -582,8 +597,15 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					break;
 				}
-/* TODO fix offset comparison */
-				scan_offset = data_offset + signature->pattern_offset;
+				if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+				{
+					pattern_offset = signature->pattern_offset;
+				}
+				else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+				{
+					pattern_offset = data_size - signature->pattern_offset;
+				}
+				scan_offset = data_offset + pattern_offset;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 				if( libcnotify_verbose != 0 )
@@ -596,7 +618,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 				}
 #endif
 /* TODO add support for unbounded signatures */
-				result = ( (off64_t) scan_offset == signature->pattern_offset );
+				result = ( scan_offset == pattern_offset );
 
 				break;
 			}

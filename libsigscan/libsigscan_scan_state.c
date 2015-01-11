@@ -529,19 +529,24 @@ int libsigscan_scan_state_start(
 			{
 				aligned_range_size = internal_scan_state->data_size - aligned_range_start;
 			}
+			internal_scan_state->header_range_start = aligned_range_start;
+			internal_scan_state->header_range_end   = aligned_range_start + aligned_range_size;
+			internal_scan_state->header_range_size  = aligned_range_size;
+/* TODO
+			internal_scan_state->header_range_start = range_start;
+			internal_scan_state->header_range_end   = range_start + range_size;
+			internal_scan_state->header_range_size  = range_size;
+*/
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
 				 "%s: header signature range: %" PRIi64 " - %" PRIi64 ".\n",
 				 function,
-				 aligned_range_start,
-				 aligned_range_start + (off64_t) aligned_range_size );
+				 internal_scan_state->header_range_start,
+				 internal_scan_state->header_range_end );
 			}
 #endif
-			internal_scan_state->header_range_start = aligned_range_start;
-			internal_scan_state->header_range_end   = aligned_range_start + aligned_range_size;
-			internal_scan_state->header_range_size  = aligned_range_size;
 		}
 		internal_scan_state->active_header_node = header_scan_tree->root_node;
 	}
@@ -581,19 +586,24 @@ int libsigscan_scan_state_start(
 			{
 				aligned_range_size = internal_scan_state->data_size - aligned_range_start;
 			}
+			internal_scan_state->footer_range_start = aligned_range_start;
+			internal_scan_state->footer_range_end   = aligned_range_start + aligned_range_size;
+			internal_scan_state->footer_range_size  = aligned_range_size;
+/* TODO
+			internal_scan_state->footer_range_start = range_start;
+			internal_scan_state->footer_range_end   = range_start + range_size;
+			internal_scan_state->footer_range_size  = range_size;
+*/
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
 				 "%s: footer signature range: %" PRIi64 " - %" PRIi64 ".\n",
 				 function,
-				 aligned_range_start,
-				 aligned_range_start + (off64_t) aligned_range_size );
+				 internal_scan_state->footer_range_start,
+				 internal_scan_state->footer_range_end );
 			}
 #endif
-			internal_scan_state->footer_range_start = aligned_range_start;
-			internal_scan_state->footer_range_end   = aligned_range_start + aligned_range_size;
-			internal_scan_state->footer_range_size  = aligned_range_size;
 		}
 		internal_scan_state->active_footer_node = footer_scan_tree->root_node;
 	}
@@ -794,6 +804,7 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 	{
 		result = libsigscan_scan_tree_node_scan_buffer(
 		          *active_node,
+		          scan_tree->pattern_offsets_mode,
 		          data_offset,
 		          data_size,
 		          buffer,
@@ -948,7 +959,7 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 			while( ( buffer_end_offset > buffer_offset )
 			    && ( skip_value == 0 ) );
 		}
-		if( scan_tree->pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_UNBOUND )
+		if( scan_tree->pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
 		{
 			break;
 		}
@@ -980,6 +991,8 @@ int libsigscan_internal_scan_state_scan_buffer(
      libcerror_error_t **error )
 {
 	static char *function      = "libsigscan_internal_scan_state_scan_buffer";
+	off64_t footer_range_end   = 0;
+	off64_t footer_range_start = 0;
 	off64_t range_end_offset   = 0;
 	off64_t range_start_offset = 0;
 	size_t range_size          = 0;
@@ -1035,6 +1048,16 @@ int libsigscan_internal_scan_state_scan_buffer(
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: header range: %" PRIi64 " - %" PRIi64 ".\n",
+			 function,
+			 internal_scan_state->header_range_start,
+			 internal_scan_state->header_range_end );
+		}
+#endif
 		if( ( ( range_start_offset >= (off64_t) internal_scan_state->header_range_start )
 		  && ( range_start_offset < (off64_t) internal_scan_state->header_range_end ) )
 		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->header_range_start )
@@ -1052,6 +1075,16 @@ int libsigscan_internal_scan_state_scan_buffer(
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->header_range_end );
 				range_end_offset = (off64_t) internal_scan_state->header_range_end;
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: scan range: %" PRIi64 " - %" PRIi64 ".\n",
+				 function,
+				 range_start_offset,
+				 range_end_offset );
+			}
+#endif
 			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 			     internal_scan_state,
 			     internal_scan_state->header_scan_tree,
@@ -1079,23 +1112,46 @@ int libsigscan_internal_scan_state_scan_buffer(
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
 
-		if( ( ( range_start_offset >= (off64_t) internal_scan_state->footer_range_start )
-		  && ( range_start_offset < (off64_t) internal_scan_state->footer_range_end ) )
-		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->footer_range_start )
-		  && ( range_end_offset < (off64_t) internal_scan_state->footer_range_end ) ) )
+		footer_range_start = (off64_t) internal_scan_state->data_size - internal_scan_state->footer_range_start;
+		footer_range_end   = (off64_t) internal_scan_state->data_size - internal_scan_state->footer_range_end;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: footer range: %" PRIi64 " - %" PRIi64 ".\n",
+			 function,
+			 footer_range_start,
+			 footer_range_end );
+		}
+#endif
+		if( ( ( range_start_offset >= footer_range_start )
+		  && ( range_start_offset < footer_range_end ) )
+		 ||  ( ( range_end_offset >= footer_range_start )
+		  && ( range_end_offset < footer_range_end ) ) )
 		{
 			range_size = buffer_size;
 
-			if( range_start_offset < (off64_t) internal_scan_state->footer_range_start )
+			if( range_start_offset < footer_range_start )
 			{
-				buffer_offset      = (size_t) ( internal_scan_state->footer_range_start - range_start_offset );
-				range_start_offset = (off64_t) internal_scan_state->footer_range_start;
+				buffer_offset      = (size_t) ( footer_range_start - range_start_offset );
+				range_start_offset = (off64_t) footer_range_start;
 			}
-			if( range_end_offset > (off64_t) internal_scan_state->footer_range_end )
+			if( range_end_offset > footer_range_end )
 			{
-				range_size      -= (size_t) ( range_end_offset - internal_scan_state->footer_range_end );
-				range_end_offset = (off64_t) internal_scan_state->footer_range_end;
+				range_size      -= (size_t) ( range_end_offset - footer_range_end );
+				range_end_offset = footer_range_end;
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: scan range: %" PRIi64 " - %" PRIi64 ".\n",
+				 function,
+				 range_start_offset,
+				 range_end_offset );
+			}
+#endif
 			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 			     internal_scan_state,
 			     internal_scan_state->footer_scan_tree,
@@ -1200,7 +1256,7 @@ int libsigscan_scan_state_scan_buffer(
 	{
 		read_size = internal_scan_state->buffer_size - internal_scan_state->buffer_data_size;
 
-		if( read_size > read_size )
+		if( read_size > scan_size )
 		{
 			read_size = scan_size;
 		}

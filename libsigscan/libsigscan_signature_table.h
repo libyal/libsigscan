@@ -61,6 +61,7 @@ int libsigscan_signature_table_fill(
      libcdata_list_t *signatures_list,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,
+     uint64_t pattern_offsets_range_size,
      libcerror_error_t **error );
 
 int libsigscan_signature_table_get_number_of_byte_value_groups(

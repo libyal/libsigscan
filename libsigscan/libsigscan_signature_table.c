@@ -212,6 +212,7 @@ int libsigscan_signature_table_fill(
      libcdata_list_t *signatures_list,
      libcdata_list_t *offsets_ignore_list,
      int pattern_offsets_mode,
+     uint64_t pattern_offsets_range_size,
      libcerror_error_t **error )
 {
 	libcdata_list_element_t *list_element = NULL;
@@ -233,9 +234,9 @@ int libsigscan_signature_table_fill(
 
 		return( -1 );
 	}
-/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_UNBOUND */
 	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
-	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END ) )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -311,7 +312,7 @@ int libsigscan_signature_table_fill(
 				}
 				break;
 
-			case LIBSIGSCAN_PATTERN_OFFSET_UNBOUND:
+			case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
 				add_signature = 1;
 				break;
 
@@ -321,13 +322,26 @@ int libsigscan_signature_table_fill(
 		}
 		if( add_signature != 0 )
 		{
+			if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+			{
+				pattern_offset = signature->pattern_offset;
+			}
+			else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+			{
+				pattern_offset = pattern_offsets_range_size - signature->pattern_offset;
+			}
+			else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+			{
+				pattern_offset = 0;
+			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: signature: %s, pattern offset: %" PRIi64 ", pattern:\n",
+				 "%s: signature: %s, pattern offset: %" PRIi64 " (%" PRIi64 "), pattern:\n",
 				 function,
 				 signature->identifier,
+				 pattern_offset,
 				 signature->pattern_offset );
 				libcnotify_print_data(
 				 signature->pattern,
@@ -335,8 +349,6 @@ int libsigscan_signature_table_fill(
 				 0 );
 			}
 #endif
-			pattern_offset = signature->pattern_offset;
-
 			for( pattern_index = 0;
 			     pattern_index < signature->pattern_size;
 			     pattern_index++ )
