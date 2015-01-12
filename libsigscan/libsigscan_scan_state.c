@@ -311,7 +311,7 @@ int libsigscan_scan_state_get_buffer_size(
 }
 
 /* Retrieves the header range
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libsigscan_scan_state_get_header_range(
      libsigscan_scan_state_t *scan_state,
@@ -369,6 +369,10 @@ int libsigscan_scan_state_get_header_range(
 
 		return( -1 );
 	}
+	if( internal_scan_state->header_range_size == 0 )
+	{
+		return( 0 );
+	}
 	*header_range_start = internal_scan_state->header_range_start;
 	*header_range_end   = internal_scan_state->header_range_end;
 	*header_range_size  = internal_scan_state->header_range_size;
@@ -377,7 +381,7 @@ int libsigscan_scan_state_get_header_range(
 }
 
 /* Retrieves the footer range
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libsigscan_scan_state_get_footer_range(
      libsigscan_scan_state_t *scan_state,
@@ -434,6 +438,10 @@ int libsigscan_scan_state_get_footer_range(
 		 function );
 
 		return( -1 );
+	}
+	if( internal_scan_state->footer_range_size == 0 )
+	{
+		return( 0 );
 	}
 	*footer_range_start = internal_scan_state->footer_range_start;
 	*footer_range_end   = internal_scan_state->footer_range_end;
@@ -552,9 +560,11 @@ int libsigscan_scan_state_start(
 		}
 		else if( result != 0 )
 		{
-			internal_scan_state->header_range_start = range_start;
+			/* The header range should always start with 0 since the header scan tree is relative to offset 0
+			 */
+			internal_scan_state->header_range_start = 0;
 			internal_scan_state->header_range_end   = range_start + range_size;
-			internal_scan_state->header_range_size  = range_size;
+			internal_scan_state->header_range_size  = range_start + range_size;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -1099,7 +1109,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 		return( -1 );
 	}
-	if( internal_scan_state->header_scan_tree != NULL )
+	if( internal_scan_state->header_range_size > 0 )
 	{
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
@@ -1163,7 +1173,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 			}
 		}
 	}
-	if( internal_scan_state->footer_scan_tree != NULL )
+	if( internal_scan_state->footer_range_size > 0 )
 	{
 		range_start_offset = internal_scan_state->data_offset;
 		range_end_offset   = internal_scan_state->data_offset + buffer_size;
@@ -1178,22 +1188,22 @@ int libsigscan_internal_scan_state_scan_buffer(
 			 internal_scan_state->footer_range_end );
 		}
 #endif
-		if( ( ( range_start_offset >= internal_scan_state->footer_range_start )
-		  && ( range_start_offset < internal_scan_state->footer_range_end ) )
-		 ||  ( ( range_end_offset >= internal_scan_state->footer_range_start )
-		  && ( range_end_offset < internal_scan_state->footer_range_end ) ) )
+		if( ( ( range_start_offset >= (off64_t) internal_scan_state->footer_range_start )
+		  && ( range_start_offset < (off64_t) internal_scan_state->footer_range_end ) )
+		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->footer_range_start )
+		  && ( range_end_offset < (off64_t) internal_scan_state->footer_range_end ) ) )
 		{
 			range_size = buffer_size;
 
-			if( range_start_offset < internal_scan_state->footer_range_start )
+			if( range_start_offset < (off64_t) internal_scan_state->footer_range_start )
 			{
 				buffer_offset      = (size_t) ( internal_scan_state->footer_range_start - range_start_offset );
 				range_start_offset = (off64_t) internal_scan_state->footer_range_start;
 			}
-			if( range_end_offset > internal_scan_state->footer_range_end )
+			if( range_end_offset > (off64_t) internal_scan_state->footer_range_end )
 			{
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->footer_range_end );
-				range_end_offset = internal_scan_state->footer_range_end;
+				range_end_offset = (off64_t) internal_scan_state->footer_range_end;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )

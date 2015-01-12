@@ -574,7 +574,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 				{
 					pattern_offset = data_size - signature->pattern_offset;
 				}
-				scan_offset = buffer_offset + pattern_offset - data_offset;
+				scan_offset = buffer_offset + ( pattern_offset - data_offset );
 
 				if( ( (size64_t) signature->pattern_size > remaining_data_size )
 				 || ( (size64_t) scan_offset > ( remaining_data_size - signature->pattern_size ) ) )

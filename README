@@ -5,7 +5,7 @@ Project information:
 * Licence: LGPLv3+
 
 Work in progress:
-* initial release sigscan tool
+* Unbound scan tree support
 
 Planned:
 * Multi-threading support

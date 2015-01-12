@@ -27,6 +27,7 @@ Tests:
   - scan file and file IO handle
   - build scan tree with no signatures, single signature, multiple signatures
   - different buffer sizes
+  - header signature range that does not start at 0
 * pysigscan_test_scanner
   - fix TODOs
   - offsets relative from end
