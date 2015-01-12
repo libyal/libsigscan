@@ -1260,6 +1260,35 @@ int libsigscan_scanner_scan_file_io_handle(
 
 				goto on_error;
 			}
+/* TODO handle unbound */
+			if( libsigscan_scan_state_flush(
+			     scan_state,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GENERIC,
+				 "%s: unable to flush scan state.",
+				 function );
+
+				goto on_error;
+			}
+			if( libsigscan_scan_state_set_data_offset(
+			     scan_state,
+			     (off64_t) footer_range_start,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set data offset.",
+				 function );
+
+				goto on_error;
+			}
+/* TODO handle unbound */
 			while( footer_range_size > 0 )
 			{
 				if( footer_range_size > buffer_size )

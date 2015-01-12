@@ -2358,9 +2358,9 @@ int libsigscan_scan_tree_fill_range_list(
 
 		return( -1 );
 	}
-/* TODO add support for LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND */
 	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
-	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END ) )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND ) )
 	{
 		libcerror_error_set(
 		 error,

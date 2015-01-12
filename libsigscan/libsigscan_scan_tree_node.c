@@ -343,6 +343,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 	static char *function             = "libsigscan_scan_tree_node_scan_buffer";
 	off64_t pattern_offset            = 0;
 	off64_t scan_offset               = 0;
+	size64_t remaining_data_size      = 0;
 	uint8_t byte_value                = 0;
 	uint8_t scan_object_type          = 0;
 	int result                        = 0;
@@ -416,7 +417,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 		return( -1 );
 	}
-	data_size -= data_offset;
+	remaining_data_size = data_size - data_offset;
 
 	do
 	{
@@ -433,7 +434,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 		}
 		scan_offset = (off64_t) ( buffer_offset + scan_tree_node->pattern_offset );
 
-		if( (size64_t) scan_offset >= data_size )
+		if( (size64_t) scan_offset >= remaining_data_size )
 		{
 			/* If the pattern offset exceeds the data size
 			 * continue with the default scan object if available.
@@ -565,10 +566,18 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					return( -1 );
 				}
-				scan_offset = buffer_offset + signature->pattern_offset;
+				if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+				{
+					pattern_offset = signature->pattern_offset;
+				}
+				else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+				{
+					pattern_offset = data_size - signature->pattern_offset;
+				}
+				scan_offset = buffer_offset + pattern_offset - data_offset;
 
-				if( ( (size64_t) signature->pattern_size > data_size )
-				 || ( (size64_t) scan_offset > ( data_size - signature->pattern_size ) ) )
+				if( ( (size64_t) signature->pattern_size > remaining_data_size )
+				 || ( (size64_t) scan_offset > ( remaining_data_size - signature->pattern_size ) ) )
 				{
 					/* If the pattern size exceeds the data size were are done scanning.
 					 */
@@ -597,15 +606,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					break;
 				}
-				if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
-				{
-					pattern_offset = signature->pattern_offset;
-				}
-				else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
-				{
-					pattern_offset = data_size - signature->pattern_offset;
-				}
-				scan_offset = data_offset + pattern_offset;
+				scan_offset += data_offset;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 				if( libcnotify_verbose != 0 )

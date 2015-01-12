@@ -35,6 +35,9 @@ Tests:
 * sigscan
   - add test
 
+20150112
+* worked on offsets from end of file
+
 20150111
 * worked on offsets from end of file
 

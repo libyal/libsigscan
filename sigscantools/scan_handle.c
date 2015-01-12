@@ -1112,7 +1112,7 @@ int scan_handle_scan_results_fprint(
 			{
 				fprintf(
 				 scan_handle->notify_stream,
-				 "\tIdentifier\t\t\t: %s\n",
+				 "\tIdentifier\t\t: %s\n",
 				 identifier );
 			}
 			else
@@ -1149,7 +1149,7 @@ int scan_handle_scan_results_fprint(
 				}
 				fprintf(
 				 scan_handle->notify_stream,
-				 "\tIdentifier\t\t\t: %s\n",
+				 "\tIdentifier\t\t: %s\n",
 				 identifier );
 
 				memory_free(
