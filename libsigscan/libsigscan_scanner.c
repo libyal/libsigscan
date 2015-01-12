@@ -1147,8 +1147,8 @@ int libsigscan_scanner_scan_file_io_handle(
 	{
 		if( header_range_end > file_size )
 		{
-			header_range_size = (size64_t) header_range_end - file_size;
-			header_range_end  = (off64_t) file_size;
+			header_range_size -= (size64_t) header_range_end - file_size;
+			header_range_end   = (off64_t) file_size;
 		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
@@ -1229,8 +1229,8 @@ int libsigscan_scanner_scan_file_io_handle(
 	{
 		if( footer_range_end > file_size )
 		{
-			footer_range_size = (size64_t) footer_range_end - file_size;
-			footer_range_end  = (off64_t) file_size;
+			footer_range_size -= (size64_t) footer_range_end - file_size;
+			footer_range_end   = (off64_t) file_size;
 		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )

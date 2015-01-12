@@ -598,7 +598,8 @@ int libsigscan_scan_state_start(
 
 			return( -1 );
 		}
-		else if( result != 0 )
+		else if( ( result != 0 )
+		      && ( range_start < internal_scan_state->data_size ) )
 		{
 			internal_scan_state->footer_range_start = internal_scan_state->data_size - range_start;
 			internal_scan_state->footer_range_end   = internal_scan_state->footer_range_start + range_size;
