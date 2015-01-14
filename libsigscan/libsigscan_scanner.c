@@ -1140,7 +1140,15 @@ int libsigscan_scanner_scan_file_io_handle(
 		if( ( footer_range_start >= header_range_start )
 		 && ( footer_range_start <= header_range_end ) )
 		{
-			if( footer_range_end >= header_range_end )
+			/* The footer range is encapsulated in the header range
+			 */
+			if( footer_range_end <= header_range_end )
+			{
+				has_footer_range = 0;
+			}
+			/* The footer range overlaps the header range at the end
+			 */
+			else if( footer_range_end > header_range_end )
 			{
 				header_range_end = footer_range_end;
 				has_footer_range = 0;

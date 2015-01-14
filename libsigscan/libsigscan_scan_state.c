@@ -1062,6 +1062,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 	static char *function      = "libsigscan_internal_scan_state_scan_buffer";
 	off64_t range_end_offset   = 0;
 	off64_t range_start_offset = 0;
+	size_t range_offset        = 0;
 	size_t range_size          = 0;
 
 	if( internal_scan_state == NULL )
@@ -1130,11 +1131,12 @@ int libsigscan_internal_scan_state_scan_buffer(
 		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->header_range_start )
 		  && ( range_end_offset < (off64_t) internal_scan_state->header_range_end ) ) )
 		{
-			range_size = buffer_size;
+			range_offset = buffer_offset;
+			range_size   = buffer_size;
 
 			if( range_start_offset < (off64_t) internal_scan_state->header_range_start )
 			{
-				buffer_offset      = (size_t) ( internal_scan_state->header_range_start - range_start_offset );
+				range_offset       = (size_t) ( internal_scan_state->header_range_start - range_start_offset );
 				range_start_offset = (off64_t) internal_scan_state->header_range_start;
 			}
 			if( range_end_offset > (off64_t) internal_scan_state->header_range_end )
@@ -1158,9 +1160,9 @@ int libsigscan_internal_scan_state_scan_buffer(
 			     &( internal_scan_state->active_header_node ),
 			     range_start_offset,
 			     internal_scan_state->data_size,
-			     &( buffer[ buffer_offset ] ),
+			     buffer,
 			     range_size,
-			     buffer_offset,
+			     range_offset,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1194,11 +1196,12 @@ int libsigscan_internal_scan_state_scan_buffer(
 		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->footer_range_start )
 		  && ( range_end_offset < (off64_t) internal_scan_state->footer_range_end ) ) )
 		{
-			range_size = buffer_size;
+			range_offset = buffer_offset;
+			range_size   = buffer_size;
 
 			if( range_start_offset < (off64_t) internal_scan_state->footer_range_start )
 			{
-				buffer_offset      = (size_t) ( internal_scan_state->footer_range_start - range_start_offset );
+				range_offset       = (size_t) ( internal_scan_state->footer_range_start - range_start_offset );
 				range_start_offset = (off64_t) internal_scan_state->footer_range_start;
 			}
 			if( range_end_offset > (off64_t) internal_scan_state->footer_range_end )
@@ -1222,9 +1225,9 @@ int libsigscan_internal_scan_state_scan_buffer(
 			     &( internal_scan_state->active_footer_node ),
 			     range_start_offset,
 			     internal_scan_state->data_size,
-			     &( buffer[ buffer_offset ] ),
+			     buffer,
 			     range_size,
-			     buffer_offset,
+			     range_offset,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
