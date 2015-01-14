@@ -36,6 +36,7 @@ Tests:
 
 20150114
 * fixes for overlapping header and footer ranges
+* worked on handling a data size of 0
 
 20150113
 * lifted minimum pattern size for header and footer signatures

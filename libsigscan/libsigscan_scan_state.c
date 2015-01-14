@@ -243,17 +243,6 @@ int libsigscan_scan_state_set_data_size(
 	}
 	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
 
-	if( data_size == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
-		 "%s: invalid data size value zero or less.",
-		 function );
-
-		return( -1 );
-	}
 	if( data_size > (size64_t) INT64_MAX )
 	{
 		libcerror_error_set(
@@ -499,17 +488,6 @@ int libsigscan_scan_state_start(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid scan state - buffer value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_scan_state->data_size == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid scan state - data size not set.",
 		 function );
 
 		return( -1 );
@@ -823,8 +801,7 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 
 		return( -1 );
 	}
-	if( ( data_offset < 0 )
-	 || ( (size64_t) data_offset > data_size ) )
+	if( data_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -868,6 +845,11 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		 function );
 
 		return( -1 );
+	}
+	if( ( data_size == 0 )
+	 || ( (size64_t) data_offset >= data_size ) )
+	{
+		return( 0 );
 	}
 	while( buffer_offset < buffer_size )
 	{
@@ -1076,8 +1058,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 		return( -1 );
 	}
-	if( ( internal_scan_state->data_offset < 0 )
-	 || ( (size64_t) internal_scan_state->data_offset > internal_scan_state->data_size ) )
+	if( internal_scan_state->data_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1110,6 +1091,11 @@ int libsigscan_internal_scan_state_scan_buffer(
 		 function );
 
 		return( -1 );
+	}
+	if( ( internal_scan_state->data_size == 0 )
+	 || ( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size ) )
+	{
+		return( 0 );
 	}
 	if( internal_scan_state->header_range_size > 0 )
 	{
@@ -1307,7 +1293,8 @@ int libsigscan_scan_state_scan_buffer(
 
 		return( -1 );
 	}
-	if( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size )
+	if( ( internal_scan_state->data_size == 0 )
+	 || ( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size ) )
 	{
 		return( 0 );
 	}
