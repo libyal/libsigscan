@@ -364,7 +364,11 @@ int libsigscan_scanner_add_signature(
 
 		return( -1 );
 	}
-	if( pattern_size < 4 )
+	/* For now unbound signatures should not be be smaller than 4 bytes
+	 * otherwise the skip value has little to no effect
+	 */
+	if( ( ( signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET )
+	 && ( pattern_size < 4 ) )
 	{
 		libcerror_error_set(
 		 error,

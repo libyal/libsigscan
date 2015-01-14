@@ -1,6 +1,6 @@
 TODO:
+* fix tar signature support
 * make sure scan buffer is sufficient large for bounded scan
-* make sure to handle offsets from end of file
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes
 
 * is there a pratical need to support signature with patterns that contain pattern gaps?
@@ -17,7 +17,6 @@ TODO:
 
 Tools:
 * sigscan/scan_handle
-  - read signatures
   - print result offset
 
 Tests:
@@ -35,6 +34,9 @@ Tests:
   - build scan tree with no signatures, single signature, multiple signatures
 * sigscan
   - add test
+
+20150113
+* lifted minimum pattern size for header and footer signatures
 
 20150112
 * worked on offsets from end of file
