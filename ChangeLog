@@ -1,6 +1,7 @@
 TODO:
 * make sure scan buffer is sufficient large for bounded scan
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes
+* dpkg add sigscan.conf
 
 * is there a pratical need to support signature with patterns that contain pattern gaps?
 * unbounded scan
@@ -33,6 +34,9 @@ Tests:
   - build scan tree with no signatures, single signature, multiple signatures
 * sigscan
   - add test
+
+20150115
+* added sigscan.conf to spec file
 
 20150114
 * fixes for overlapping header and footer ranges

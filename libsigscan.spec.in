@@ -77,6 +77,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc AUTHORS COPYING NEWS README
 %attr(755,root,root) %{_bindir}/sigscan
 %{_mandir}/man1/*
+%config %{_sysconfdir}/sigscan.conf
 
 %files python
 %defattr(644,root,root,755)
