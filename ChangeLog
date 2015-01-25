@@ -35,6 +35,9 @@ Tests:
 * sigscan
   - add test
 
+20150125
+* changes for deployment
+
 20150115
 * added sigscan.conf to spec file
 

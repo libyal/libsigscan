@@ -20,6 +20,7 @@
  */
 
 #include <common.h>
+#include <memory.h>
 #include <types.h>
 
 #include "libsigscan_byte_value_group.h"

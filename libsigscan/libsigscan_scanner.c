@@ -28,6 +28,7 @@
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_libcnotify.h"
+#include "libsigscan_libcstring.h"
 #include "libsigscan_scanner.h"
 #include "libsigscan_scan_state.h"
 #include "libsigscan_scan_tree.h"
