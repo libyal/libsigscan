@@ -31,6 +31,7 @@ override_dh_install:
 	dh_install "debian/tmp/usr/share/man/man3/*" -p libsigscan-dev
 	# Create the libsigscan-tools package.
 	dh_install "debian/tmp/usr/bin/*" -p libsigscan-tools
+	dh_install "debian/tmp/etc/sigscan.conf" -p libsigscan-tools
 	dh_install "debian/tmp/usr/share/man/man1/*" -p libsigscan-tools
 	# Create the libsigscan-python package.
 	dh_install -X"*_d.so" "debian/tmp/usr/lib/python*/*" -p libsigscan-python

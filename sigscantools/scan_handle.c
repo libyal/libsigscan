@@ -334,10 +334,10 @@ int scan_handle_copy_string_to_pattern(
      size_t *pattern_size,
      libcerror_error_t **error )
 {
-	static char *function    = "scan_handle_copy_string_to_pattern";
-	size_t pattern_index     = 0;
-	size_t string_index      = 0;
-	uint8_t byte_value       = 0;
+	static char *function = "scan_handle_copy_string_to_pattern";
+	size_t pattern_index  = 0;
+	size_t string_index   = 0;
+	uint8_t byte_value    = 0;
 
 	if( string == NULL )
 	{

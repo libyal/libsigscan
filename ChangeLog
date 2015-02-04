@@ -35,6 +35,10 @@ Tests:
 * sigscan
   - add test
 
+20150204
+* fixes in sigscan.conf
+* added sigscan.conf to dpkf/rules file
+
 20150125
 * changes for deployment
 
