@@ -54,6 +54,13 @@ PyMethodDef pysigscan_scanner_object_methods[] = {
 	  "\n"
 	  "Signals the scanner to abort the current activity." },
 
+	{ "set_scan_buffer_size",
+	  (PyCFunction) pysigscan_scanner_set_scan_buffer_size,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "set_scan_buffer_size(buffer_size) -> None\n"
+	  "\n"
+	  "Set the size of the scan buffer." },
+
 	/* Functions to access signatures */
 
 	{ "add_signature",
@@ -394,6 +401,57 @@ PyObject *pysigscan_scanner_signal_abort(
 		 error,
 		 PyExc_IOError,
 		 "%s: unable to signal abort.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
+}
+
+/* Sets the size of the scan buffer
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysigscan_scanner_set_scan_buffer_size(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	libcerror_error_t *error    = NULL;
+	static char *function       = "pysigscan_scanner_set_scan_buffer_size";
+	static char *keyword_list[] = { "buffer_size", NULL };
+	Py_ssize_t buffer_size      = 0;
+	int result                  = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "n",
+	     keyword_list,
+	     &buffer_size ) == 0 )
+	{
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          pysigscan_scanner->scanner,
+	          (size_t) buffer_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pysigscan_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to set scan buffer size.",
 		 function );
 
 		libcerror_error_free(

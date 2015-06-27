@@ -1,4 +1,4 @@
-.Dd January  4, 2015
+.Dd June 27, 2015
 .Dt libsigscan 3
 .Os libsigscan
 .Sh NAME
@@ -48,6 +48,8 @@ Scanner functions
 .Fn libsigscan_scanner_free "libsigscan_scanner_t **scanner, libsigscan_error_t **error"
 .Ft int
 .Fn libsigscan_scanner_signal_abort "libsigscan_scanner_t *scanner, libsigscan_error_t **error"
+.Ft int
+.Fn libsigscan_scanner_set_scan_buffer_size "libsigscan_scanner_t *scanner, size_t scan_buffer_size, libsigscan_error_t **error"
 .Ft int
 .Fn libsigscan_scanner_add_signature "libsigscan_scanner_t *scanner, const char *identifier, size_t identifier_length, off64_t pattern_offset, const uint8_t *pattern, size_t pattern_size, uint32_t signature_flags, libsigscan_error_t **error"
 .Ft int

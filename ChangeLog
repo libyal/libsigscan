@@ -35,6 +35,9 @@ Tests:
 * sigscan
   - add test
 
+20150617
+* worked on Python bindings
+
 20150204
 * fixes in sigscan.conf
 * added sigscan.conf to dpkf/rules file

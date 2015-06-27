@@ -58,7 +58,7 @@ int pysigscan_scan_state_init(
 void pysigscan_scan_state_free(
       pysigscan_scan_state_t *pysigscan_scan_state );
 
-PyObject *pysigscan_scanner_set_data_size(
+PyObject *pysigscan_scan_state_set_data_size(
            pysigscan_scan_state_t *pysigscan_scan_state,
            PyObject *arguments,
            PyObject *keywords );

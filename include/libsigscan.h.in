@@ -186,6 +186,15 @@ int libsigscan_scanner_signal_abort(
      libsigscan_scanner_t *scanner,
      libsigscan_error_t **error );
 
+/* Sets the scan buffer size
+ * Returns 1 if successful or -1 on error
+ */
+LIBSIGSCAN_EXTERN \
+int libsigscan_scanner_set_scan_buffer_size(
+     libsigscan_scanner_t *scanner,
+     size_t scan_buffer_size,
+     libsigscan_error_t **error );
+
 /* Adds a signature
  * Returns 1 if successful, 0 if signature already exists or -1 on error
  */

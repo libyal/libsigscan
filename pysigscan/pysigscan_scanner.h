@@ -61,6 +61,11 @@ PyObject *pysigscan_scanner_signal_abort(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments );
 
+PyObject *pysigscan_scanner_set_scan_buffer_size(
+           pysigscan_scanner_t *pysigscan_scanner,
+           PyObject *arguments,
+           PyObject *keywords );
+
 PyObject *pysigscan_scanner_add_signature(
            pysigscan_scanner_t *pysigscan_scanner,
            PyObject *arguments,
