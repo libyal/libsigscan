@@ -35,6 +35,9 @@ Tests:
 * sigscan
   - add test
 
+20150714
+* bug fixes
+
 20150617
 * worked on Python bindings
 

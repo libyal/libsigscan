@@ -1367,7 +1367,7 @@ int libsigscan_scanner_scan_file_io_handle(
 
 	buffer = NULL;
 
-	if( file_io_handle_is_open != 0 )
+	if( file_io_handle_is_open == 0 )
 	{
 		if( libbfio_handle_close(
 		     file_io_handle,
@@ -1392,7 +1392,7 @@ on_error:
 		memory_free(
 		 buffer );
 	}
-	if( file_io_handle_is_open != 0 )
+	if( file_io_handle_is_open == 0 )
 	{
 		libbfio_handle_close(
 		 file_io_handle,
