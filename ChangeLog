@@ -35,6 +35,9 @@ Tests:
 * sigscan
   - add test
 
+20150725
+* worked on setup.py
+
 20150714
 * bug fixes
 

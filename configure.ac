@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsigscan],
- [20150714],
+ [20150725],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -209,7 +209,6 @@ AC_CONFIG_FILES([common/types.h])
 AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([dpkg/copyright])
 AC_CONFIG_FILES([libsigscan/libsigscan.rc])
-AC_CONFIG_FILES([pysigscan/setup.py])
 AC_CONFIG_FILES([libsigscan.pc])
 AC_CONFIG_FILES([libsigscan.spec])
 dnl Have configure write its configuration

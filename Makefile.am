@@ -43,6 +43,9 @@ GETTEXT_FILES = \
 PKGCONFIG_FILES = \
 	libsigscan.pc.in
 
+SETUP_PY_FILES = \
+	setup.py
+
 SPEC_FILES = \
 	libsigscan.spec \
 	libsigscan.spec.in
@@ -55,6 +58,7 @@ EXTRA_DIST = \
 	$(DPKG_FILES) \
 	$(GETTEXT_FILES) \
 	$(PKGCONFIG_FILES) \
+	$(SETUP_PY_FILES) \
 	$(SPEC_FILES)
 
 MAINTAINERCLEANFILES = \
