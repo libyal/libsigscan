@@ -1,4 +1,5 @@
 TODO:
+* check how duplicate definitions are handled
 * make sure scan buffer is sufficient large for bounded scan
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes
 * dpkg add sigscan.conf

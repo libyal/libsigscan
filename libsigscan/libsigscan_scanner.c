@@ -1136,7 +1136,7 @@ int libsigscan_scanner_scan_file_io_handle(
 			 "%s: invalid footer range value out of bounds.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( ( footer_range_start >= header_range_start )
 		 && ( footer_range_start <= header_range_end ) )
