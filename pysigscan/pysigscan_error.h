@@ -28,7 +28,7 @@
 #include "pysigscan_libcerror.h"
 #include "pysigscan_python.h"
 
-#define PYSIGSCAN_ERROR_STRING_SIZE		768
+#define PYSIGSCAN_ERROR_STRING_SIZE		2048
 
 #if defined( __cplusplus )
 extern "C" {

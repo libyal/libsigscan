@@ -36,6 +36,12 @@ Tests:
 * sigscan
   - add test
 
+20151221
+* applied updates
+
+20151205
+* worked on Python bindings
+
 20150725
 * worked on setup.py
 

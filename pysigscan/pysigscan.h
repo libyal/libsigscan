@@ -35,8 +35,13 @@ PyObject *pysigscan_get_version(
            PyObject *self,
            PyObject *arguments );
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_pysigscan(
+                void );
+#else
 PyMODINIT_FUNC initpysigscan(
                 void );
+#endif
 
 #if defined( __cplusplus )
 }
