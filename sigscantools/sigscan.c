@@ -1,7 +1,7 @@
 /*
  * Scans a file for binary signatures
  *
- * Copyright (c) 2014-2015, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
