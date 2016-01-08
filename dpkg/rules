@@ -12,7 +12,7 @@ export DH_OPTIONS
 
 .PHONY: override_dh_auto_configure
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-python CFLAGS="-g"
+	dh_auto_configure -- --enable-python2 --enable-python3 CFLAGS="-g"
 
 .PHONY: override_dh_auto_test
 override_dh_auto_test:
@@ -34,8 +34,11 @@ override_dh_install:
 	dh_install "debian/tmp/etc/sigscan.conf" -p libsigscan-tools
 	dh_install "debian/tmp/usr/share/man/man1/*" -p libsigscan-tools
 	# Create the libsigscan-python package.
-	dh_install -X"*_d.so" "debian/tmp/usr/lib/python*/*" -p libsigscan-python
-	# The libsigscan-dbg and libsigscan-python-dbg packages are created by dh_strip.
+	dh_install -X"*_d.so" "debian/tmp/usr/lib/python2*/*" -p libsigscan-python
+	# Create the libsigscan-python3 package.
+	dh_install -X"*_d.so" "debian/tmp/usr/lib/python3*/*" -p libsigscan-python3
+	# The libsigscan-dbg, libsigscan-python-dbg and libsigscan-python3-dbg packages
+	# are created by dh_strip.
 	dh_install
 
 .PHONY: override_dh_installmenu
@@ -85,6 +88,7 @@ override_dh_strip:
 ifeq (,$(filter nostrip,$(DEB_BUILD_OPTIONS)))
 	dh_strip -plibsigscan --dbg-package=libsigscan-dbg
 	dh_strip -plibsigscan-python --dbg-package=libsigscan-python-dbg
+	dh_strip -plibsigscan-python3 --dbg-package=libsigscan-python3-dbg
 endif
 
 .PHONY: override_dh_shlibdeps

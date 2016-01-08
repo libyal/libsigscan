@@ -36,6 +36,9 @@ Tests:
 * sigscan
   - add test
 
+20160108
+* worked on Python 3 support
+
 20160105
 * 2016 update
 

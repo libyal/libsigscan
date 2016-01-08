@@ -18,6 +18,8 @@ SUBDIRS = \
 	libcsystem \
 	sigscantools \
 	pysigscan \
+	pysigscan2 \
+	pysigscan3 \
 	po \
 	manuals \
 	tests \
@@ -31,8 +33,10 @@ DPKG_FILES = \
 	dpkg/copyright \
 	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libsigscan-dev.docs \
 	dpkg/libsigscan.docs \
+	dpkg/libsigscan-dev.docs \
+	dpkg/libsigscan-python.docs \
+	dpkg/libsigscan-python3.docs \
 	dpkg/libsigscan-tools.docs \
 	dpkg/source/format
 
