@@ -55,15 +55,15 @@ pysigscan_la_CPPFLAGS = $(PYTHON2_CPPFLAGS)
 pysigscan_la_LDFLAGS  = -module -avoid-version $(PYTHON2_LDFLAGS)
 
 $(BUILT_SOURCES):
-	/bin/cp -f $(top_srcdir)/pysigscan/pysigscan*.[ch] .
-
-clean-local:
-	/bin/rm -f pysigscan*.[ch]
+	/bin/cp -f $(top_srcdir)/pysigscan/$@ $@
 
 endif
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
+
+clean-local:
+	/bin/rm -f pysigscan*.[ch]
 
 distclean: clean
 	/bin/rm -f Makefile
