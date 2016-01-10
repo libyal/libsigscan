@@ -113,7 +113,7 @@ stamp-h[1-9]
 /include/libsigscan/types.h
 /libsigscan/libsigscan.rc
 /libsigscan/libsigscan_definitions.h
-/pysigscan[23]/*.[ch]
+/pysigscan-python[23]/*.[ch]
 /sigscantools/sigscan
 /tests/input
 /tests/sigscan_test_scanner

@@ -18,8 +18,8 @@ SUBDIRS = \
 	libcsystem \
 	sigscantools \
 	pysigscan \
-	pysigscan2 \
-	pysigscan3 \
+	pysigscan-python2 \
+	pysigscan-python3 \
 	po \
 	manuals \
 	tests \
