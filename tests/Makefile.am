@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBSIGSCAN_DLL_IMPORT@
 
-if HAVE_PYTHON
+if HAVE_PYTHON_TESTS
 TESTS_PYSIGSCAN = \
 	test_pysigscan_scanner.sh
 endif

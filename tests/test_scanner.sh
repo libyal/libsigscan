@@ -1,57 +1,71 @@
 #!/bin/bash
+# Library scanner type testing script
 #
-# Library scanner testing script
-#
-# Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
-#
-# Refer to AUTHORS for acknowledgements.
-#
-# This software is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This software is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this software.  If not, see <http://www.gnu.org/licenses/>.
-#
+# Version: 20160128
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-test_scanner()
-{ 
-	echo "Testing scanner type";
+TEST_PREFIX=`pwd`;
+TEST_PREFIX=`dirname ${TEST_PREFIX}`;
+TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib//'`;
 
-	./${SIGSCAN_TEST_SCANNER};
-
-	RESULT=$?;
-
-	echo "";
-
-	return ${RESULT};
-}
-
-SIGSCAN_TEST_SCANNER="sigscan_test_scanner";
-
-if ! test -x ${SIGSCAN_TEST_SCANNER};
+if ! test -z ${SKIP_LIBRARY_TESTS};
 then
-	SIGSCAN_TEST_SCANNER="sigscan_test_scanner.exe";
+	exit ${EXIT_IGNORE};
 fi
 
-if ! test -x ${SIGSCAN_TEST_SCANNER};
+TEST_SCANNER="./${TEST_PREFIX}_test_scanner";
+
+if ! test -x ${TEST_SCANNER};
 then
-	echo "Missing executable: ${SIGSCAN_TEST_SCANNER}";
+	TEST_SCANNER="${TEST_PREFIX}_test_scanner.exe";
+fi
+
+if ! test -x ${TEST_SCANNER};
+then
+	echo "Missing executable: ${TEST_SCANNER}";
 
 	exit ${EXIT_FAILURE};
 fi
 
-if ! test_scanner;
+TEST_RUNNER="tests/test_runner.sh";
+
+if ! test -x ${TEST_RUNNER};
+then
+	TEST_RUNNER="./test_runner.sh";
+fi
+
+if ! test -x ${TEST_RUNNER};
+then
+	echo "Missing test runner: ${TEST_RUNNER}";
+
+	exit ${EXIT_FAILURE};
+fi
+
+echo -n -e "Testing scanner\t"
+
+TMPDIR="tmp$$";
+
+rm -rf ${TMPDIR};
+mkdir ${TMPDIR};
+
+${TEST_RUNNER} ${TMPDIR} ${TEST_SCANNER} ${CODEPAGE};
+
+RESULT=$?;
+
+rm -rf ${TMPDIR};
+
+if test ${RESULT} -ne 0;
+then
+	echo "(FAIL)";
+else
+	echo "(PASS)";
+fi
+echo "";
+
+if test ${RESULT} -ne 0;
 then
 	exit ${EXIT_FAILURE};
 fi
