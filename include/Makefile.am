@@ -1,13 +1,13 @@
 include_HEADERS = \
-        libsigscan.h
+	libsigscan.h
 
 pkginclude_HEADERS = \
-        libsigscan/codepage.h \
-        libsigscan/definitions.h \
-        libsigscan/error.h \
-        libsigscan/extern.h \
-        libsigscan/features.h \
-        libsigscan/types.h
+	libsigscan/codepage.h \
+	libsigscan/definitions.h \
+	libsigscan/error.h \
+	libsigscan/extern.h \
+	libsigscan/features.h \
+	libsigscan/types.h
 
 EXTRA_DIST = \
 	libsigscan.h.in \
