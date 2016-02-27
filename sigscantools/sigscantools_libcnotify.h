@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EXETOOLS_LIBCNOTIFY_H )
-#define _EXETOOLS_LIBCNOTIFY_H
+#if !defined( _SIGSCANTOOLS_LIBCNOTIFY_H )
+#define _SIGSCANTOOLS_LIBCNOTIFY_H
 
 #include <common.h>
 
@@ -44,7 +44,7 @@
 
 #include <libcnotify.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCNOTIFY ) */
 
-#endif
+#endif /* !defined( _SIGSCANTOOLS_LIBCNOTIFY_H ) */
 

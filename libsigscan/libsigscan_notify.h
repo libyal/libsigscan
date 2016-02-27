@@ -23,9 +23,8 @@
 #define _LIBSIGSCAN_NOTIFY_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
-
-#include <stdio.h>
 
 #include "libsigscan_extern.h"
 #include "libsigscan_libcerror.h"
@@ -54,11 +53,11 @@ LIBSIGSCAN_EXTERN \
 int libsigscan_notify_stream_close(
      libcerror_error_t **error );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSIGSCAN ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_NOTIFY_H ) */
 

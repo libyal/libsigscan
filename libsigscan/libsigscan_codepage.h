@@ -80,11 +80,11 @@ enum LIBSIGSCAN_CODEPAGES
 	LIBSIGSCAN_CODEPAGE_WINDOWS_1258			= 1258
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSIGSCAN ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_INTERNAL_CODEPAGE_H ) */
 

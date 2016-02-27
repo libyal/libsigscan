@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EXETOOLS_LIBCLOCALE_H )
-#define _EXETOOLS_LIBCLOCALE_H
+#if !defined( _SIGSCANTOOLS_LIBCLOCALE_H )
+#define _SIGSCANTOOLS_LIBCLOCALE_H
 
 #include <common.h>
 
@@ -44,7 +44,7 @@
 
 #include <libclocale.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCLOCALE ) */
 
-#endif
+#endif /* !defined( _SIGSCANTOOLS_LIBCLOCALE_H ) */
 
