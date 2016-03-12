@@ -51,7 +51,7 @@ TMPDIR="tmp$$";
 rm -rf ${TMPDIR};
 mkdir ${TMPDIR};
 
-${TEST_RUNNER} ${TMPDIR} ${TEST_SCANNER} ${CODEPAGE};
+${TEST_RUNNER} ${TMPDIR} ${TEST_SCANNER};
 
 RESULT=$?;
 

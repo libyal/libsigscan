@@ -1297,159 +1297,22 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
-	if( libsigscan_signature_table_get_number_of_byte_value_groups(
+	if( libsigscan_scan_tree_fill_pattern_weights(
+	     scan_tree,
 	     signature_table,
-	     &number_of_byte_value_groups,
-	     error ) != 1 )
+	     similarity_weights,
+	     occurrence_weights,
+	     byte_value_weights,
+	     error ) != 1)
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of byte value groups.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to fill pattern weights.",
 		 function );
 
 		goto on_error;
-	}
-	for( byte_value_group_index = 0;
-	     byte_value_group_index < number_of_byte_value_groups;
-	     byte_value_group_index++ )
-	{
-		if( libsigscan_signature_table_get_byte_value_group_by_index(
-		     signature_table,
-		     byte_value_group_index,
-		     &byte_value_group,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve byte value group: %d.",
-			 function,
-			 byte_value_group_index );
-
-			goto on_error;
-		}
-		if( byte_value_group == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing byte value group: %d.",
-			 function,
-			 byte_value_group_index );
-
-			goto on_error;
-		}
-		if( libsigscan_byte_value_group_get_number_of_signature_groups(
-		     byte_value_group,
-		     &number_of_signature_groups,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: invalid byte value: %d - unable to retrieve number of signature groups.",
-			 function,
-			 byte_value_group_index );
-
-			goto on_error;
-		}
-		if( number_of_signature_groups > 1 )
-		{
-			if( libsigscan_pattern_weights_set_weight(
-			     occurrence_weights,
-			     byte_value_group->pattern_offset,
-			     number_of_signature_groups,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set occurrence weight.",
-				 function );
-
-				goto on_error;
-			}
-		}
-		for( signature_group_index = 0;
-		     signature_group_index < number_of_signature_groups;
-		     signature_group_index++ )
-		{
-			if( libsigscan_byte_value_group_get_signature_group_by_index(
-			     byte_value_group,
-			     signature_group_index,
-			     &signature_group,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: invalid byte value group: %d - unable to retrieve signature group: %d.",
-				 function,
-				 byte_value_group_index,
-				 signature_group_index );
-
-				goto on_error;
-			}
-			if( libsigscan_signature_group_get_number_of_signatures(
-			     signature_group,
-			     &number_of_signatures,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: invalid byte value group: %d - invalid signature group: %d - unable to retrieve number of signatures.",
-				 function,
-				 byte_value_group_index,
-				 signature_group_index );
-
-				goto on_error;
-			}
-			if( number_of_signatures > 1 )
-			{
-				if( libsigscan_pattern_weights_add_weight(
-				     similarity_weights,
-				     byte_value_group->pattern_offset,
-				     number_of_signatures,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to add similarity weight.",
-					 function );
-
-					goto on_error;
-				}
-			}
-			if( libsigscan_common_byte_values[ byte_value ] == 0 )
-			{
-				if( libsigscan_pattern_weights_add_weight(
-				     byte_value_weights,
-				     byte_value_group->pattern_offset,
-				     1,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to add byte value weight.",
-					 function );
-
-					goto on_error;
-				}
-			}
-		}
 	}
 	result = libsigscan_scan_tree_get_most_significant_pattern_offset(
 	          scan_tree,
@@ -1608,19 +1471,6 @@ int libsigscan_scan_tree_build_node(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - unable to retrieve signature group: %d.",
-			 function,
-			 pattern_offset,
-			 signature_group_index );
-
-			goto on_error;
-		}
-		if( number_of_signatures == 0 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - missing signature group: %d.",
 			 function,
 			 pattern_offset,
 			 signature_group_index );
@@ -2332,6 +2182,195 @@ on_error:
 		 NULL );
 	}
 	return( -1 );
+}
+
+/* Fills the pattern weights
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_scan_tree_fill_pattern_weights(
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_signature_table_t *signature_table,
+     libsigscan_pattern_weights_t *similarity_weights,
+     libsigscan_pattern_weights_t *occurrence_weights,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     libcerror_error_t **error )
+{
+	libsigscan_byte_value_group_t *byte_value_group = NULL;
+	libsigscan_signature_group_t *signature_group   = NULL;
+	static char *function                           = "libsigscan_scan_tree_fill_pattern_weights";
+	uint8_t byte_value                              = 0;
+	int byte_value_group_index                      = 0;
+	int number_of_byte_value_groups                 = 0;
+	int number_of_signature_groups                  = 0;
+	int number_of_signatures                        = 0;
+	int signature_group_index                       = 0;
+
+	if( scan_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid scan tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsigscan_signature_table_get_number_of_byte_value_groups(
+	     signature_table,
+	     &number_of_byte_value_groups,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of byte value groups.",
+		 function );
+
+		return( -1 );
+	}
+	for( byte_value_group_index = 0;
+	     byte_value_group_index < number_of_byte_value_groups;
+	     byte_value_group_index++ )
+	{
+		if( libsigscan_signature_table_get_byte_value_group_by_index(
+		     signature_table,
+		     byte_value_group_index,
+		     &byte_value_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve byte value group: %d.",
+			 function,
+			 byte_value_group_index );
+
+			return( -1 );
+		}
+		if( byte_value_group == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing byte value group: %d.",
+			 function,
+			 byte_value_group_index );
+
+			return( -1 );
+		}
+		if( libsigscan_byte_value_group_get_number_of_signature_groups(
+		     byte_value_group,
+		     &number_of_signature_groups,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: invalid byte value: %d - unable to retrieve number of signature groups.",
+			 function,
+			 byte_value_group_index );
+
+			return( -1 );
+		}
+		if( number_of_signature_groups > 1 )
+		{
+			if( libsigscan_pattern_weights_set_weight(
+			     occurrence_weights,
+			     byte_value_group->pattern_offset,
+			     number_of_signature_groups,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set occurrence weight.",
+				 function );
+
+				return( -1 );
+			}
+		}
+		for( signature_group_index = 0;
+		     signature_group_index < number_of_signature_groups;
+		     signature_group_index++ )
+		{
+			if( libsigscan_byte_value_group_get_signature_group_by_index(
+			     byte_value_group,
+			     signature_group_index,
+			     &signature_group,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: invalid byte value group: %d - unable to retrieve signature group: %d.",
+				 function,
+				 byte_value_group_index,
+				 signature_group_index );
+
+				return( -1 );
+			}
+			if( libsigscan_signature_group_get_number_of_signatures(
+			     signature_group,
+			     &number_of_signatures,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: invalid byte value group: %d - invalid signature group: %d - unable to retrieve number of signatures.",
+				 function,
+				 byte_value_group_index,
+				 signature_group_index );
+
+				return( -1 );
+			}
+			if( number_of_signatures > 1 )
+			{
+				if( libsigscan_pattern_weights_add_weight(
+				     similarity_weights,
+				     byte_value_group->pattern_offset,
+				     number_of_signatures,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to add similarity weight.",
+					 function );
+
+					return( -1 );
+				}
+			}
+			if( libsigscan_common_byte_values[ byte_value ] == 0 )
+			{
+				if( libsigscan_pattern_weights_add_weight(
+				     byte_value_weights,
+				     byte_value_group->pattern_offset,
+				     1,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to add byte value weight.",
+					 function );
+
+					return( -1 );
+				}
+			}
+		}
+	}
+	return( 1 );
 }
 
 /* Fills the range list

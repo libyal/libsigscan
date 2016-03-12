@@ -116,6 +116,14 @@ int libsigscan_scan_tree_build(
      int pattern_offsets_mode,
      libcerror_error_t **error );
 
+int libsigscan_scan_tree_fill_pattern_weights(
+     libsigscan_scan_tree_t *scan_tree,
+     libsigscan_signature_table_t *signature_table,
+     libsigscan_pattern_weights_t *similarity_weights,
+     libsigscan_pattern_weights_t *occurrence_weights,
+     libsigscan_pattern_weights_t *byte_value_weights,
+     libcerror_error_t **error );
+
 int libsigscan_scan_tree_fill_range_list(
      libsigscan_scan_tree_t *scan_tree,
      libcdata_list_t *signatures_list,
