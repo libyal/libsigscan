@@ -1228,20 +1228,6 @@ int libsigscan_scan_tree_build_node(
 
 		return( -1 );
 	}
-	if( libsigscan_signature_table_get_signatures_list_clone(
-	     signature_table,
-	     &remaining_signatures_list,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to clone remaining signatures list.",
-		 function );
-
-		goto on_error;
-	}
 	if( libcdata_list_clone(
 	     &sub_offsets_ignore_list,
 	     offsets_ignore_list,
@@ -1454,6 +1440,98 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
+	/* Determine the signatures not covered by the scan node
+	 */
+	if( libsigscan_signature_table_get_signatures_list_clone(
+	     signature_table,
+	     &remaining_signatures_list,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to clone remaining signatures list.",
+		 function );
+
+		goto on_error;
+	}
+	for( signature_group_index = 0;
+	     signature_group_index < number_of_signature_groups;
+	     signature_group_index++ )
+	{
+		if( libsigscan_byte_value_group_get_signature_group_by_index(
+		     byte_value_group,
+		     signature_group_index,
+		     &signature_group,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - unable to retrieve signature group: %d.",
+			 function,
+			 pattern_offset,
+			 signature_group_index );
+
+			goto on_error;
+		}
+		if( libsigscan_signature_group_get_number_of_signatures(
+		     signature_group,
+		     &number_of_signatures,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve number of signatures.",
+			 function,
+			 pattern_offset,
+			 signature_group_index );
+
+			goto on_error;
+		}
+		for( signature_index = 0;
+		     signature_index < number_of_signatures;
+		     signature_index++ )
+		{
+			if( libsigscan_signature_group_get_signature_by_index(
+			     signature_group,
+			     signature_index,
+			     &signature,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 	 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve signature: %d.",
+				 function,
+				 pattern_offset,
+				 signature_group_index,
+				 signature_index );
+
+				goto on_error;
+			}
+			if( libsigscan_signatures_list_remove_signature(
+			     remaining_signatures_list,
+			     signature,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_REMOVE_FAILED,
+				 "%s: unable to remove signature: %s.",
+				 function,
+				 signature->identifier );
+
+				goto on_error;
+			}
+		}
+	}
 	/* Determine the scan tree node byte values
 	 */
 	for( signature_group_index = 0;
@@ -1575,6 +1653,23 @@ int libsigscan_scan_tree_build_node(
 
 				goto on_error;
 			}
+			if( libsigscan_signature_table_fill(
+			     sub_signature_table,
+			     remaining_signatures_list,
+			     sub_offsets_ignore_list,
+			     pattern_offsets_mode,
+			     pattern_offsets_range_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to fill signature table.",
+				 function );
+
+				goto on_error;
+			}
 			if( libsigscan_scan_tree_build_node(
 			     scan_tree,
 			     sub_signature_table,
@@ -1647,45 +1742,6 @@ int libsigscan_scan_tree_build_node(
 		/* The scan tree node takes over management of the scan object
 		 */
 		scan_object = NULL;
-
-		for( signature_index = 0;
-		     signature_index < number_of_signatures;
-		     signature_index++ )
-		{
-			if( libsigscan_signature_group_get_signature_by_index(
-			     signature_group,
-			     signature_index,
-			     &signature,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 	 "%s: invalid byte value group for pattern offset: %" PRIi64 " - invalid signature group: %d - unable to retrieve signature: %d.",
-				 function,
-				 pattern_offset,
-				 signature_group_index,
-				 signature_index );
-
-				goto on_error;
-			}
-			if( libsigscan_signatures_list_remove_signature(
-			     remaining_signatures_list,
-			     signature,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_REMOVE_FAILED,
-				 "%s: unable to remove signature: %s.",
-				 function,
-				 signature->identifier );
-
-				goto on_error;
-			}
-		}
 	}
 	/* Determine the scan tree node default value
 	 */
@@ -2455,7 +2511,7 @@ int libsigscan_scan_tree_fill_range_list(
 		switch( pattern_offsets_mode )
 		{
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
-				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
 				{
 					add_signature = 1;
 				}
@@ -2466,7 +2522,7 @@ int libsigscan_scan_tree_fill_range_list(
 				break;
 
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
-				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
 				{
 					add_signature = 1;
 				}

@@ -291,7 +291,7 @@ int libsigscan_signature_table_fill(
 		switch( pattern_offsets_mode )
 		{
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
-				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START )
 				{
 					add_signature = 1;
 				}
@@ -302,7 +302,7 @@ int libsigscan_signature_table_fill(
 				break;
 
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
-				if( ( signature->signature_flags & 0x00000003UL ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END )
 				{
 					add_signature = 1;
 				}
