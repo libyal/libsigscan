@@ -21,6 +21,8 @@ Tools:
   - print result offset
 
 Tests:
+* add test signature files
+  - tar, tar_old
 * sigscan_test_scanner
   - add scan result (signature) identifier check
   - offsets relative from end

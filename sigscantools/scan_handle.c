@@ -1075,7 +1075,7 @@ int scan_handle_scan_results_fprint(
 			fprintf(
 			 scan_handle->notify_stream,
 			 "Scan result: %d\n",
-			 result_index );
+			 result_index + 1 );
 
 			if( libsigscan_scan_state_get_result(
 			     scan_state,
@@ -1089,7 +1089,7 @@ int scan_handle_scan_results_fprint(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve scan result: %d.",
 				 function,
-				 result_index );
+				 result_index + 1 );
 
 				goto on_error;
 			}
@@ -1104,7 +1104,7 @@ int scan_handle_scan_results_fprint(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve scan result: %d identifier size.",
 				 function,
-				 result_index );
+				 result_index + 1 );
 
 				goto on_error;
 			}
@@ -1143,7 +1143,7 @@ int scan_handle_scan_results_fprint(
 					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 					 "%s: unable to retrieve scan result: %d identifier.",
 					 function,
-					 result_index );
+					 result_index + 1 );
 
 					goto on_error;
 				}
