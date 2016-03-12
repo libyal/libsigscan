@@ -38,6 +38,10 @@ Tests:
 * sigscan
   - add test
 
+20160312
+* fixed bug in scan tree initialization
+* applied updates
+
 20160109
 * fixes for rpmbuild
 
