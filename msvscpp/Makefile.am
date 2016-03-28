@@ -14,6 +14,7 @@ MSVSCPP_FILES = \
 	libuna/libuna.vcproj \
 	pysigscan/pysigscan.vcproj \
 	sigscan/sigscan.vcproj \
+	sigscan_test_get_version/sigscan_test_get_version.vcproj \
 	sigscan_test_scanner/sigscan_test_scanner.vcproj \
 	libsigscan.sln
 

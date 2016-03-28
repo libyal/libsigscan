@@ -20,14 +20,16 @@ TESTS_PYSIGSCAN = \
 endif
 
 TESTS = \
-	test_scanner.sh \
+	test_api_functions.sh \
+	test_api_types.sh \
 	test_sigscan.sh \
 	$(TESTS_PYSIGSCAN)
 
 check_SCRIPTS = \
 	pysigscan_test_scanner.py \
+	test_api_functions.sh \
+	test_api_types.sh \
 	test_pysigscan_scanner.sh \
-	test_scanner.sh \
 	test_sigscan.sh \
 	test_runner.sh
 
@@ -35,7 +37,17 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	sigscan_test_get_version \
 	sigscan_test_scanner
+
+sigscan_test_get_version_SOURCES = \
+	sigscan_test_libcstring.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_get_version.c
+
+sigscan_test_get_version_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCSTRING_LIBADD@
 
 sigscan_test_scanner_SOURCES = \
 	sigscan_test_libcerror.h \

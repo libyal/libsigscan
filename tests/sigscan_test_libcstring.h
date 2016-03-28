@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EXE_TEST_LIBCSTRING_H )
-#define _EXE_TEST_LIBCSTRING_H
+#if !defined( _SIGSCAN_TEST_LIBCSTRING_H )
+#define _SIGSCAN_TEST_LIBCSTRING_H
 
 #include <common.h>
 
@@ -45,7 +45,7 @@
 
 #include <libcstring.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCSTRING ) */
 
-#endif
+#endif /* !defined( _SIGSCAN_TEST_LIBCSTRING_H ) */
 

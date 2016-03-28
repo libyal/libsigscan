@@ -1,6 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_get_version", "sigscan_test_get_version\sigscan_test_get_version.vcproj", "{57453787-D747-46A5-B6C2-26056A7D00F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
+		{839CEBB4-95B3-47FE-A19E-F6F2E3A5292C} = {839CEBB4-95B3-47FE-A19E-F6F2E3A5292C}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_scanner", "sigscan_test_scanner\sigscan_test_scanner.vcproj", "{35E00574-2F17-48AF-9FAF-41855EAA2DE5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
@@ -138,6 +144,10 @@ Global
 		VSDebug|Win32 = VSDebug|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57453787-D747-46A5-B6C2-26056A7D00F0}.Release|Win32.ActiveCfg = Release|Win32
+		{57453787-D747-46A5-B6C2-26056A7D00F0}.Release|Win32.Build.0 = Release|Win32
+		{57453787-D747-46A5-B6C2-26056A7D00F0}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{57453787-D747-46A5-B6C2-26056A7D00F0}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{35E00574-2F17-48AF-9FAF-41855EAA2DE5}.Release|Win32.ActiveCfg = Release|Win32
 		{35E00574-2F17-48AF-9FAF-41855EAA2DE5}.Release|Win32.Build.0 = Release|Win32
 		{35E00574-2F17-48AF-9FAF-41855EAA2DE5}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
