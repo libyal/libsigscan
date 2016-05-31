@@ -42,7 +42,7 @@ struct scan_handle
 	 */
 	libsigscan_scanner_t *scanner;
 
-	/* The nofication output stream
+	/* The notification output stream
 	 */
 	FILE *notify_stream;
 

@@ -1,14 +1,14 @@
 #!/bin/bash
 # Scan tool testing script
 #
-# Version: 20160328
+# Version: 20160531
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
 TEST_PREFIX=`dirname ${PWD}`;
-TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\)/\1/'`;
+TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\).*$/\1/'`;
 
 TEST_PROFILE="${TEST_PREFIX}";
 TEST_DESCRIPTION="${TEST_PREFIX}";
@@ -54,7 +54,7 @@ fi
 
 source ${TEST_RUNNER};
 
-run_test_on_input_directory "${TEST_PROFILE}" "${TEST_DESCRIPTION}" "with_stdout_reference" "${OPTION_SETS}" "${TEST_EXECUTABLE}" "${INPUT_DIRECTORY}" "${INPUT_GLOB}" -c../etc/sigscan.conf;
+run_test_on_input_directory "${TEST_PROFILE}" "${TEST_DESCRIPTION}" "with_stdout_reference" "${OPTION_SETS}" "${TEST_EXECUTABLE}" "${INPUT_DIRECTORY}" "${INPUT_GLOB}" -c../../etc/sigscan.conf;
 RESULT=$?;
 
 exit ${RESULT};

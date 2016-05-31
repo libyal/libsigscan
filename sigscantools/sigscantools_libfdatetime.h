@@ -1,5 +1,5 @@
 /*
- * The internal libfdatetime header
+ * The libfdatetime header wrapper
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EXETOOLS_LIBFDATETIME_H )
-#define _EXETOOLS_LIBFDATETIME_H
+#if !defined( _SIGSCANTOOLS_LIBFDATETIME_H )
+#define _SIGSCANTOOLS_LIBFDATETIME_H
 
 #include <common.h>
 
@@ -33,6 +33,7 @@
 #include <libfdatetime_fat_date_time.h>
 #include <libfdatetime_filetime.h>
 #include <libfdatetime_floatingtime.h>
+#include <libfdatetime_hfs_time.h>
 #include <libfdatetime_nsf_timedate.h>
 #include <libfdatetime_posix_time.h>
 #include <libfdatetime_systemtime.h>
@@ -43,13 +44,13 @@
 /* If libtool DLL support is enabled set LIBFDATETIME_DLL_IMPORT
  * before including libfdatetime.h
  */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
 #define LIBFDATETIME_DLL_IMPORT
 #endif
 
 #include <libfdatetime.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBFDATETIME ) */
 
-#endif
+#endif /* !defined( _SIGSCANTOOLS_LIBFDATETIME_H ) */
 
