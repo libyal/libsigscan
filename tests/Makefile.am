@@ -37,13 +37,27 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	sigscan_test_error \
 	sigscan_test_get_version \
 	sigscan_test_scanner
 
-sigscan_test_get_version_SOURCES = \
+sigscan_test_error_SOURCES = \
+	sigscan_test_error.c \
 	sigscan_test_libcstring.h \
 	sigscan_test_libsigscan.h \
-	sigscan_test_get_version.c
+	sigscan_test_macros.h \
+	sigscan_test_unused.h
+
+sigscan_test_error_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCSTRING_LIBADD@
+
+sigscan_test_get_version_SOURCES = \
+	sigscan_test_get_version.c \
+	sigscan_test_libcstring.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_macros.h \
+	sigscan_test_unused.h
 
 sigscan_test_get_version_LDADD = \
 	../libsigscan/libsigscan.la \

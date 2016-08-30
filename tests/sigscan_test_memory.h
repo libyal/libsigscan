@@ -1,5 +1,5 @@
 /*
- * Notification functions
+ * Memory allocation functions for testing
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,45 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSIGSCAN_NOTIFY_H )
-#define _LIBSIGSCAN_NOTIFY_H
+#if !defined( _SIGSCAN_TEST_MEMORY_H )
+#define _SIGSCAN_TEST_MEMORY_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
-
-#include "libsigscan_extern.h"
-#include "libsigscan_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#if !defined( HAVE_LOCAL_LIBSIGSCAN )
+#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ )
 
-LIBSIGSCAN_EXTERN \
-void libsigscan_notify_set_verbose(
-      int verbose );
+#define HAVE_SIGSCAN_TEST_MEMORY		1
 
-LIBSIGSCAN_EXTERN \
-int libsigscan_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
+extern int sigscan_test_malloc_attempts_before_fail;
 
-LIBSIGSCAN_EXTERN \
-int libsigscan_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
+extern int sigscan_test_memcpy_attempts_before_fail;
 
-LIBSIGSCAN_EXTERN \
-int libsigscan_notify_stream_close(
-     libcerror_error_t **error );
+extern int sigscan_test_memset_attempts_before_fail;
 
-#endif /* !defined( HAVE_LOCAL_LIBSIGSCAN ) */
+extern int sigscan_test_realloc_attempts_before_fail;
+
+#endif /* defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _LIBSIGSCAN_NOTIFY_H ) */
+#endif /* !defined( _SIGSCAN_TEST_MEMORY_H ) */
 
