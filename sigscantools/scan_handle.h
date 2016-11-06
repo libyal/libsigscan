@@ -2,7 +2,7 @@
  * Scan handle
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
- *
+ * 
  * Refer to AUTHORS for acknowledgements.
  *
  * This software is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include "sigscantools_libcerror.h"
-#include "sigscantools_libcstring.h"
 #include "sigscantools_libsigscan.h"
 
 #if defined( __cplusplus )
@@ -78,13 +77,13 @@ int scan_handle_copy_string_to_pattern(
 
 int scan_handle_read_signature_definitions(
      scan_handle_t *scan_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error );
 
 int scan_handle_scan_input(
      scan_handle_t *scan_handle,
      libsigscan_scan_state_t *scan_state,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error );
 
 int scan_handle_scan_results_fprint(
@@ -96,5 +95,5 @@ int scan_handle_scan_results_fprint(
 }
 #endif
 
-#endif
+#endif /* !defined( _SCAN_HANDLE_H ) */
 

@@ -27,7 +27,6 @@
 #include "scan_handle.h"
 #include "sigscantools_libcerror.h"
 #include "sigscantools_libcfile.h"
-#include "sigscantools_libcstring.h"
 #include "sigscantools_libsigscan.h"
 
 #define SCAN_HANDLE_BUFFER_SIZE			16 * 1024 * 1024
@@ -306,7 +305,7 @@ int scan_handle_copy_string_to_offset(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported character value: %" PRIc_LIBCSTRING_SYSTEM " at index: %d.",
+			 "%s: unsupported character value: %" PRIc_SYSTEM " at index: %d.",
 			 function,
 			 string[ string_index ],
 			 string_index );
@@ -531,7 +530,7 @@ on_error:
  */
 int scan_handle_read_signature_definitions(
      scan_handle_t *scan_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	libcfile_file_t *file             = NULL;
@@ -590,7 +589,7 @@ int scan_handle_read_signature_definitions(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcfile_file_open_wide(
 	     file,
 	     filename,
@@ -957,7 +956,7 @@ on_error:
 int scan_handle_scan_input(
      scan_handle_t *scan_handle,
      libsigscan_scan_state_t *scan_state,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "scan_handle_scan_input";
@@ -973,7 +972,7 @@ int scan_handle_scan_input(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsigscan_scanner_scan_file_wide(
 	     scan_handle->scanner,
 	     scan_state,

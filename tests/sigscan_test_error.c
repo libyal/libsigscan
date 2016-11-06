@@ -20,6 +20,8 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -108,7 +110,7 @@ int sigscan_test_error_backtrace_sprint(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain(
      int argc SIGSCAN_TEST_ATTRIBUTE_UNUSED,
      wchar_t * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
@@ -123,23 +125,23 @@ int main(
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_error_free",
-	 sigscan_test_error_free() )
+	 sigscan_test_error_free );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_error_fprint",
-	 sigscan_test_error_fprint() )
+	 sigscan_test_error_fprint );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_error_sprint",
-	 sigscan_test_error_sprint() )
+	 sigscan_test_error_sprint );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_error_backtrace_fprint",
-	 sigscan_test_error_backtrace_fprint() )
+	 sigscan_test_error_backtrace_fprint );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_error_backtrace_sprint",
-	 sigscan_test_error_backtrace_sprint() )
+	 sigscan_test_error_backtrace_sprint );
 
 	return( EXIT_SUCCESS );
 

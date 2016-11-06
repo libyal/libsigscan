@@ -20,6 +20,8 @@
  */
 
 #include <common.h>
+#include <narrow_string.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -28,7 +30,6 @@
 #include <stdio.h>
 
 #include "sigscan_test_libcerror.h"
-#include "sigscan_test_libcstring.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_unused.h"
 
@@ -451,7 +452,7 @@ int sigscan_test_scanner_scan(
 
 	while( signature->identifier != NULL )
 	{
-		identifier_size = 1 + libcstring_narrow_string_length(
+		identifier_size = 1 + narrow_string_length(
 		                       signature->identifier );
 
 		if( libsigscan_scanner_add_signature(
@@ -592,7 +593,7 @@ on_error:
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #else
 int main( int argc, char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )

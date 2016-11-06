@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -28,7 +27,6 @@ libsigscan_la_SOURCES = \
 	libsigscan_libcerror.h \
 	libsigscan_libclocale.h \
 	libsigscan_libcnotify.h \
-	libsigscan_libcstring.h \
 	libsigscan_libuna.h \
 	libsigscan_notify.c libsigscan_notify.h \
 	libsigscan_offset_group.c libsigscan_offset_group.h \
@@ -51,7 +49,6 @@ libsigscan_la_SOURCES = \
 	libsigscan_weight_group.c libsigscan_weight_group.h
 
 libsigscan_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

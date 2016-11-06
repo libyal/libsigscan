@@ -8,7 +8,6 @@ if HAVE_PYTHON3
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -27,7 +26,6 @@ BUILT_SOURCES = \
 	pysigscan_libbfio.h \
 	pysigscan_libcerror.h \
 	pysigscan_libclocale.h \
-	pysigscan_libcstring.h \
 	pysigscan_libsigscan.h \
 	pysigscan_python.h \
 	pysigscan_scan_result.c pysigscan_scan_result.h \
@@ -42,7 +40,6 @@ pyexec_LTLIBRARIES = pysigscan.la
 nodist_pysigscan_la_SOURCES = $(BUILT_SOURCES)
 
 pysigscan_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCDATA_LIBADD@ \

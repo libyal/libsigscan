@@ -20,6 +20,7 @@
  */
 
 #include <common.h>
+#include <narrow_string.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
@@ -30,7 +31,6 @@
 #include "pysigscan_error.h"
 #include "pysigscan_file_object_io_handle.h"
 #include "pysigscan_libcerror.h"
-#include "pysigscan_libcstring.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
 #include "pysigscan_scan_result.h"
@@ -74,7 +74,7 @@ PyObject *pysigscan_get_version(
 
 	Py_END_ALLOW_THREADS
 
-	version_string_length = libcstring_narrow_string_length(
+	version_string_length = narrow_string_length(
 	                         version_string );
 
 	/* Pass the string length to PyUnicode_DecodeUTF8

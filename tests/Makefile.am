@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -38,42 +37,38 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	sigscan_test_error \
-	sigscan_test_get_version \
-	sigscan_test_scanner
+	sigscan_test_scanner \
+	sigscan_test_support
 
 sigscan_test_error_SOURCES = \
 	sigscan_test_error.c \
-	sigscan_test_libcstring.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
 	sigscan_test_unused.h
 
 sigscan_test_error_LDADD = \
-	../libsigscan/libsigscan.la \
-	@LIBCSTRING_LIBADD@
-
-sigscan_test_get_version_SOURCES = \
-	sigscan_test_get_version.c \
-	sigscan_test_libcstring.h \
-	sigscan_test_libsigscan.h \
-	sigscan_test_macros.h \
-	sigscan_test_unused.h
-
-sigscan_test_get_version_LDADD = \
-	../libsigscan/libsigscan.la \
-	@LIBCSTRING_LIBADD@
+	../libsigscan/libsigscan.la
 
 sigscan_test_scanner_SOURCES = \
 	sigscan_test_libcerror.h \
-	sigscan_test_libcstring.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_scanner.c \
 	sigscan_test_unused.h
 
 sigscan_test_scanner_LDADD = \
 	../libsigscan/libsigscan.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
+
+sigscan_test_support_SOURCES = \
+	sigscan_test_libcerror.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_macros.h \
+	sigscan_test_support.c \
+	sigscan_test_unused.h
+
+sigscan_test_support_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

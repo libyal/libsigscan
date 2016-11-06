@@ -7,7 +7,6 @@ MSVSCPP_FILES = \
 	libcnotify/libcnotify.vcproj \
 	libcpath/libcpath.vcproj \
 	libcsplit/libcsplit.vcproj \
-	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libcthreads/libcthreads.vcproj \
 	libsigscan/libsigscan.vcproj \
@@ -15,8 +14,8 @@ MSVSCPP_FILES = \
 	pysigscan/pysigscan.vcproj \
 	sigscan/sigscan.vcproj \
 	sigscan_test_error/sigscan_test_error.vcproj \
-	sigscan_test_get_version/sigscan_test_get_version.vcproj \
 	sigscan_test_scanner/sigscan_test_scanner.vcproj \
+	sigscan_test_support/sigscan_test_support.vcproj \
 	libsigscan.sln
 
 EXTRA_DIST = \

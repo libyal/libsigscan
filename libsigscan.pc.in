@@ -3,10 +3,10 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libexe
+Name: libsigscan
 Description: Library for binary signature scanning
 Version: @VERSION@
-Libs: -L${libdir} -lexe
-Libs.private: @ax_libbfio_pc_libs_private@ @ax_libcdata_pc_libs_private@ @ax_libcerror_pc_libs_private@ @ax_libcfile_pc_libs_private@ @ax_libclocale_pc_libs_private@ @ax_libcnotify_pc_libs_private@ @ax_libcpath_pc_libs_private@ @ax_libcsplit_pc_libs_private@ @ax_libcstring_pc_libs_private@ @ax_libcthreads_pc_libs_private@ @ax_libuna_pc_libs_private@ @ax_pthread_pc_libs_private@
+Libs: -L${libdir} -lsigscan
+Libs.private: @ax_libbfio_pc_libs_private@ @ax_libcdata_pc_libs_private@ @ax_libcerror_pc_libs_private@ @ax_libcfile_pc_libs_private@ @ax_libclocale_pc_libs_private@ @ax_libcnotify_pc_libs_private@ @ax_libcpath_pc_libs_private@ @ax_libcsplit_pc_libs_private@ @ax_libcthreads_pc_libs_private@ @ax_libuna_pc_libs_private@ @ax_pthread_pc_libs_private@
 Cflags: -I${includedir}
 

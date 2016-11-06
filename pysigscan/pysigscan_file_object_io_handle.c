@@ -28,7 +28,6 @@
 #include "pysigscan_integer.h"
 #include "pysigscan_libbfio.h"
 #include "pysigscan_libcerror.h"
-#include "pysigscan_libcstring.h"
 #include "pysigscan_python.h"
 
 /* Creates a file object IO handle

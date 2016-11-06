@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -29,7 +28,6 @@ sigscan_SOURCES = \
 	sigscantools_libcfile.h \
 	sigscantools_libclocale.h \
 	sigscantools_libcnotify.h \
-	sigscantools_libcstring.h \
 	sigscantools_libcsystem.h \
 	sigscantools_libsigscan.h \
 	sigscantools_libuna.h
@@ -42,7 +40,6 @@ sigscan_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 MAINTAINERCLEANFILES = \

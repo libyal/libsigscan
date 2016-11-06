@@ -24,9 +24,8 @@
 
 /* The libsigscan type support features
  */
-#if @HAVE_WIDE_CHARACTER_TYPE@ || defined( HAVE_WIDE_CHARACTER_TYPE )
-#define LIBSIGSCAN_HAVE_WIDE_CHARACTER_TYPE		1
-
+#if defined( WINAPI ) || @HAVE_WIDE_CHARACTER_TYPE@
+#define LIBSIGSCAN_HAVE_WIDE_CHARACTER_TYPE	1
 #endif
 
 #if defined( HAVE_LIBBFIO ) || ( !defined( WINAPI ) && @HAVE_LIBBFIO@ )
@@ -43,5 +42,5 @@
 #endif
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_FEATURES_H ) */
 

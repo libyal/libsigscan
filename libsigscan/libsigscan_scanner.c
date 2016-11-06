@@ -21,14 +21,15 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsigscan_definitions.h"
 #include "libsigscan_libbfio.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_libcnotify.h"
-#include "libsigscan_libcstring.h"
 #include "libsigscan_scanner.h"
 #include "libsigscan_scan_state.h"
 #include "libsigscan_scan_tree.h"
@@ -688,6 +689,7 @@ int libsigscan_scanner_scan_file(
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsigscan_scanner_scan_file";
+	size_t filename_length           = 0;
 
 	if( scanner == NULL )
 	{
@@ -740,11 +742,13 @@ int libsigscan_scanner_scan_file(
 		goto on_error;
 	}
 #endif
+	filename_length = narrow_string_length(
+	                   filename );
+
 	if( libbfio_file_set_name(
 	     file_io_handle,
 	     filename,
-	     libcstring_narrow_string_length(
-	      filename ) + 1,
+	     filename_length + 1,
 	     error ) != 1 )
 	{
                 libcerror_error_set(
@@ -810,6 +814,7 @@ int libsigscan_scanner_scan_file_wide(
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsigscan_scanner_scan_file_wide";
+	size_t filename_length           = 0;
 
 	if( scanner == NULL )
 	{
@@ -862,11 +867,13 @@ int libsigscan_scanner_scan_file_wide(
 		goto on_error;
 	}
 #endif
+	filename_length = wide_string_length(
+	                   filename );
+
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     filename,
-	     libcstring_wide_string_length(
-	      filename ) + 1,
+	     filename_length + 1,
 	     error ) != 1 )
 	{
                 libcerror_error_set(

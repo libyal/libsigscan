@@ -27,7 +27,6 @@
 
 #include "pysigscan_libbfio.h"
 #include "pysigscan_libcerror.h"
-#include "pysigscan_libcstring.h"
 #include "pysigscan_python.h"
 
 #if defined( __cplusplus )

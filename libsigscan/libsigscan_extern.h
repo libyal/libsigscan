@@ -38,10 +38,9 @@
 #include <libsigscan/extern.h>
 
 #else
-
-#define LIBSIGSCAN_EXTERN  extern
-
-#endif
+#define LIBSIGSCAN_EXTERN	extern
 
 #endif
+
+#endif /* !defined( _LIBSIGSCAN_INTERNAL_EXTERN_H ) */
 

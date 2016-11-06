@@ -976,7 +976,7 @@ PyObject *pysigscan_scanner_scan_file(
 	const char *filename_narrow                  = NULL;
 	int result                                   = 0;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	const wchar_t *filename_wide                 = NULL;
 #else
 	PyObject *utf8_string_object                 = NULL;
@@ -1051,7 +1051,7 @@ PyObject *pysigscan_scanner_scan_file(
 	{
 		PyErr_Clear();
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 		                             string_object );
 

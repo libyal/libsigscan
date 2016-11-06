@@ -32,14 +32,14 @@ typedef intptr_t libsigscan_error_t;
  */
 enum LIBSIGSCAN_ERROR_DOMAINS
 {
-	LIBSIGSCAN_ERROR_DOMAIN_ARGUMENTS			= (int) 'a',
-	LIBSIGSCAN_ERROR_DOMAIN_CONVERSION			= (int) 'c',
-	LIBSIGSCAN_ERROR_DOMAIN_COMPRESSION			= (int) 'C',
-	LIBSIGSCAN_ERROR_DOMAIN_IO				= (int) 'I',
+	LIBSIGSCAN_ERROR_DOMAIN_ARGUMENTS		= (int) 'a',
+	LIBSIGSCAN_ERROR_DOMAIN_CONVERSION		= (int) 'c',
+	LIBSIGSCAN_ERROR_DOMAIN_COMPRESSION		= (int) 'C',
+	LIBSIGSCAN_ERROR_DOMAIN_IO			= (int) 'I',
 	LIBSIGSCAN_ERROR_DOMAIN_INPUT			= (int) 'i',
 	LIBSIGSCAN_ERROR_DOMAIN_MEMORY			= (int) 'm',
 	LIBSIGSCAN_ERROR_DOMAIN_OUTPUT			= (int) 'o',
-	LIBSIGSCAN_ERROR_DOMAIN_RUNTIME			= (int) 'r',
+	LIBSIGSCAN_ERROR_DOMAIN_RUNTIME			= (int) 'r'
 };
 
 /* The argument error codes
@@ -47,7 +47,7 @@ enum LIBSIGSCAN_ERROR_DOMAINS
  */
 enum LIBSIGSCAN_ARGUMENT_ERROR
 {
-	LIBSIGSCAN_ARGUMENT_ERROR_GENERIC			= 0,
+	LIBSIGSCAN_ARGUMENT_ERROR_GENERIC		= 0,
 
 	/* The argument contains an invalid value
 	 */
@@ -68,11 +68,11 @@ enum LIBSIGSCAN_ARGUMENT_ERROR
 
 	/* The argument contains a value that is too small
 	 */
-	LIBSIGSCAN_ARGUMENT_ERROR_VALUE_TOO_SMALL		= 5,
+	LIBSIGSCAN_ARGUMENT_ERROR_VALUE_TOO_SMALL	= 5,
 
 	/* The argument contains a value that is too large
 	 */
-	LIBSIGSCAN_ARGUMENT_ERROR_VALUE_TOO_LARGE		= 6,
+	LIBSIGSCAN_ARGUMENT_ERROR_VALUE_TOO_LARGE	= 6,
 
 	/* The argument contains a value that is out of bounds
 	 */
@@ -80,11 +80,11 @@ enum LIBSIGSCAN_ARGUMENT_ERROR
 
 	/* The argument contains a value that is not supported
 	 */
-	LIBSIGSCAN_ARGUMENT_ERROR_UNSUPPORTED_VALUE		= 8,
+	LIBSIGSCAN_ARGUMENT_ERROR_UNSUPPORTED_VALUE	= 8,
 
 	/* The argument contains a value that conficts with another argument
 	 */
-	LIBSIGSCAN_ARGUMENT_ERROR_CONFLICTING_VALUE		= 9
+	LIBSIGSCAN_ARGUMENT_ERROR_CONFLICTING_VALUE	= 9
 };
 
 /* The conversion error codes
@@ -92,15 +92,15 @@ enum LIBSIGSCAN_ARGUMENT_ERROR
  */
 enum LIBSIGSCAN_CONVERSION_ERROR
 {
-	LIBSIGSCAN_CONVERSION_ERROR_GENERIC			= 0,
+	LIBSIGSCAN_CONVERSION_ERROR_GENERIC		= 0,
 
 	/* The conversion failed on the input
 	 */
-	LIBSIGSCAN_CONVERSION_ERROR_INPUT_FAILED		= 1,
+	LIBSIGSCAN_CONVERSION_ERROR_INPUT_FAILED	= 1,
 
 	/* The conversion failed on the output
 	 */
-	LIBSIGSCAN_CONVERSION_ERROR_OUTPUT_FAILED		= 2
+	LIBSIGSCAN_CONVERSION_ERROR_OUTPUT_FAILED	= 2
 };
 
 /* The compression error codes
@@ -124,7 +124,7 @@ enum LIBSIGSCAN_COMPRESSION_ERROR
  */
 enum LIBSIGSCAN_IO_ERROR
 {
-	LIBSIGSCAN_IO_ERROR_GENERIC				= 0,
+	LIBSIGSCAN_IO_ERROR_GENERIC			= 0,
 
 	/* The open failed
 	 */
@@ -132,7 +132,7 @@ enum LIBSIGSCAN_IO_ERROR
 
 	/* The close failed
 	 */
-	LIBSIGSCAN_IO_ERROR_CLOSE_FAILED			= 2,
+	LIBSIGSCAN_IO_ERROR_CLOSE_FAILED		= 2,
 
 	/* The seek failed
 	 */
@@ -144,11 +144,11 @@ enum LIBSIGSCAN_IO_ERROR
 
 	/* The write failed
 	 */
-	LIBSIGSCAN_IO_ERROR_WRITE_FAILED			= 5,
+	LIBSIGSCAN_IO_ERROR_WRITE_FAILED		= 5,
 
 	/* Access denied
 	 */
-	LIBSIGSCAN_IO_ERROR_ACCESS_DENIED			= 6,
+	LIBSIGSCAN_IO_ERROR_ACCESS_DENIED		= 6,
 
 	/* The resource is invalid i.e. a missing file
 	 */
@@ -156,11 +156,11 @@ enum LIBSIGSCAN_IO_ERROR
 
 	/* The ioctl failed
 	 */
-	LIBSIGSCAN_IO_ERROR_IOCTL_FAILED			= 8,
+	LIBSIGSCAN_IO_ERROR_IOCTL_FAILED		= 8,
 
 	/* The unlink failed
 	 */
-	LIBSIGSCAN_IO_ERROR_UNLINK_FAILED			= 9
+	LIBSIGSCAN_IO_ERROR_UNLINK_FAILED		= 9
 };
 
 /* The input error codes
@@ -172,15 +172,15 @@ enum LIBSIGSCAN_INPUT_ERROR
 
 	/* The input contains invalid data
 	 */
-	LIBSIGSCAN_INPUT_ERROR_INVALID_DATA			= 1,
+	LIBSIGSCAN_INPUT_ERROR_INVALID_DATA		= 1,
 
 	/* The input contains an unsupported signature
 	 */
-	LIBSIGSCAN_INPUT_ERROR_SIGNATURE_MISMATCH		= 2,
+	LIBSIGSCAN_INPUT_ERROR_SIGNATURE_MISMATCH	= 2,
 
 	/* A checksum in the input did not match
 	 */
-	LIBSIGSCAN_INPUT_ERROR_CHECKSUM_MISMATCH		= 3,
+	LIBSIGSCAN_INPUT_ERROR_CHECKSUM_MISMATCH	= 3,
 
 	/* A value in the input did not match a previously
 	 * read value or calculated value
@@ -201,11 +201,22 @@ enum LIBSIGSCAN_MEMORY_ERROR
 
 	/* The memory failed to be copied
 	 */
-	LIBSIGSCAN_MEMORY_ERROR_COPY_FAILED			= 2,
+	LIBSIGSCAN_MEMORY_ERROR_COPY_FAILED		= 2,
 
 	/* The memory failed to be set
 	 */
-	LIBSIGSCAN_MEMORY_ERROR_SET_FAILED			= 3
+	LIBSIGSCAN_MEMORY_ERROR_SET_FAILED		= 3
+};
+
+/* The output error codes
+ */
+enum LIBSIGSCAN_OUTPUT_ERROR
+{
+	LIBSIGSCAN_OUTPUT_ERROR_GENERIC			= 0,
+
+	/* There is insuficient space to write the output
+	 */
+	LIBSIGSCAN_OUTPUT_ERROR_INSUFFICIENT_SPACE	= 1
 };
 
 /* The runtime error codes
@@ -213,7 +224,7 @@ enum LIBSIGSCAN_MEMORY_ERROR
  */
 enum LIBSIGSCAN_RUNTIME_ERROR
 {
-	LIBSIGSCAN_RUNTIME_ERROR_GENERIC			= 0,
+	LIBSIGSCAN_RUNTIME_ERROR_GENERIC		= 0,
 
 	/* The value is missing
 	 */
@@ -221,11 +232,11 @@ enum LIBSIGSCAN_RUNTIME_ERROR
 
 	/* The value was already set
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_VALUE_ALREADY_SET		= 2,
+	LIBSIGSCAN_RUNTIME_ERROR_VALUE_ALREADY_SET	= 2,
 
 	/* The creation and/or initialization of an internal structure failed
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_INITIALIZE_FAILED		= 3,
+	LIBSIGSCAN_RUNTIME_ERROR_INITIALIZE_FAILED	= 3,
 
 	/* The resize of an internal structure failed
 	 */
@@ -233,15 +244,15 @@ enum LIBSIGSCAN_RUNTIME_ERROR
 
 	/* The free and/or finalization of an internal structure failed
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_FINALIZE_FAILED		= 5,
+	LIBSIGSCAN_RUNTIME_ERROR_FINALIZE_FAILED	= 5,
 
 	/* The value could not be determined
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_GET_FAILED			= 6,
+	LIBSIGSCAN_RUNTIME_ERROR_GET_FAILED		= 6,
 
 	/* The value could not be set
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_SET_FAILED			= 7,
+	LIBSIGSCAN_RUNTIME_ERROR_SET_FAILED		= 7,
 
 	/* The value could not be appended/prepended
 	 */
@@ -269,23 +280,12 @@ enum LIBSIGSCAN_RUNTIME_ERROR
 
 	/* The value is unsupported
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_UNSUPPORTED_VALUE		= 14,
+	LIBSIGSCAN_RUNTIME_ERROR_UNSUPPORTED_VALUE	= 14,
 
 	/* An abort was requested
 	 */
-	LIBSIGSCAN_RUNTIME_ERROR_ABORT_REQUESTED		= 15
+	LIBSIGSCAN_RUNTIME_ERROR_ABORT_REQUESTED	= 15
 };
 
-/* The output error codes
- */
-enum LIBSIGSCAN_OUTPUT_ERROR
-{
-	LIBSIGSCAN_OUTPUT_ERROR_GENERIC			= 0,
-
-	/* There is insuficient space to write the output
-	 */
-	LIBSIGSCAN_OUTPUT_ERROR_INSUFFICIENT_SPACE		= 1
-};
-
-#endif
+#endif /* !defined( _LIBSIGSCAN_ERROR_H ) */
 
