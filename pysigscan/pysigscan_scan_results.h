@@ -1,5 +1,5 @@
 /*
- * Python object definition of the scan results sequence and iterator
+ * Python object definition of the sequence and iterator object of scan results
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -27,7 +27,6 @@
 
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
-#include "pysigscan_scan_state.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -41,56 +40,56 @@ struct pysigscan_scan_results
 	 */
 	PyObject_HEAD
 
-	/* The scan state object
+	/* The parent object
 	 */
-	pysigscan_scan_state_t *scan_state_object;
+	PyObject *parent_object;
 
-	/* The get scan result by index callback function
+	/* The get item by index callback function
 	 */
-	PyObject* (*get_scan_result_by_index)(
-	             pysigscan_scan_state_t *scan_state_object,
-	             int result_index );
+	PyObject* (*get_item_by_index)(
+	             PyObject *parent_object,
+	             int index );
 
-	/* The (current) (scan) result index
+	/* The current index
 	 */
-	int result_index;
+	int current_index;
 
-	/* The number of (scan) results
+	/* The number of items
 	 */
-	int number_of_results;
+	int number_of_items;
 };
 
 extern PyTypeObject pysigscan_scan_results_type_object;
 
 PyObject *pysigscan_scan_results_new(
-           pysigscan_scan_state_t *scan_state_object,
-           PyObject* (*get_scan_result_by_index)(
-                        pysigscan_scan_state_t *scan_state_object,
-                        int result_index ),
-           int number_of_results );
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items );
 
 int pysigscan_scan_results_init(
-     pysigscan_scan_results_t *pysigscan_scan_results );
+     pysigscan_scan_results_t *scan_results_object );
 
 void pysigscan_scan_results_free(
-      pysigscan_scan_results_t *pysigscan_scan_results );
+      pysigscan_scan_results_t *scan_results_object );
 
 Py_ssize_t pysigscan_scan_results_len(
-            pysigscan_scan_results_t *pysigscan_scan_results );
+            pysigscan_scan_results_t *scan_results_object );
 
 PyObject *pysigscan_scan_results_getitem(
-           pysigscan_scan_results_t *pysigscan_scan_results,
+           pysigscan_scan_results_t *scan_results_object,
            Py_ssize_t item_index );
 
 PyObject *pysigscan_scan_results_iter(
-           pysigscan_scan_results_t *pysigscan_scan_results );
+           pysigscan_scan_results_t *scan_results_object );
 
 PyObject *pysigscan_scan_results_iternext(
-           pysigscan_scan_results_t *pysigscan_scan_results );
+           pysigscan_scan_results_t *scan_results_object );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_SCAN_RESULTS_H ) */
 

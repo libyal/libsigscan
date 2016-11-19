@@ -1,5 +1,5 @@
 /*
- * Python object definition of the scan results sequence and iterator
+ * Python object definition of the sequence and iterator object of scan results
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -31,7 +31,6 @@
 #include "pysigscan_python.h"
 #include "pysigscan_scan_result.h"
 #include "pysigscan_scan_results.h"
-#include "pysigscan_scan_state.h"
 
 PySequenceMethods pysigscan_scan_results_sequence_methods = {
 	/* sq_length */
@@ -98,7 +97,7 @@ PyTypeObject pysigscan_scan_results_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pysigscan scan results sequence and iterator object",
+	"pysigscan internal sequence and iterator object of scan results",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,72 +154,72 @@ PyTypeObject pysigscan_scan_results_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pysigscan_scan_results_new(
-           pysigscan_scan_state_t *scan_state_object,
-           PyObject* (*get_scan_result_by_index)(
-                        pysigscan_scan_state_t *scan_state_object,
-                        int result_index ),
-           int number_of_results )
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items )
 {
-	pysigscan_scan_results_t *pysigscan_scan_results = NULL;
-	static char *function                            = "pysigscan_scan_results_new";
+	pysigscan_scan_results_t *scan_results_object = NULL;
+	static char *function                         = "pysigscan_scan_results_new";
 
-	if( scan_state_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan state object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
 	}
-	if( get_scan_result_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get scan result by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the scan results values are initialized
 	 */
-	pysigscan_scan_results = PyObject_New(
-	                          struct pysigscan_scan_results,
-	                          &pysigscan_scan_results_type_object );
+	scan_results_object = PyObject_New(
+	                       struct pysigscan_scan_results,
+	                       &pysigscan_scan_results_type_object );
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize scan results.",
+		 "%s: unable to create scan results object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pysigscan_scan_results_init(
-	     pysigscan_scan_results ) != 0 )
+	     scan_results_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize scan results.",
+		 "%s: unable to initialize scan results object.",
 		 function );
 
 		goto on_error;
 	}
-	pysigscan_scan_results->scan_state_object        = scan_state_object;
-	pysigscan_scan_results->get_scan_result_by_index = get_scan_result_by_index;
-	pysigscan_scan_results->number_of_results        = number_of_results;
+	scan_results_object->parent_object     = parent_object;
+	scan_results_object->get_item_by_index = get_item_by_index;
+	scan_results_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pysigscan_scan_results->scan_state_object );
+	 (PyObject *) scan_results_object->parent_object );
 
-	return( (PyObject *) pysigscan_scan_results );
+	return( (PyObject *) scan_results_object );
 
 on_error:
-	if( pysigscan_scan_results != NULL )
+	if( scan_results_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pysigscan_scan_results );
+		 (PyObject *) scan_results_object );
 	}
 	return( NULL );
 }
@@ -229,25 +228,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scan_results_init(
-     pysigscan_scan_results_t *pysigscan_scan_results )
+     pysigscan_scan_results_t *scan_results_object )
 {
 	static char *function = "pysigscan_scan_results_init";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the scan results values are initialized
 	 */
-	pysigscan_scan_results->scan_state_object        = NULL;
-	pysigscan_scan_results->get_scan_result_by_index = NULL;
-	pysigscan_scan_results->result_index             = 0;
-	pysigscan_scan_results->number_of_results        = 0;
+	scan_results_object->parent_object     = NULL;
+	scan_results_object->get_item_by_index = NULL;
+	scan_results_object->current_index     = 0;
+	scan_results_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -255,22 +254,22 @@ int pysigscan_scan_results_init(
 /* Frees a scan results object
  */
 void pysigscan_scan_results_free(
-      pysigscan_scan_results_t *pysigscan_scan_results )
+      pysigscan_scan_results_t *scan_results_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pysigscan_scan_results_free";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pysigscan_scan_results );
+	           scan_results_object );
 
 	if( ob_type == NULL )
 	{
@@ -290,72 +289,72 @@ void pysigscan_scan_results_free(
 
 		return;
 	}
-	if( pysigscan_scan_results->scan_state_object != NULL )
+	if( scan_results_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pysigscan_scan_results->scan_state_object );
+		 (PyObject *) scan_results_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pysigscan_scan_results );
+	 (PyObject*) scan_results_object );
 }
 
 /* The scan results len() function
  */
 Py_ssize_t pysigscan_scan_results_len(
-            pysigscan_scan_results_t *pysigscan_scan_results )
+            pysigscan_scan_results_t *scan_results_object )
 {
 	static char *function = "pysigscan_scan_results_len";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pysigscan_scan_results->number_of_results );
+	return( (Py_ssize_t) scan_results_object->number_of_items );
 }
 
 /* The scan results getitem() function
  */
 PyObject *pysigscan_scan_results_getitem(
-           pysigscan_scan_results_t *pysigscan_scan_results,
+           pysigscan_scan_results_t *scan_results_object,
            Py_ssize_t item_index )
 {
 	PyObject *scan_result_object = NULL;
 	static char *function        = "pysigscan_scan_results_getitem";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->get_scan_result_by_index == NULL )
+	if( scan_results_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results - missing get scan result by index function.",
+		 "%s: invalid scan results object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->number_of_results < 0 )
+	if( scan_results_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results - invalid number of results.",
+		 "%s: invalid scan results object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pysigscan_scan_results->number_of_results ) )
+	 || ( item_index >= (Py_ssize_t) scan_results_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -364,8 +363,8 @@ PyObject *pysigscan_scan_results_getitem(
 
 		return( NULL );
 	}
-	scan_result_object = pysigscan_scan_results->get_scan_result_by_index(
-	                      pysigscan_scan_results->scan_state_object,
+	scan_result_object = scan_results_object->get_item_by_index(
+	                      scan_results_object->parent_object,
 	                      (int) item_index );
 
 	return( scan_result_object );
@@ -374,83 +373,83 @@ PyObject *pysigscan_scan_results_getitem(
 /* The scan results iter() function
  */
 PyObject *pysigscan_scan_results_iter(
-           pysigscan_scan_results_t *pysigscan_scan_results )
+           pysigscan_scan_results_t *scan_results_object )
 {
 	static char *function = "pysigscan_scan_results_iter";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pysigscan_scan_results );
+	 (PyObject *) scan_results_object );
 
-	return( (PyObject *) pysigscan_scan_results );
+	return( (PyObject *) scan_results_object );
 }
 
 /* The scan results iternext() function
  */
 PyObject *pysigscan_scan_results_iternext(
-           pysigscan_scan_results_t *pysigscan_scan_results )
+           pysigscan_scan_results_t *scan_results_object )
 {
 	PyObject *scan_result_object = NULL;
 	static char *function        = "pysigscan_scan_results_iternext";
 
-	if( pysigscan_scan_results == NULL )
+	if( scan_results_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results.",
+		 "%s: invalid scan results object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->get_scan_result_by_index == NULL )
+	if( scan_results_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results - missing get scan result by index function.",
+		 "%s: invalid scan results object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->result_index < 0 )
+	if( scan_results_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results - invalid result index.",
+		 "%s: invalid scan results object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->number_of_results < 0 )
+	if( scan_results_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results - invalid number of results.",
+		 "%s: invalid scan results object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pysigscan_scan_results->result_index >= pysigscan_scan_results->number_of_results )
+	if( scan_results_object->current_index >= scan_results_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	scan_result_object = pysigscan_scan_results->get_scan_result_by_index(
-	                      pysigscan_scan_results->scan_state_object,
-	                      pysigscan_scan_results->result_index );
+	scan_result_object = scan_results_object->get_item_by_index(
+	                      scan_results_object->parent_object,
+	                      scan_results_object->current_index );
 
 	if( scan_result_object != NULL )
 	{
-		pysigscan_scan_results->result_index++;
+		scan_results_object->current_index++;
 	}
 	return( scan_result_object );
 }

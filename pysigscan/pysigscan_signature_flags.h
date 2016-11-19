@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYSIGSCAN_ENCRYPTION_TYPES_H )
-#define _PYSIGSCAN_ENCRYPTION_TYPES_H
+#if !defined( _PYSIGSCAN_SIGNATURE_FLAGS_H )
+#define _PYSIGSCAN_SIGNATURE_FLAGS_H
 
 #include <common.h>
 #include <types.h>
@@ -50,14 +50,14 @@ PyObject *pysigscan_signature_flags_new(
            void );
 
 int pysigscan_signature_flags_init(
-     pysigscan_signature_flags_t *pysigscan_signature_flags );
+     pysigscan_signature_flags_t *definitions_object );
 
 void pysigscan_signature_flags_free(
-      pysigscan_signature_flags_t *pysigscan_signature_flags );
+      pysigscan_signature_flags_t *definitions_object );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_SIGNATURE_FLAGS_H ) */
 

@@ -47,5 +47,5 @@ PyMODINIT_FUNC initpysigscan(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_H ) */
 

@@ -68,7 +68,7 @@ PyObject *pysigscan_scan_state_get_number_of_scan_results(
            PyObject *arguments );
 
 PyObject *pysigscan_scan_state_get_scan_result_by_index(
-           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *pysigscan_scan_state,
            int result_index );
 
 PyObject *pysigscan_scan_state_get_scan_result(

@@ -441,7 +441,7 @@ PyObject *pysigscan_scan_state_get_number_of_scan_results(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pysigscan_scan_state_get_scan_result_by_index(
-           pysigscan_scan_state_t *pysigscan_scan_state,
+           PyObject *pysigscan_scan_state,
            int result_index )
 {
 	libcerror_error_t *error              = NULL;
@@ -462,7 +462,7 @@ PyObject *pysigscan_scan_state_get_scan_result_by_index(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libsigscan_scan_state_get_result(
-	          pysigscan_scan_state->scan_state,
+	          ( (pysigscan_scan_state_t *) pysigscan_scan_state )->scan_state,
 	          result_index,
 	          &scan_result,
 	          &error );
@@ -485,7 +485,7 @@ PyObject *pysigscan_scan_state_get_scan_result_by_index(
 	}
 	scan_result_object = pysigscan_scan_result_new(
 	                      scan_result,
-	                      pysigscan_scan_state );
+	                      (pysigscan_scan_state_t *) pysigscan_scan_state );
 
 	if( scan_result_object == NULL )
 	{
@@ -530,7 +530,7 @@ PyObject *pysigscan_scan_state_get_scan_result(
 		return( NULL );
 	}
 	scan_result_object = pysigscan_scan_state_get_scan_result_by_index(
-	                      pysigscan_scan_state,
+	                      (PyObject *) pysigscan_scan_state,
 	                      result_index );
 
 	return( scan_result_object );
@@ -583,7 +583,7 @@ PyObject *pysigscan_scan_state_get_scan_results(
 		return( NULL );
 	}
 	scan_results_object = pysigscan_scan_results_new(
-	                       pysigscan_scan_state,
+	                       (PyObject *) pysigscan_scan_state,
 	                       &pysigscan_scan_state_get_scan_result_by_index,
 	                       number_of_results );
 

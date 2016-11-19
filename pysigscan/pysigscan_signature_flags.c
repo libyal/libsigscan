@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #endif
 
+#include "pysigscan_signature_flags.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
-#include "pysigscan_signature_flags.h"
 #include "pysigscan_unused.h"
 
 PyTypeObject pysigscan_signature_flags_type_object = {
@@ -73,7 +73,7 @@ PyTypeObject pysigscan_signature_flags_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT,
 	/* tp_doc */
-	"pysigscan signature_flags object (wraps LIBSIGSCAN_SIGNATURE_FLAGS)",
+	"pysigscan signature flags object (wraps LIBSIGSCAN_SIGNATURE_FLAGS)",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -167,6 +167,34 @@ int pysigscan_signature_flags_init_type(
 #endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
+	     "OFFSET_RELATIVE_FROM_START",
+	     value_object ) != 0 )
+	{
+		goto on_error;
+	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END );
+#else
+	value_object = PyInt_FromLong(
+	                LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END );
+#endif
+	if( PyDict_SetItemString(
+	     type_object->tp_dict,
+	     "OFFSET_RELATIVE_FROM_END",
+	     value_object ) != 0 )
+	{
+		goto on_error;
+	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START );
+#else
+	value_object = PyInt_FromLong(
+	                LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START );
+#endif
+	if( PyDict_SetItemString(
+	     type_object->tp_dict,
 	     "RELATIVE_FROM_START",
 	     value_object ) != 0 )
 	{
@@ -205,39 +233,39 @@ on_error:
 PyObject *pysigscan_signature_flags_new(
            void )
 {
-	pysigscan_signature_flags_t *pysigscan_signature_flags = NULL;
-	static char *function                                  = "pysigscan_signature_flags_new";
+	pysigscan_signature_flags_t *definitions_object = NULL;
+	static char *function                           = "pysigscan_signature_flags_new";
 
-	pysigscan_signature_flags = PyObject_New(
-	                             struct pysigscan_signature_flags,
-	                             &pysigscan_signature_flags_type_object );
+	definitions_object = PyObject_New(
+	                      struct pysigscan_signature_flags,
+	                      &pysigscan_signature_flags_type_object );
 
-	if( pysigscan_signature_flags == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize signature flags.",
+		 "%s: unable to create definitions object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pysigscan_signature_flags_init(
-	     pysigscan_signature_flags ) != 0 )
+	     definitions_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize signature flags.",
+		 "%s: unable to initialize definitions object.",
 		 function );
 
 		goto on_error;
 	}
-	return( (PyObject *) pysigscan_signature_flags );
+	return( (PyObject *) definitions_object );
 
 on_error:
-	if( pysigscan_signature_flags != NULL )
+	if( definitions_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pysigscan_signature_flags );
+		 (PyObject *) definitions_object );
 	}
 	return( NULL );
 }
@@ -246,15 +274,15 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_signature_flags_init(
-     pysigscan_signature_flags_t *pysigscan_signature_flags )
+     pysigscan_signature_flags_t *definitions_object )
 {
 	static char *function = "pysigscan_signature_flags_init";
 
-	if( pysigscan_signature_flags == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid signature flags.",
+		 "%s: invalid definitions object.",
 		 function );
 
 		return( -1 );
@@ -265,22 +293,22 @@ int pysigscan_signature_flags_init(
 /* Frees a signature flags object
  */
 void pysigscan_signature_flags_free(
-      pysigscan_signature_flags_t *pysigscan_signature_flags )
+      pysigscan_signature_flags_t *definitions_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pysigscan_signature_flags_free";
 
-	if( pysigscan_signature_flags == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid signature flags.",
+		 "%s: invalid definitions object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pysigscan_signature_flags );
+	           definitions_object );
 
 	if( ob_type == NULL )
 	{
@@ -301,6 +329,6 @@ void pysigscan_signature_flags_free(
 		return;
 	}
 	ob_type->tp_free(
-	 (PyObject*) pysigscan_signature_flags );
+	 (PyObject*) definitions_object );
 }
 
