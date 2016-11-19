@@ -60,5 +60,5 @@ int libsigscan_offsets_list_insert_offset(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_OFFSETS_LIST_H ) */
 

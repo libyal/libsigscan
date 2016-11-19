@@ -122,9 +122,23 @@ stamp-h[1-9]
 /libsigscan/libsigscan_definitions.h
 /pysigscan-python[23]/*.[ch]
 /sigscantools/sigscan
+/tests/sigscan_test_byte_value_group
 /tests/sigscan_test_error
+/tests/sigscan_test_notify
+/tests/sigscan_test_offset_group
+/tests/sigscan_test_pattern_weights
 /tests/sigscan_test_scanner
+/tests/sigscan_test_scan_object
+/tests/sigscan_test_scan_result
+/tests/sigscan_test_scan_state
+/tests/sigscan_test_scan_tree
+/tests/sigscan_test_scan_tree_node
+/tests/sigscan_test_signature
+/tests/sigscan_test_signature_group
+/tests/sigscan_test_signature_table
+/tests/sigscan_test_skip_table
 /tests/sigscan_test_support
+/tests/sigscan_test_weight_group
 /tests/tmp*
 
 # Local library dependencies specific files

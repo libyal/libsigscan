@@ -42,5 +42,5 @@ int libsigscan_signatures_list_remove_signature(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SIGNATURES_LIST_H ) */
 

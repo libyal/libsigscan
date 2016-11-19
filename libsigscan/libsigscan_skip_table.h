@@ -85,5 +85,5 @@ int libsigscan_skip_table_printf(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SKIP_TABLE_H ) */
 

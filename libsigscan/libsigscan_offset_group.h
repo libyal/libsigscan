@@ -84,5 +84,5 @@ int libsigscan_offset_group_append_offset(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_OFFSET_GROUP_H ) */
 

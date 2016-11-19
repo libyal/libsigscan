@@ -59,5 +59,5 @@ int libsigscan_set_codepage(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SUPPORT_H ) */
 

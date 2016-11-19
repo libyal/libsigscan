@@ -102,5 +102,5 @@ int libsigscan_signature_set(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SIGNATURE_H ) */
 

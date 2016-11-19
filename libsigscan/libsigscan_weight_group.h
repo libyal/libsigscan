@@ -82,5 +82,5 @@ int libsigscan_weight_group_set_weight(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_WEIGHT_GROUP_H ) */
 

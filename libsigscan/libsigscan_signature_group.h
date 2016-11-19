@@ -85,5 +85,5 @@ int libsigscan_signature_group_append_signature(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SIGNATURE_GROUP_H ) */
 

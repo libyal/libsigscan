@@ -176,6 +176,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\tests\sigscan_test_memory.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\sigscan_test_scanner.c"
 				>
 			</File>
@@ -191,6 +195,14 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\sigscan_test_libsigscan.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\sigscan_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\sigscan_test_memory.h"
 				>
 			</File>
 			<File

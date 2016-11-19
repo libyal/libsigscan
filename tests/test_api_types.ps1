@@ -1,6 +1,6 @@
 # Library API type testing script
 #
-# Version: 20161107
+# Version: 20161110
 
 $ExitSuccess = 0
 $ExitFailure = 1
@@ -10,8 +10,8 @@ $TestPrefix = Split-Path -path ${Pwd}.Path -parent
 $TestPrefix = Split-Path -path ${TestPrefix} -leaf
 $TestPrefix = ${TestPrefix}.Substring(3)
 
-$TestTypes = "scanner"
-$TestTypes = ${TestTypes} -split " "
+$TestTypes = "byte_value_group offset_group pattern_weights scan_object scan_result scan_state scan_tree scan_tree_node scanner signature signature_group signature_table skip_table weight_group"
+$TestTypesWithInput = ""
 
 $TestToolDirectory = "..\msvscpp\Release"
 
@@ -55,7 +55,17 @@ If (-Not (Test-Path ${TestToolDirectory}))
 
 $Result = ${ExitIgnore}
 
-Foreach (${TestType} in ${TestTypes})
+Foreach (${TestType} in ${TestTypes} -split " ")
+{
+	$Result = TestAPIType ${TestType}
+
+	If (${Result} -ne ${ExitSuccess})
+	{
+		Break
+	}
+}
+
+Foreach (${TestType} in ${TestTypesWithInput} -split " ")
 {
 	$Result = TestAPIType ${TestType}
 

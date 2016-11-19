@@ -134,5 +134,5 @@ int libsigscan_scan_tree_fill_range_list(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SCAN_TREE_H ) */
 

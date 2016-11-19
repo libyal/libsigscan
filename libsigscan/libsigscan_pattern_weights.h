@@ -106,5 +106,5 @@ int libsigscan_pattern_weights_insert_set_weight(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_PATTERN_WEIGHTS_H ) */
 

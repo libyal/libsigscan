@@ -34,6 +34,15 @@
 extern "C" {
 #endif
 
+/* Intermediate version of the macro required
+ * for correct evaluation predefined string
+ */
+#define _WIDE_STRING_INTERMEDIATE( string ) \
+	L ## string
+
+#define _WIDE_STRING( string ) \
+	_WIDE_STRING_INTERMEDIATE( string )
+
 /* String allocation
  */
 #define wide_string_allocate( size ) \
@@ -68,7 +77,7 @@ extern "C" {
 #define wide_string_compare_no_case( string1, string2, size ) \
 	_wcsnicmp( string1, string2, size )
 
-#elif defined( WINAPI ) || defined( HAVE_WCSNICMP )
+#elif ( defined( WINAPI ) && !defined( __CYGWIN__ ) ) || defined( HAVE_WCSNICMP )
 #define wide_string_compare_no_case( string1, string2, size ) \
 	wcsnicmp( string1, string2, size )
 

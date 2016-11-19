@@ -146,5 +146,5 @@ int libsigscan_scanner_scan_file_io_handle(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_INTERNAL_SCANNER_H ) */
 

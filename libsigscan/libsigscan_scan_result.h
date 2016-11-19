@@ -80,5 +80,5 @@ int libsigscan_scan_result_get_identifier(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SCAN_RESULT_H ) */
 

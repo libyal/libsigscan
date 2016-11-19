@@ -214,5 +214,5 @@ int libsigscan_scan_state_get_result(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SCAN_STATE_H ) */
 

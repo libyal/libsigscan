@@ -201,9 +201,9 @@ typedef int64_t off64_t;
 
 /* The following type definitions hide internal data structures
  */
-typedef intptr_t libsigscan_scanner_t;
 typedef intptr_t libsigscan_scan_result_t;
 typedef intptr_t libsigscan_scan_state_t;
+typedef intptr_t libsigscan_scanner_t;
 
 #ifdef __cplusplus
 }

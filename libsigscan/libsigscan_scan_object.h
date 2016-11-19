@@ -77,5 +77,5 @@ int libsigscan_scan_object_printf(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SCAN_OBJECT_H ) */
 

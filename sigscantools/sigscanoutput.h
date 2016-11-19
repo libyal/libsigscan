@@ -45,5 +45,5 @@ void sigscanoutput_version_detailed_fprint(
 }
 #endif
 
-#endif
+#endif /* !defined( _SIGSCANOUTPUT_H ) */
 

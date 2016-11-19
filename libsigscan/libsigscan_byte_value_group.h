@@ -93,5 +93,5 @@ int libsigscan_byte_value_group_get_signature_group_by_index(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_BYTE_VALUE_GROUP_H ) */
 

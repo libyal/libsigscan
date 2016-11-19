@@ -34,14 +34,14 @@
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libsigscan_scanner {}		libsigscan_scanner_t;
 typedef struct libsigscan_scan_result {}	libsigscan_scan_result_t;
 typedef struct libsigscan_scan_state {}		libsigscan_scan_state_t;
+typedef struct libsigscan_scanner {}		libsigscan_scanner_t;
 
 #else
-typedef intptr_t libsigscan_scanner_t;
 typedef intptr_t libsigscan_scan_result_t;
 typedef intptr_t libsigscan_scan_state_t;
+typedef intptr_t libsigscan_scanner_t;
 
 #endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 

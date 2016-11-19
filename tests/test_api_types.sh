@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library API type testing script
 #
-# Version: 20161105
+# Version: 20161110
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -11,7 +11,7 @@ TEST_PREFIX=`dirname ${PWD}`;
 TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\).*$/\1/'`;
 
 TEST_PROFILE="lib${TEST_PREFIX}";
-TEST_TYPES="scanner";
+TEST_TYPES="byte_value_group offset_group pattern_weights scan_object scan_result scan_state scan_tree scan_tree_node scanner signature signature_group signature_table skip_table weight_group";
 TEST_TYPES_WITH_INPUT="";
 OPTION_SETS="";
 
@@ -96,8 +96,14 @@ fi
 
 for TEST_TYPE in ${TEST_TYPES_WITH_INPUT};
 do
-	test_api_type_with_input "${TEST_TYPE}";
-	RESULT=$?;
+	if test -d ${INPUT_DIRECTORY};
+	then
+		test_api_type_with_input "${TEST_TYPE}";
+		RESULT=$?;
+	else
+		test_api_type "${TEST_TYPE}";
+		RESULT=$?;
+	fi
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then

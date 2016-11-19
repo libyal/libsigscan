@@ -98,5 +98,5 @@ int libsigscan_scan_tree_node_printf(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSIGSCAN_SCAN_TREE_NODE_H ) */
 
