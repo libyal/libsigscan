@@ -1,5 +1,5 @@
 /*
- * Library signature_table type testing program
+ * Library signature_table type test program
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -516,6 +516,129 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_signature_table_get_signatures_list_clone function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_signature_table_get_signatures_list_clone(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_signature_table_t *signature_table = NULL;
+	libcdata_list_t signatures_list_clone         = 0;
+	int result                                    = 0;
+	int signatures_list_clone_is_set              = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_signature_table_initialize(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_table_get_signatures_list_clone(
+	          signature_table,
+	          &signatures_list_clone,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signatures_list_clone_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsigscan_signature_table_get_signatures_list_clone(
+	          NULL,
+	          &signatures_list_clone,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( signatures_list_clone_is_set != 0 )
+	{
+		result = libsigscan_signature_table_get_signatures_list_clone(
+		          signature_table,
+		          NULL,
+		          &error );
+
+		SIGSCAN_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Clean up
+	 */
+	result = libsigscan_signature_table_free(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( signature_table != NULL )
+	{
+		libsigscan_signature_table_free(
+		 &signature_table,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) */
 
 /* The main program
@@ -557,7 +680,9 @@ int main(
 	 "libsigscan_signature_table_get_number_of_signatures",
 	 sigscan_test_signature_table_get_number_of_signatures );
 
-	/* TODO: add tests for libsigscan_signature_table_get_signatures_list_clone */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_signature_table_get_signatures_list_clone",
+	 sigscan_test_signature_table_get_signatures_list_clone );
 
 	/* TODO: add tests for libsigscan_signature_table_insert_signature */
 

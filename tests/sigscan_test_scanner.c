@@ -1,5 +1,5 @@
 /*
- * Library scanner type testing program
+ * Library scanner type test program
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -266,6 +266,59 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_scanner_signal_abort function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_signal_abort(
+     libsigscan_scanner_t *scanner )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_signal_abort(
+	          scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SIGSCAN_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_signal_abort(
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -289,7 +342,7 @@ int main(
 	 "libsigscan_scanner_free",
 	 sigscan_test_scanner_free );
 
-	/* TODO: add tests for libsigscan_scanner_signal_abort */
+	/* TODO: add tests for sigscan_test_scanner_signal_abort */
 
 	/* TODO: add tests for libsigscan_scanner_set_scan_buffer_size */
 

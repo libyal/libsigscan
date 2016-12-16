@@ -1,5 +1,5 @@
 /*
- * Library offset_group type testing program
+ * Library offset_group type test program
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *

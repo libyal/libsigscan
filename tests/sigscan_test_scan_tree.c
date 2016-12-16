@@ -1,5 +1,5 @@
 /*
- * Library scan_tree type testing program
+ * Library scan_tree type test program
  *
  * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
  *
