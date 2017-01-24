@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsigscan],
- [20161216],
+ [20170124],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -87,17 +87,8 @@ AX_LIBBFIO_CHECK_ENABLE
 dnl Check for library function support
 AX_LIBSIGSCAN_CHECK_LOCAL
 
-dnl Check for enabling libcsystem for cross-platform C generic system functions
-AX_LIBCSYSTEM_CHECK_ENABLE
-
-dnl Check if sigscantools should be build as static executables
-AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
-
-dnl Check if libsigscan should be build with verbose output
-AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
-
-dnl Check if libsigscan should be build with debug output
-AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
+dnl Check for sigscantools function support
+AX_SIGSCANTOOLS_CHECK_LOCAL
 
 dnl Check if libsigscan python bindings (pysigscan) should be build
 AX_PYTHON_CHECK_PYPREFIX
@@ -122,29 +113,6 @@ AS_IF(
 dnl Check for test function support
 AX_TESTS_CHECK_LOCAL
 
-dnl Check if DLL support is needed
-AS_IF(
- [test "x$enable_shared" = xyes],
- [AS_CASE(
-  [$host],
-  [*cygwin* | *mingw*],
-  [AC_DEFINE(
-   [HAVE_DLLMAIN],
-   [1],
-   [Define to 1 to enable the DllMain function.])
-  AC_SUBST(
-   [HAVE_DLLMAIN],
-   [1])
-
-  AS_IF(
-   [test "x$ac_cv_enable_static_executables" = xno],
-   [AC_SUBST(
-    [LIBSIGSCAN_DLL_IMPORT],
-    ["-DLIBSIGSCAN_DLL_IMPORT"])
-   ])
-  ])
- ])
-
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
 
@@ -156,13 +124,6 @@ AS_IF(
   [Requires:])
  AC_SUBST(
   [libsigscan_spec_build_requires],
-  [BuildRequires:])
- ])
-
-AS_IF(
- [test "x$ac_cv_libcsystem" = xyes],
- [AC_SUBST(
-  [libsigscan_tools_spec_build_requires],
   [BuildRequires:])
  ])
 
@@ -196,7 +157,6 @@ AC_CONFIG_FILES([libcfile/Makefile])
 AC_CONFIG_FILES([libcpath/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libsigscan/Makefile])
-AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([sigscantools/Makefile])
 AC_CONFIG_FILES([pysigscan/Makefile])
 AC_CONFIG_FILES([pysigscan-python2/Makefile])

@@ -16,20 +16,21 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYSIGSCAN = \
+	test_python_module.sh \
 	test_pysigscan_scanner.sh
 endif
 
 TESTS = \
-	test_api_functions.sh \
-	test_api_types.sh \
+	test_library.sh \
 	test_sigscan.sh \
 	$(TESTS_PYSIGSCAN)
 
 check_SCRIPTS = \
 	pysigscan_test_scanner.py \
-	test_api_functions.sh \
-	test_api_types.sh \
+	pysigscan_test_support.py \
+	test_library.sh \
 	test_pysigscan_scanner.sh \
+	test_python_module.sh \
 	test_sigscan.sh \
 	test_runner.sh
 

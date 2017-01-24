@@ -14,7 +14,6 @@ SUBDIRS = \
 	libcpath \
 	libbfio \
 	libsigscan \
-	libcsystem \
 	sigscantools \
 	pysigscan \
 	pysigscan-python2 \
@@ -116,7 +115,6 @@ splint:
 	(cd $(srcdir)/libcpath && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsigscan && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcsystem && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/sigscantools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/pysigscan && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/tests && $(MAKE) splint $(AM_MAKEFLAGS))

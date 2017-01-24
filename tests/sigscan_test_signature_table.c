@@ -1,7 +1,7 @@
 /*
  * Library signature_table type test program
  *
- * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -524,7 +524,7 @@ int sigscan_test_signature_table_get_signatures_list_clone(
 {
 	libcerror_error_t *error                      = NULL;
 	libsigscan_signature_table_t *signature_table = NULL;
-	libcdata_list_t signatures_list_clone         = 0;
+	libcdata_list_t *signatures_list_clone        = 0;
 	int result                                    = 0;
 	int signatures_list_clone_is_set              = 0;
 

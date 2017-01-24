@@ -1,7 +1,7 @@
 /*
  * Scans a file for binary signatures
  *
- * Copyright (C) 2014-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -34,12 +34,14 @@
 #endif
 
 #include "scan_handle.h"
-#include "sigscanoutput.h"
+#include "sigscantools_getopt.h"
 #include "sigscantools_libcerror.h"
 #include "sigscantools_libclocale.h"
 #include "sigscantools_libcnotify.h"
-#include "sigscantools_libcsystem.h"
 #include "sigscantools_libsigscan.h"
+#include "sigscantools_output.h"
+#include "sigscantools_signal.h"
+#include "sigscantools_unused.h"
 
 scan_handle_t *sigscan_scan_handle = NULL;
 int sigscan_abort                  = 0;
@@ -69,12 +71,12 @@ void usage_fprint(
 /* Signal handler for sigscan
  */
 void sigscan_signal_handler(
-      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      sigscantools_signal_t signal SIGSCANTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function    = "sigscan_signal_handler";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
+	SIGSCANTOOLS_UNREFERENCED_PARAMETER( signal )
 
 	sigscan_abort = 1;
 
@@ -96,8 +98,13 @@ void sigscan_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libcsystem_file_io_close(
+#if defined( WINAPI ) && !defined( __CYGWIN__ )
+	if( _close(
 	     0 ) != 0 )
+#else
+	if( close(
+	     0 ) != 0 )
+#endif
 	{
 		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
@@ -137,13 +144,13 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( libcsystem_initialize(
+	if( sigscantools_output_initialize(
 	     _IONBF,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize system values.\n" );
+		 "Unable to initialize output settings.\n" );
 
 		goto on_error;
 	}
@@ -151,7 +158,7 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = sigscantools_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "c:hvV" ) ) ) != (system_integer_t) -1 )
