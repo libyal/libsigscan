@@ -29,13 +29,12 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libsigscan.docs \
-	dpkg/libsigscan-dev.docs \
-	dpkg/libsigscan-python.docs \
-	dpkg/libsigscan-python3.docs \
-	dpkg/libsigscan-tools.docs \
+	dpkg/libsigscan.install \
+	dpkg/libsigscan-dev.install \
+	dpkg/libsigscan-python.install \
+	dpkg/libsigscan-python3.install \
+	dpkg/libsigscan-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
