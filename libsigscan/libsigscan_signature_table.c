@@ -681,7 +681,33 @@ int libsigscan_signature_table_get_signatures_list_clone(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to clone remaining signatures list.",
+		 "%s: unable to clone signatures list.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Frees a signature list
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_table_free_signatures_list_clone(
+     libcdata_list_t **signatures_list,
+     libcerror_error_t **error )
+{
+	static char *function = "libsigscan_signature_table_free_signatures_list_clone";
+
+	if( libcdata_list_free(
+	     signatures_list,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free signatures list.",
 		 function );
 
 		return( -1 );

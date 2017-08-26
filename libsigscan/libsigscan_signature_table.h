@@ -91,6 +91,10 @@ int libsigscan_signature_table_get_signatures_list_clone(
      libcdata_list_t **signatures_list,
      libcerror_error_t **error );
 
+int libsigscan_signature_table_free_signatures_list_clone(
+     libcdata_list_t **signatures_list,
+     libcerror_error_t **error );
+
 int libsigscan_signature_table_insert_signature(
      libsigscan_signature_table_t *signature_table,
      off64_t pattern_offset,

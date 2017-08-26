@@ -1,14 +1,10 @@
 # Tests C library functions and types.
 #
-# Version: 20170115
+# Version: 20170807
 
 $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
-
-$TestPrefix = Split-Path -path ${Pwd}.Path -parent
-$TestPrefix = Split-Path -path ${TestPrefix} -leaf
-$TestPrefix = ${TestPrefix}.Substring(3)
 
 $LibraryTests = "byte_value_group error notify offset_group pattern_weights scan_object scan_result scan_state scan_tree scan_tree_node scanner signature signature_group signature_table skip_table support weight_group"
 $LibraryTestsWithInput = ""
@@ -20,7 +16,7 @@ Function RunTest
 	param( [string]$TestType )
 
 	$TestDescription = "Testing: ${TestName}"
-	$TestExecutable = "${TestToolDirectory}\${TestPrefix}_test_${TestName}.exe"
+	$TestExecutable = "${TestToolDirectory}\sigscan_test_${TestName}.exe"
 
 	$Output = Invoke-Expression ${TestExecutable}
 	$Result = ${LastExitCode}
@@ -44,7 +40,15 @@ Function RunTest
 
 If (-Not (Test-Path ${TestToolDirectory}))
 {
+	$TestToolDirectory = "..\msvscpp\VSDebug"
+}
+If (-Not (Test-Path ${TestToolDirectory}))
+{
 	$TestToolDirectory = "..\vs2010\Release"
+}
+If (-Not (Test-Path ${TestToolDirectory}))
+{
+	$TestToolDirectory = "..\vs2010\VSDebug"
 }
 If (-Not (Test-Path ${TestToolDirectory}))
 {
@@ -52,11 +56,23 @@ If (-Not (Test-Path ${TestToolDirectory}))
 }
 If (-Not (Test-Path ${TestToolDirectory}))
 {
+	$TestToolDirectory = "..\vs2012\VSDebug"
+}
+If (-Not (Test-Path ${TestToolDirectory}))
+{
 	$TestToolDirectory = "..\vs2013\Release"
 }
 If (-Not (Test-Path ${TestToolDirectory}))
 {
+	$TestToolDirectory = "..\vs2013\VSDebug"
+}
+If (-Not (Test-Path ${TestToolDirectory}))
+{
 	$TestToolDirectory = "..\vs2015\Release"
+}
+If (-Not (Test-Path ${TestToolDirectory}))
+{
+	$TestToolDirectory = "..\vs2015\VSDebug"
 }
 If (-Not (Test-Path ${TestToolDirectory}))
 {

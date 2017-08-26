@@ -880,7 +880,7 @@ int scan_handle_read_signature_definitions(
 		}
 		else
 		{
-			if( memory_copy(
+			if( memmove(
 			     buffer,
 			     &( buffer[ buffer_offset ] ),
 			     read_size ) == NULL )

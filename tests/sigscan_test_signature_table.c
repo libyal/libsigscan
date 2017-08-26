@@ -605,6 +605,23 @@ int sigscan_test_signature_table_get_signatures_list_clone(
 	}
 	/* Clean up
 	 */
+	result = libsigscan_signature_table_free_signatures_list_clone(
+	          &signatures_list_clone,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list_clone",
+	 signatures_list_clone );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_signature_table_free(
 	          &signature_table,
 	          &error );
@@ -629,6 +646,12 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
+	}
+	if( signatures_list_clone != NULL )
+	{
+		libsigscan_signature_table_free_signatures_list_clone(
+		 &signatures_list_clone,
+		 NULL );
 	}
 	if( signature_table != NULL )
 	{

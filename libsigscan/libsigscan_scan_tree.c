@@ -1906,9 +1906,8 @@ int libsigscan_scan_tree_build_node(
 
 		goto on_error;
 	}
-	if( libcdata_list_free(
+	if( libsigscan_signature_table_free_signatures_list_clone(
 	     &remaining_signatures_list,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1993,9 +1992,8 @@ on_error:
 	}
 	if( remaining_signatures_list != NULL )
 	{
-		libcdata_list_free(
+		libsigscan_signature_table_free_signatures_list_clone(
 		 &remaining_signatures_list,
-		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
 		 NULL );
 	}
 	return( -1 );
