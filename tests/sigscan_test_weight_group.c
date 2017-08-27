@@ -35,7 +35,7 @@
 
 #include "../libsigscan/libsigscan_weight_group.h"
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 /* Tests the libsigscan_weight_group_free function
  * Returns 1 if successful or 0 if not
@@ -75,7 +75,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -92,7 +92,7 @@ int main(
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 	/* TODO: add tests for libsigscan_weight_group_initialize */
 
@@ -108,7 +108,7 @@ int main(
 
 	/* TODO: add tests for libsigscan_weight_group_set_weight */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

@@ -35,7 +35,7 @@
 
 #include "../libsigscan/libsigscan_skip_table.h"
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 /* Tests the libsigscan_skip_table_initialize function
  * Returns 1 if successful or 0 if not
@@ -393,7 +393,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -410,7 +410,7 @@ int main(
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_skip_table_initialize",
@@ -430,7 +430,7 @@ int main(
 
 	/* TODO: add tests for libsigscan_skip_table_printf */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

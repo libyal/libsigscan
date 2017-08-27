@@ -266,7 +266,7 @@ on_error:
 	return( 0 );
 }
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 /* Tests the libsigscan_scan_state_get_buffer_size function
  * Returns 1 if successful or 0 if not
@@ -391,7 +391,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* Tests the libsigscan_scan_state_get_number_of_results function
  * Returns 1 if successful or 0 if not
@@ -543,7 +543,7 @@ int main(
 
 	/* TODO: add tests for libsigscan_scan_state_set_data_size */
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_scan_state_get_buffer_size",
@@ -561,7 +561,7 @@ int main(
 
 	/* TODO: add tests for libsigscan_scan_state_scan_buffer */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_scan_state_get_number_of_results",
