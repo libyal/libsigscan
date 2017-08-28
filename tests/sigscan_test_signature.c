@@ -64,13 +64,13 @@ int sigscan_test_signature_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "signature",
-         signature );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsigscan_signature_free(
 	          &signature,
@@ -81,13 +81,13 @@ int sigscan_test_signature_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "signature",
-         signature );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature",
+	 signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int sigscan_test_signature_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int sigscan_test_signature_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int sigscan_test_signature_free(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -292,13 +292,13 @@ int sigscan_test_signature_clone(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "source_signature",
-         source_signature );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "source_signature",
+	 source_signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test regular cases
 	 */
@@ -312,13 +312,13 @@ int sigscan_test_signature_clone(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "destination_signature",
-         destination_signature );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "destination_signature",
+	 destination_signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* TODO: move handling clones into the signature code */
 	result = libsigscan_signature_free_clone(
@@ -330,13 +330,13 @@ int sigscan_test_signature_clone(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "destination_signature",
-         destination_signature );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "destination_signature",
+	 destination_signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsigscan_signature_clone(
 	          &destination_signature,
@@ -348,13 +348,13 @@ int sigscan_test_signature_clone(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "destination_signature",
-         destination_signature );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "destination_signature",
+	 destination_signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -368,9 +368,9 @@ int sigscan_test_signature_clone(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -386,13 +386,13 @@ int sigscan_test_signature_clone(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "source_signature",
-         source_signature );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "source_signature",
+	 source_signature );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 

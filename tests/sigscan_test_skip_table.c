@@ -64,13 +64,13 @@ int sigscan_test_skip_table_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "skip_table",
-         skip_table );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "skip_table",
+	 skip_table );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsigscan_skip_table_free(
 	          &skip_table,
@@ -81,13 +81,13 @@ int sigscan_test_skip_table_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "skip_table",
-         skip_table );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "skip_table",
+	 skip_table );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int sigscan_test_skip_table_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int sigscan_test_skip_table_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int sigscan_test_skip_table_free(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

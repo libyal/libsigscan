@@ -57,9 +57,9 @@ int sigscan_test_byte_value_group_free(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

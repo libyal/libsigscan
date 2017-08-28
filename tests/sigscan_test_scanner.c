@@ -60,13 +60,13 @@ int sigscan_test_scanner_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "scanner",
-         scanner );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scanner",
+	 scanner );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsigscan_scanner_free(
 	          &scanner,
@@ -77,13 +77,13 @@ int sigscan_test_scanner_initialize(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "scanner",
-         scanner );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scanner",
+	 scanner );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -96,9 +96,9 @@ int sigscan_test_scanner_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -114,9 +114,9 @@ int sigscan_test_scanner_initialize(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -248,9 +248,9 @@ int sigscan_test_scanner_free(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -286,9 +286,9 @@ int sigscan_test_scanner_signal_abort(
 	 result,
 	 1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -301,9 +301,9 @@ int sigscan_test_scanner_signal_abort(
 	 result,
 	 -1 );
 
-        SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
