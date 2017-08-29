@@ -1,17 +1,13 @@
 #!/bin/bash
 # Python-bindings scanner testing script
 #
-# Version: 20160128
+# Version: 20170829
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TEST_PREFIX=`pwd`;
-TEST_PREFIX=`dirname ${TEST_PREFIX}`;
-TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib//'`;
-
-TEST_SCRIPT="py${TEST_PREFIX}_test_scanner.py";
+TEST_SCRIPT="pysigscan_test_scanner.py";
 
 if ! test -z ${SKIP_PYTHON_TESTS};
 then
@@ -36,10 +32,10 @@ fi
 
 if test `uname -s` = 'Darwin';
 then
-	DYLD_LIBRARY_PATH="../lib${TEST_PREFIX}/.libs/" PYTHONPATH="../py${TEST_PREFIX}/.libs/" ${PYTHON} ${TEST_SCRIPT};
+	DYLD_LIBRARY_PATH="../libpysigscan/.libs/" PYTHONPATH="../pypysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
 	RESULT=$?;
 else
-	LD_LIBRARY_PATH="../lib${TEST_PREFIX}/.libs/" PYTHONPATH="../py${TEST_PREFIX}/.libs/" ${PYTHON} ${TEST_SCRIPT};
+	LD_LIBRARY_PATH="../libpysigscan/.libs/" PYTHONPATH="../pypysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
 	RESULT=$?;
 fi
 
