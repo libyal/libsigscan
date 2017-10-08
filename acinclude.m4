@@ -1,3 +1,7 @@
+dnl Checks for required headers and functions
+dnl
+dnl Version: 20171008
+
 dnl Function to detect if libsigscan dependencies are available
 AC_DEFUN([AX_LIBSIGSCAN_CHECK_LOCAL],
   [dnl Check for internationalization functions in libsigscan/libsigscan_i18n.c

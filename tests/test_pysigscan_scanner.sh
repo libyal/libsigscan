@@ -1,7 +1,7 @@
 #!/bin/bash
 # Python-bindings scanner testing script
 #
-# Version: 20170829
+# Version: 20171008
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -32,10 +32,10 @@ fi
 
 if test `uname -s` = 'Darwin';
 then
-	DYLD_LIBRARY_PATH="../libpysigscan/.libs/" PYTHONPATH="../pypysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
+	DYLD_LIBRARY_PATH="../libsigscan/.libs/" PYTHONPATH="../pysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
 	RESULT=$?;
 else
-	LD_LIBRARY_PATH="../libpysigscan/.libs/" PYTHONPATH="../pypysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
+	LD_LIBRARY_PATH="../libsigscan/.libs/" PYTHONPATH="../pysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
 	RESULT=$?;
 fi
 
