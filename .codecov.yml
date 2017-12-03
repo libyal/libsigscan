@@ -7,4 +7,14 @@ coverage:
     patch: true
     changes: false
   ignore:
+    - "libbfio/*"
+    - "libcdata/*"
+    - "libcerror/*"
+    - "libcfile/*"
+    - "libclocale/*"
+    - "libcnotify/*"
+    - "libcpath/*"
+    - "libcsplit/*"
+    - "libcthreads/*"
+    - "libuna/*"
     - "tests/*"
