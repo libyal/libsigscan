@@ -78,13 +78,15 @@ sigscan_test_error_LDADD = \
 	../libsigscan/libsigscan.la
 
 sigscan_test_notify_SOURCES = \
+	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
 	sigscan_test_notify.c \
 	sigscan_test_unused.h
 
 sigscan_test_notify_LDADD = \
-	../libsigscan/libsigscan.la
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@
 
 sigscan_test_offset_group_SOURCES = \
 	sigscan_test_libcerror.h \

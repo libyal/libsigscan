@@ -15,6 +15,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_notify", "sigscan_test_notify\sigscan_test_notify.vcproj", "{49CEDEAB-C1F4-4778-90F4-E44B99A53332}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
+		{35423269-669C-4978-9141-7A18B1228BB6} = {35423269-669C-4978-9141-7A18B1228BB6}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_offset_group", "sigscan_test_offset_group\sigscan_test_offset_group.vcproj", "{E0957DE9-F0A9-4886-B70E-42F9735D364B}"
