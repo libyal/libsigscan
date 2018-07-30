@@ -1,5 +1,5 @@
 /*
- * The internal libsigscan header
+ * The libsigscan header wrapper
  *
  * Copyright (C) 2014-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -23,13 +23,6 @@
 #define _SIGSCANTOOLS_LIBSIGSCAN_H
 
 #include <common.h>
-
-/* If Cygwin libtool DLL support is enabled set LIBSIGSCAN_DLL_IMPORT
- * before including libsigscan.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBSIGSCAN_DLL_IMPORT
-#endif
 
 #include <libsigscan.h>
 

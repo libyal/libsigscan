@@ -28,17 +28,13 @@
  */
 #if !defined( HAVE_LOCAL_LIBSIGSCAN )
 
-/* If libtool DLL support is enabled set LIBSIGSCAN_DLL_EXPORT
- * before including libsigscan/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSIGSCAN_DLL_EXPORT
-#endif
-
 #include <libsigscan/extern.h>
 
+#define LIBSIGSCAN_EXTERN_VARIABLE	LIBSIGSCAN_EXTERN
+
 #else
-#define LIBSIGSCAN_EXTERN	/* extern */
+#define LIBSIGSCAN_EXTERN		/* extern */
+#define LIBSIGSCAN_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBSIGSCAN ) */
 

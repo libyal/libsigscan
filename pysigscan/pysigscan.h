@@ -1,5 +1,5 @@
 /*
- * Python bindings for libsigscan (pysigscan)
+ * Python bindings module for libsigscan (pysigscan)
  *
  * Copyright (C) 2014-2018, Joachim Metz <joachim.metz@gmail.com>
  *

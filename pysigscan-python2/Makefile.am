@@ -14,7 +14,8 @@ AM_CFLAGS = \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
-	@LIBBFIO_CPPFLAGS@
+	@LIBBFIO_CPPFLAGS@ \
+	@LIBSIGSCAN_DLL_IMPORT@
 
 am_pysigscan_la_rpath = -rpath $(pyexecdir2)
 

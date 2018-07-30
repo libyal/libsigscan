@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsigscan],
- [20180512],
+ [20180730],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -94,27 +94,20 @@ dnl Check if libsigscan required headers and functions are available
 AX_LIBSIGSCAN_CHECK_LOCAL
 
 dnl Check if libsigscan Python bindings (pysigscan) required headers and functions are available
-AX_PYTHON_CHECK_PYPREFIX
 AX_PYTHON_CHECK_ENABLE
-AX_PYTHON2_CHECK_ENABLE
-AX_PYTHON3_CHECK_ENABLE
 
 AS_IF(
   [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno],
-  [dnl Headers included in pysigscan/pysigscan_error.c
-  AC_CHECK_HEADERS([stdarg.h varargs.h])
+  [AC_CHECK_HEADERS([stdarg.h varargs.h])
 
   AS_IF(
     [test "x$ac_cv_header_stdarg_h" != xyes && test "x$ac_cv_header_varargs_h" != xyes],
-    [AC_MSG_FAILURE(
+    [dnl Headers included in pysigscan/pysigscan_error.c
+    AC_MSG_FAILURE(
       [Missing headers: stdarg.h and varargs.h],
       [1])
     ])
   ])
-
-AM_CONDITIONAL(
-  HAVE_PYTHON_TESTS,
-  [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno])
 
 dnl Check if sigscantools required headers and functions are available
 AX_SIGSCANTOOLS_CHECK_LOCAL
@@ -127,7 +120,7 @@ AS_IF(
  [test "x$enable_shared" = xyes],
  [AS_CASE(
   [$host],
-  [*cygwin* | *mingw*],
+  [*cygwin* | *mingw* | *msys*],
   [AC_DEFINE(
    [HAVE_DLLMAIN],
    [1],
@@ -136,7 +129,10 @@ AS_IF(
    [HAVE_DLLMAIN],
    [1])
 
-  dnl Used in tests
+  AC_SUBST(
+   [LIBSIGSCAN_DLL_EXPORT],
+   ["-DLIBSIGSCAN_DLL_EXPORT"])
+
   AC_SUBST(
    [LIBSIGSCAN_DLL_IMPORT],
    ["-DLIBSIGSCAN_DLL_IMPORT"])
@@ -227,8 +223,6 @@ Features:
    Wide character type support:                  $ac_cv_enable_wide_character_type
    sigscantools are build as static executables: $ac_cv_enable_static_executables
    Python (pysigscan) support:                   $ac_cv_enable_python
-   Python version 2 (pysigscan) support:         $ac_cv_enable_python2
-   Python version 3 (pysigscan) support:         $ac_cv_enable_python3
    Verbose output:                               $ac_cv_enable_verbose_output
    Debug output:                                 $ac_cv_enable_debug_output
 ]);

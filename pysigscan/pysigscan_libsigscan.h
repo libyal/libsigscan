@@ -24,14 +24,7 @@
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBSIGSCAN_DLL_IMPORT
- * before including libsigscan.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSIGSCAN_DLL_IMPORT
-#endif
-
 #include <libsigscan.h>
 
-#endif
+#endif /* !defined( _PYSIGSCAN_LIBSIGSCAN_H ) */
 
