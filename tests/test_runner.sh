@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bash functions to run an executable for testing.
 #
-# Version: 20180727
+# Version: 20180731
 #
 # When CHECK_WITH_ASAN is set to a non-empty value the test executable
 # is run with asan, otherwise it is run without.
@@ -741,6 +741,12 @@ run_test_with_input_and_arguments()
 	fi
 	local RESULT=0;
 
+	if test "${OSTYPE}" = "msys";
+	then
+		# Work-around for MSYS using / as a path segment seperator but
+		# the test executable requires \ as a path segment separator.
+		INPUT_FILE=`echo ${INPUT_FILE} | sed 's?/?\\\\?g'`;
+	fi
 	if test -n "${CHECK_WITH_ASAN}";
 	then
 		local TEST_EXECUTABLE=$( find_binary_executable ${TEST_EXECUTABLE} );
