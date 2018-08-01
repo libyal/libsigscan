@@ -113,6 +113,8 @@ int sigscan_test_pattern_weights_initialize(
 	          &pattern_weights,
 	          &error );
 
+	pattern_weights = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int sigscan_test_pattern_weights_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	pattern_weights = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 
@@ -270,6 +270,210 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_pattern_weights_add_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_add_weight(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_pattern_weights_add_weight(
+	          NULL,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_set_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_set_weight(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_set_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_pattern_weights_set_weight(
+	          NULL,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libsigscan_pattern_weights_get_largest_weight function
  * Returns 1 if successful or 0 if not
  */
@@ -279,7 +483,6 @@ int sigscan_test_pattern_weights_get_largest_weight(
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	int largest_weight                            = 0;
-	int largest_weight_is_set                     = 0;
 	int result                                    = 0;
 
 	/* Initialize test
@@ -308,16 +511,52 @@ int sigscan_test_pattern_weights_get_largest_weight(
 	          &largest_weight,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 0 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	largest_weight_is_set = result;
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          pattern_weights,
+	          &largest_weight,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "largest_weight",
+	 largest_weight,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -338,25 +577,623 @@ int sigscan_test_pattern_weights_get_largest_weight(
 	libcerror_error_free(
 	 &error );
 
-	if( largest_weight_is_set != 0 )
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          pattern_weights,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
 	{
-		result = libsigscan_pattern_weights_get_largest_weight(
-		          pattern_weights,
-		          NULL,
-		          &error );
-
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
 		libcerror_error_free(
 		 &error );
 	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_get_offset_group function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_get_offset_group(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_offset_group_t *offset_group       = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	offset_group = NULL;
+
+	result = libsigscan_pattern_weights_get_offset_group(
+	          pattern_weights,
+	          1,
+	          &offset_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	offset_group = NULL;
+
+	result = libsigscan_pattern_weights_get_offset_group(
+	          pattern_weights,
+	          1,
+	          &offset_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "offset_group",
+	 offset_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	offset_group = NULL;
+
+	result = libsigscan_pattern_weights_get_offset_group(
+	          NULL,
+	          1,
+	          &offset_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_insert_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_insert_offset(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_insert_offset(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_pattern_weights_insert_offset(
+	          NULL,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_get_weight_group function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_get_weight_group(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	libsigscan_weight_group_t *weight_group       = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	weight_group = NULL;
+
+	result = libsigscan_pattern_weights_get_weight_group(
+	          pattern_weights,
+	          0,
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	weight_group = NULL;
+
+	result = libsigscan_pattern_weights_get_weight_group(
+	          pattern_weights,
+	          0,
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	weight_group = NULL;
+
+	result = libsigscan_pattern_weights_get_weight_group(
+	          NULL,
+	          0,
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_insert_add_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_insert_add_weight(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_insert_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_pattern_weights_insert_add_weight(
+	          NULL,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( pattern_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &pattern_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_pattern_weights_insert_set_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_pattern_weights_insert_set_weight(
+     void )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_pattern_weights_t *pattern_weights = NULL;
+	int result                                    = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &pattern_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "pattern_weights",
+	 pattern_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_pattern_weights_insert_set_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_pattern_weights_insert_set_weight(
+	          NULL,
+	          0,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -420,23 +1257,37 @@ int main(
 	 "libsigscan_pattern_weights_free",
 	 sigscan_test_pattern_weights_free );
 
-	/* TODO: add tests for libsigscan_pattern_weights_add_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_add_weight",
+	 sigscan_test_pattern_weights_add_weight );
 
-	/* TODO: add tests for libsigscan_pattern_weights_set_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_set_weight",
+	 sigscan_test_pattern_weights_set_weight );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_pattern_weights_get_largest_weight",
 	 sigscan_test_pattern_weights_get_largest_weight );
 
-	/* TODO: add tests for libsigscan_pattern_weights_get_offset_group */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_get_offset_group",
+	 sigscan_test_pattern_weights_get_offset_group );
 
-	/* TODO: add tests for libsigscan_pattern_weights_insert_offset */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_insert_offset",
+	 sigscan_test_pattern_weights_insert_offset );
 
-	/* TODO: add tests for libsigscan_pattern_weights_get_weight_group */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_get_weight_group",
+	 sigscan_test_pattern_weights_get_weight_group );
 
-	/* TODO: add tests for libsigscan_pattern_weights_insert_add_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_insert_add_weight",
+	 sigscan_test_pattern_weights_insert_add_weight );
 
-	/* TODO: add tests for libsigscan_pattern_weights_insert_set_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_pattern_weights_insert_set_weight",
+	 sigscan_test_pattern_weights_insert_set_weight );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 

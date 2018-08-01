@@ -1186,8 +1186,6 @@ int libsigscan_scan_tree_build_node(
 	off64_t pattern_offset                            = 0;
 	uint8_t byte_value                                = 0;
 	uint8_t scan_object_type                          = 0;
-	int byte_value_group_index                        = 0;
-	int number_of_byte_value_groups                   = 0;
 	int number_of_remaining_signatures                = 0;
 	int number_of_signature_groups                    = 0;
 	int number_of_signatures                          = 0;

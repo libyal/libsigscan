@@ -349,6 +349,17 @@ int libsigscan_signature_group_append_signature(
 
 		return( -1 );
 	}
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
+		 function );
+
+		return( -1 );
+	}
 	if( libcdata_list_append_value(
 	     signature_group->signatures_list,
 	     (intptr_t *) signature,

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Scan tool testing script
 #
-# Version: 20180730
+# Version: 20180801
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -46,6 +46,13 @@ then
 fi
 
 source ${TEST_RUNNER};
+
+if test "${OSTYPE}" = "msys";
+then
+	echo "MSYS not supported.";
+
+	exit ${EXIT_IGNORE};
+fi
 
 if ! test -d "input";
 then

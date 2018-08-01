@@ -33,6 +33,8 @@
 #include "sigscan_test_memory.h"
 #include "sigscan_test_unused.h"
 
+#include "../libsigscan/libsigscan_scan_result.h"
+
 /* Tests the libsigscan_scan_result_free function
  * Returns 1 if successful or 0 if not
  */
