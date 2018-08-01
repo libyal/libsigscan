@@ -1,7 +1,7 @@
 #!/bin/bash
 # Python-bindings scanner testing script
 #
-# Version: 20171008
+# Version: 201801801
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -23,26 +23,24 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if ! test -f ${TEST_SCRIPT};
+TEST_RUNNER="tests/test_runner.sh";
+
+if ! test -f "${TEST_RUNNER}";
 then
-	echo "Missing script: ${TEST_SCRIPT}";
+	TEST_RUNNER="./test_runner.sh";
+fi
+
+if ! test -f "${TEST_RUNNER}";
+then
+	echo "Missing test runner: ${TEST_RUNNER}";
 
 	exit ${EXIT_FAILURE};
 fi
 
-if test `uname -s` = 'Darwin';
-then
-	DYLD_LIBRARY_PATH="../libsigscan/.libs/" PYTHONPATH="../pysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
-	RESULT=$?;
-else
-	LD_LIBRARY_PATH="../libsigscan/.libs/" PYTHONPATH="../pysigscan/.libs/" ${PYTHON} ${TEST_SCRIPT};
-	RESULT=$?;
-fi
+source ${TEST_RUNNER};
 
-if test ${RESULT} -ne ${EXIT_SUCCESS};
-then
-	exit ${EXIT_FAILURE};
-fi
+run_test_with_arguments "pysigscan" ${TEST_SCRIPT};
+RESULT=$?;
 
-exit ${EXIT_SUCCESS};
+exit ${RESULT};
 
