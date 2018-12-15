@@ -106,6 +106,7 @@ rm -rf %{buildroot}
 %doc AUTHORS README
 %attr(755,root,root) %{_bindir}/*
 %{_mandir}/man1/*
+%config %{_sysconfdir}/sigscan.conf
 
 %changelog
 * @SPEC_DATE@ Joachim Metz <joachim.metz@gmail.com> @VERSION@-1
