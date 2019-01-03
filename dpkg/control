@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libsigscan
 Package: libsigscan
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libsigscan1
+Replaces: libsigscan1
 Suggests: libsigscan-dbg
 Description: Library for binary signature scanning
  libsigscan is a library for binary signature scanning.
@@ -31,6 +33,8 @@ Package: libsigscan-tools
 Section: utils
 Architecture: any
 Depends: libsigscan (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libsigscan-utils
+Replaces: libsigscan-utils
 Description: Several tools for binary signature scanning files
  Several tools for binary signature scanning files.
 
@@ -45,6 +49,8 @@ Package: libsigscan-python
 Section: python
 Architecture: any
 Depends: libsigscan (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-libsigscan
+Replaces: python-libsigscan
 Suggests: libsigscan-python-dbg
 Description: Python 2 bindings for libsigscan
  Python 2 bindings for libsigscan.
@@ -60,6 +66,8 @@ Package: libsigscan-python3
 Section: python
 Architecture: any
 Depends: libsigscan (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python3-libsigscan
+Replaces: python3-libsigscan
 Suggests: libsigscan-python3-dbg
 Description: Python 3 bindings for libsigscan
  Python 3 bindings for libsigscan.
