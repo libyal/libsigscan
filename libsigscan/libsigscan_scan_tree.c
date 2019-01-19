@@ -2438,6 +2438,7 @@ int libsigscan_scan_tree_fill_range_list(
 	libsigscan_signature_t *signature     = NULL;
 	static char *function                 = "libsigscan_scan_tree_fill_range_list";
 	int add_signature                     = 0;
+	int result                            = 0;
 
 	if( scan_tree == NULL )
 	{
@@ -2538,14 +2539,16 @@ int libsigscan_scan_tree_fill_range_list(
 		}
 		if( add_signature != 0 )
 		{
-			if( libcdata_range_list_insert_range(
-			     scan_tree->pattern_range_list,
-			     signature->pattern_offset,
-			     (size64_t) signature->pattern_size,
-			     NULL,
-			     NULL,
-			     NULL,
-			     error ) != 1 )
+			result = libcdata_range_list_insert_range(
+			          scan_tree->pattern_range_list,
+			          signature->pattern_offset,
+			          (size64_t) signature->pattern_size,
+			          NULL,
+			          NULL,
+			          NULL,
+			          error );
+
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
