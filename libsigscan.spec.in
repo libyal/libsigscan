@@ -13,6 +13,14 @@ BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requ
 %description -n libsigscan
 Library for binary signature scanning
 
+%package -n libsigscan-static
+Summary: Library for binary signature scanning
+Group: Development/Libraries
+Requires: libsigscan = %{version}-%{release}
+
+%description -n libsigscan-static
+Static library version of libsigscan.
+
 %package -n libsigscan-devel
 Summary: Header files and libraries for developing applications for libsigscan
 Group: Development/Libraries
@@ -73,11 +81,16 @@ rm -rf %{buildroot}
 %doc AUTHORS README
 %attr(755,root,root) %{_libdir}/*.so.*
 
+%files -n libsigscan-static
+%defattr(644,root,root,755)
+%license COPYING
+%doc AUTHORS README
+%attr(755,root,root) %{_libdir}/*.a
+
 %files -n libsigscan-devel
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
-%{_libdir}/*.a
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libsigscan.pc
