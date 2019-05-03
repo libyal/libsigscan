@@ -29,6 +29,7 @@ check_SCRIPTS = \
 	pysigscan_test_scanner.py \
 	pysigscan_test_support.py \
 	test_library.sh \
+	test_manpage.sh \
 	test_pysigscan_scanner.sh \
 	test_python_module.sh \
 	test_sigscan.sh \
