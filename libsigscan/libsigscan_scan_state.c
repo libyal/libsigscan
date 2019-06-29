@@ -1140,25 +1140,28 @@ int libsigscan_internal_scan_state_scan_buffer(
 				 range_end_offset );
 			}
 #endif
-			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
-			     internal_scan_state,
-			     internal_scan_state->header_scan_tree,
-			     &( internal_scan_state->active_header_node ),
-			     range_start_offset,
-			     internal_scan_state->data_size,
-			     buffer,
-			     range_size,
-			     range_offset,
-			     error ) != 1 )
+			if( range_offset < range_size )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GENERIC,
-				 "%s: unable to scan buffer by header scan tree.",
-				 function );
+				if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+				     internal_scan_state,
+				     internal_scan_state->header_scan_tree,
+				     &( internal_scan_state->active_header_node ),
+				     range_start_offset,
+				     internal_scan_state->data_size,
+				     buffer,
+				     range_size,
+				     range_offset,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GENERIC,
+					 "%s: unable to scan buffer by header scan tree.",
+					 function );
 
-				return( -1 );
+					return( -1 );
+				}
 			}
 		}
 	}
@@ -1205,25 +1208,28 @@ int libsigscan_internal_scan_state_scan_buffer(
 				 range_end_offset );
 			}
 #endif
-			if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
-			     internal_scan_state,
-			     internal_scan_state->footer_scan_tree,
-			     &( internal_scan_state->active_footer_node ),
-			     range_start_offset,
-			     internal_scan_state->data_size,
-			     buffer,
-			     range_size,
-			     range_offset,
-			     error ) != 1 )
+			if( range_offset < range_size )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GENERIC,
-				 "%s: unable to scan buffer by footer scan tree.",
-				 function );
+				if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+				     internal_scan_state,
+				     internal_scan_state->footer_scan_tree,
+				     &( internal_scan_state->active_footer_node ),
+				     range_start_offset,
+				     internal_scan_state->data_size,
+				     buffer,
+				     range_size,
+				     range_offset,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GENERIC,
+					 "%s: unable to scan buffer by footer scan tree.",
+					 function );
 
-				return( -1 );
+					return( -1 );
+				}
 			}
 		}
 	}
