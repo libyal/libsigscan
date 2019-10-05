@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsigscan],
- [20190629],
+ [20191005],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
