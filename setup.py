@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Script to build and install Python-bindings.
-# Version: 20191005
+# Version: 20191006
 
 from __future__ import print_function
 
@@ -15,13 +15,14 @@ import subprocess
 import sys
 import tarfile
 
-from distutils import dist
 from distutils import sysconfig
 from distutils.ccompiler import new_compiler
-from distutils.command.build_ext import build_ext
 from distutils.command.bdist import bdist
-from distutils.command.sdist import sdist
-from setuptools import Extension, setup
+from setuptools import dist
+from setuptools import Extension
+from setuptools import setup
+from setuptools.command.build_ext import build_ext
+from setuptools.command.sdist import sdist
 
 try:
   from distutils.command.bdist_msi import bdist_msi
@@ -300,16 +301,6 @@ SOURCES.extend(source_files)
 
 # TODO: what about description and platform in egg file
 
-commands = {
-    "build_ext": custom_build_ext,
-    "bdist_rpm": custom_bdist_rpm,
-    "sdist": custom_sdist}
-
-# Conditially include bdist_msi otherwise setup.py --help-commands will raise
-# an exception on platforms where bdist_msi is not available.
-if bdist_msi:
-    commands["bdist_msi"] = custom_bdist_msi
-
 setup(
     name=project_information.package_name,
     url=project_information.project_url,
@@ -319,7 +310,12 @@ setup(
     author="Joachim Metz",
     author_email="joachim.metz@gmail.com",
     license="GNU Lesser General Public License v3 or later (LGPLv3+)",
-    cmdclass=commands,
+    cmdclass={
+        "build_ext": custom_build_ext,
+        "bdist_msi": custom_bdist_msi,
+        "bdist_rpm": custom_bdist_rpm,
+        "sdist": custom_sdist,
+    },
     ext_modules=[
         Extension(
             project_information.module_name,

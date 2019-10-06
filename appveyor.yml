@@ -1,4 +1,6 @@
 environment:
+  pypi_token:
+    secure: VHuZiUWgTqTciKE2nsv/LiYTG6AIRwHGjUNIOkgIG00hcKAM4fHNpvesulVLhh26cWLxZFGtXY9btyD8oR4vxiU5uc4ofvEeLSUkLx47WBBuvC27zw1d/5NCBqomdnGRFW8IlsG6CRWlCY/64yUGuL9hmzo06w4NR+IPSUC+6CXgtipS5BLFEDcj1Ldx1biLrqo9P5erseshRQ2iMeVV/2TEmxSGUW3AJbXuJZEiWutmKBK7uGoVdMwAOzE981tJ9KCWcyloFN56wTQUvrBJDXcs0fRmaeSqsZa9Pzf20m0=
   matrix:
   - TARGET: vs2008
     BUILD_ENVIRONMENT: msbuild
@@ -146,10 +148,6 @@ environment:
     CFLAGS: "--coverage"
     LDFLAGS: "--coverage"
 
-matrix:
-  allow_failures:
-  - TARGET: python27-x64
-
 install:
 - cmd: git clone https://github.com/codecov/codecov-bash.git ..\codecov-bash
 - cmd: if [%BUILD_ENVIRONMENT%]==[msbuild] (
@@ -220,4 +218,11 @@ after_test:
 - cmd: if [%TARGET%]==[mingw-gcc-no-optimization] (
     copy C:\projects\codecov-bash\codecov C:\MinGW\msys\1.0\home\appveyor\libsigscan\codecov.sh &&
     C:\MinGW\msys\1.0\bin\bash -e -l -c "cd libsigscan && chmod a+x ./codecov.sh && sed -i 's/-execdir /-exec /' ./codecov.sh && ./codecov.sh -n ${TARGET} -y .codecov.yml" )
+
+artifacts:
+- path: dist\*.whl
+
+deploy_script:
+- ps: If ($env:APPVEYOR_REPO_TAG -eq "true") {
+    Invoke-Expression "${env:PYTHON}\\python.exe -m twine upload dist/*.whl --username __token__ --password ${env:PYPI_TOKEN} --skip-existing" }
 
