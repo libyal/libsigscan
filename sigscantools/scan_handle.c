@@ -1107,14 +1107,11 @@ int scan_handle_scan_results_fprint(
 
 				goto on_error;
 			}
-			if( identifier_size == 0 )
-			{
-				fprintf(
-				 scan_handle->notify_stream,
-				 "\tIdentifier\t\t: %s\n",
-				 identifier );
-			}
-			else
+			fprintf(
+			 scan_handle->notify_stream,
+			 "\tIdentifier\t\t:" );
+
+			if( identifier_size > 0 )
 			{
 				identifier = (char *) memory_allocate(
 				                       sizeof( char ) * identifier_size );
@@ -1148,7 +1145,7 @@ int scan_handle_scan_results_fprint(
 				}
 				fprintf(
 				 scan_handle->notify_stream,
-				 "\tIdentifier\t\t: %s\n",
+				 " %s",
 				 identifier );
 
 				memory_free(
@@ -1156,6 +1153,10 @@ int scan_handle_scan_results_fprint(
 
 				identifier = NULL;
 			}
+			fprintf(
+			 scan_handle->notify_stream,
+			 "\n" );
+
 			if( libsigscan_scan_result_free(
 			     &scan_result,
 			     error ) != 1 )
