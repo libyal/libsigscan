@@ -1,7 +1,7 @@
 /*
  * Common output functions for the sigscantools
  *
- * Copyright (C) 2014-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2020, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -99,7 +99,7 @@ void sigscanoutput_copyright_fprint(
 	}
 	fprintf(
 	 stream,
-	 "Copyright (C) 2014-2019, Joachim Metz <%s>.\n"
+	 "Copyright (C) 2014-2020, Joachim Metz <%s>.\n"
 	 "This is free software; see the source for copying conditions. There is NO\n"
 	 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 	 PACKAGE_BUGREPORT );
