@@ -59,7 +59,7 @@ PyTypeObject pysigscan_scan_results_type_object = {
 	PyVarObject_HEAD_INIT( NULL, 0 )
 
 	/* tp_name */
-	"pysigscan._scan_results",
+	"pysigscan.scan_results",
 	/* tp_basicsize */
 	sizeof( pysigscan_scan_results_t ),
 	/* tp_itemsize */
@@ -97,7 +97,7 @@ PyTypeObject pysigscan_scan_results_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"pysigscan internal sequence and iterator object of scan results",
+	"pysigscan sequence and iterator object of scan results",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -150,7 +150,7 @@ PyTypeObject pysigscan_scan_results_type_object = {
 	0
 };
 
-/* Creates a new scan results object
+/* Creates a new scan results sequence and iterator object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pysigscan_scan_results_new(
@@ -160,8 +160,8 @@ PyObject *pysigscan_scan_results_new(
                         int index ),
            int number_of_items )
 {
-	pysigscan_scan_results_t *scan_results_object = NULL;
-	static char *function                         = "pysigscan_scan_results_new";
+	pysigscan_scan_results_t *sequence_object = NULL;
+	static char *function                     = "pysigscan_scan_results_new";
 
 	if( parent_object == NULL )
 	{
@@ -183,93 +183,89 @@ PyObject *pysigscan_scan_results_new(
 	}
 	/* Make sure the scan results values are initialized
 	 */
-	scan_results_object = PyObject_New(
-	                       struct pysigscan_scan_results,
-	                       &pysigscan_scan_results_type_object );
+	sequence_object = PyObject_New(
+	                   struct pysigscan_scan_results,
+	                   &pysigscan_scan_results_type_object );
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to create scan results object.",
+		 "%s: unable to create sequence object.",
 		 function );
 
 		goto on_error;
 	}
-	if( pysigscan_scan_results_init(
-	     scan_results_object ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize scan results object.",
-		 function );
-
-		goto on_error;
-	}
-	scan_results_object->parent_object     = parent_object;
-	scan_results_object->get_item_by_index = get_item_by_index;
-	scan_results_object->number_of_items   = number_of_items;
+	sequence_object->parent_object     = parent_object;
+	sequence_object->get_item_by_index = get_item_by_index;
+	sequence_object->current_index     = 0;
+	sequence_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) scan_results_object->parent_object );
+	 (PyObject *) sequence_object->parent_object );
 
-	return( (PyObject *) scan_results_object );
+	return( (PyObject *) sequence_object );
 
 on_error:
-	if( scan_results_object != NULL )
+	if( sequence_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) scan_results_object );
+		 (PyObject *) sequence_object );
 	}
 	return( NULL );
 }
 
-/* Intializes a scan results object
+/* Intializes a scan results sequence and iterator object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scan_results_init(
-     pysigscan_scan_results_t *scan_results_object )
+     pysigscan_scan_results_t *sequence_object )
 {
 	static char *function = "pysigscan_scan_results_init";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the scan results values are initialized
 	 */
-	scan_results_object->parent_object     = NULL;
-	scan_results_object->get_item_by_index = NULL;
-	scan_results_object->current_index     = 0;
-	scan_results_object->number_of_items   = 0;
+	sequence_object->parent_object     = NULL;
+	sequence_object->get_item_by_index = NULL;
+	sequence_object->current_index     = 0;
+	sequence_object->number_of_items   = 0;
 
-	return( 0 );
+	PyErr_Format(
+	 PyExc_NotImplementedError,
+	 "%s: initialize of scan results not supported.",
+	 function );
+
+	return( -1 );
 }
 
-/* Frees a scan results object
+/* Frees a scan results sequence object
  */
 void pysigscan_scan_results_free(
-      pysigscan_scan_results_t *scan_results_object )
+      pysigscan_scan_results_t *sequence_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pysigscan_scan_results_free";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           scan_results_object );
+	           sequence_object );
 
 	if( ob_type == NULL )
 	{
@@ -289,72 +285,72 @@ void pysigscan_scan_results_free(
 
 		return;
 	}
-	if( scan_results_object->parent_object != NULL )
+	if( sequence_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) scan_results_object->parent_object );
+		 (PyObject *) sequence_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) scan_results_object );
+	 (PyObject*) sequence_object );
 }
 
 /* The scan results len() function
  */
 Py_ssize_t pysigscan_scan_results_len(
-            pysigscan_scan_results_t *scan_results_object )
+            pysigscan_scan_results_t *sequence_object )
 {
 	static char *function = "pysigscan_scan_results_len";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) scan_results_object->number_of_items );
+	return( (Py_ssize_t) sequence_object->number_of_items );
 }
 
 /* The scan results getitem() function
  */
 PyObject *pysigscan_scan_results_getitem(
-           pysigscan_scan_results_t *scan_results_object,
+           pysigscan_scan_results_t *sequence_object,
            Py_ssize_t item_index )
 {
 	PyObject *scan_result_object = NULL;
 	static char *function        = "pysigscan_scan_results_getitem";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->get_item_by_index == NULL )
+	if( sequence_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object - missing get item by index function.",
+		 "%s: invalid sequence object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->number_of_items < 0 )
+	if( sequence_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object - invalid number of items.",
+		 "%s: invalid sequence object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) scan_results_object->number_of_items ) )
+	 || ( item_index >= (Py_ssize_t) sequence_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -363,8 +359,8 @@ PyObject *pysigscan_scan_results_getitem(
 
 		return( NULL );
 	}
-	scan_result_object = scan_results_object->get_item_by_index(
-	                      scan_results_object->parent_object,
+	scan_result_object = sequence_object->get_item_by_index(
+	                      sequence_object->parent_object,
 	                      (int) item_index );
 
 	return( scan_result_object );
@@ -373,83 +369,83 @@ PyObject *pysigscan_scan_results_getitem(
 /* The scan results iter() function
  */
 PyObject *pysigscan_scan_results_iter(
-           pysigscan_scan_results_t *scan_results_object )
+           pysigscan_scan_results_t *sequence_object )
 {
 	static char *function = "pysigscan_scan_results_iter";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) scan_results_object );
+	 (PyObject *) sequence_object );
 
-	return( (PyObject *) scan_results_object );
+	return( (PyObject *) sequence_object );
 }
 
 /* The scan results iternext() function
  */
 PyObject *pysigscan_scan_results_iternext(
-           pysigscan_scan_results_t *scan_results_object )
+           pysigscan_scan_results_t *sequence_object )
 {
 	PyObject *scan_result_object = NULL;
 	static char *function        = "pysigscan_scan_results_iternext";
 
-	if( scan_results_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object.",
+		 "%s: invalid sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->get_item_by_index == NULL )
+	if( sequence_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object - missing get item by index function.",
+		 "%s: invalid sequence object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->current_index < 0 )
+	if( sequence_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object - invalid current index.",
+		 "%s: invalid sequence object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->number_of_items < 0 )
+	if( sequence_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid scan results object - invalid number of items.",
+		 "%s: invalid sequence object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( scan_results_object->current_index >= scan_results_object->number_of_items )
+	if( sequence_object->current_index >= sequence_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	scan_result_object = scan_results_object->get_item_by_index(
-	                      scan_results_object->parent_object,
-	                      scan_results_object->current_index );
+	scan_result_object = sequence_object->get_item_by_index(
+	                      sequence_object->parent_object,
+	                      sequence_object->current_index );
 
 	if( scan_result_object != NULL )
 	{
-		scan_results_object->current_index++;
+		sequence_object->current_index++;
 	}
 	return( scan_result_object );
 }

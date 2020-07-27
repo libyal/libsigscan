@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
 #include "sigscan_test_unused.h"

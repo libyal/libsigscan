@@ -492,13 +492,14 @@ int libsigscan_scan_state_start(
 
 		return( -1 );
 	}
-	if( scan_buffer_size > (size_t) SSIZE_MAX )
+	if( ( scan_buffer_size == 0 )
+	 || ( scan_buffer_size > MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid scan buffer size value exceeds maximum.",
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid scan buffer size value out of bounds.",
 		 function );
 
 		return( -1 );

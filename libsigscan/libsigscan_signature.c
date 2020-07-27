@@ -363,12 +363,12 @@ int libsigscan_signature_set(
 		return( -1 );
 	}
 	if( ( identifier_length == 0 )
-	 || ( identifier_length > (size_t) SSIZE_MAX ) )
+	 || ( identifier_length > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid identifier length value out of bounds.",
 		 function );
 
@@ -386,12 +386,12 @@ int libsigscan_signature_set(
 		return( -1 );
 	}
 	if( ( pattern_size == 0 )
-	 || ( pattern_size > (size_t) SSIZE_MAX ) )
+	 || ( pattern_size > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid pattern size value out of bounds.",
 		 function );
 

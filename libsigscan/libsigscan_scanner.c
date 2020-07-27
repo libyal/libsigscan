@@ -1078,6 +1078,18 @@ int libsigscan_scanner_scan_file_io_handle(
 
 		goto on_error;
 	}
+	if( ( buffer_size == 0 )
+	 || ( buffer_size > MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid buffer size value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	buffer = (uint8_t *) memory_allocate(
 	                      sizeof( uint8_t ) * buffer_size );
 

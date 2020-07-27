@@ -69,23 +69,23 @@ PyObject *pysigscan_scan_results_new(
            int number_of_items );
 
 int pysigscan_scan_results_init(
-     pysigscan_scan_results_t *scan_results_object );
+     pysigscan_scan_results_t *sequence_object );
 
 void pysigscan_scan_results_free(
-      pysigscan_scan_results_t *scan_results_object );
+      pysigscan_scan_results_t *sequence_object );
 
 Py_ssize_t pysigscan_scan_results_len(
-            pysigscan_scan_results_t *scan_results_object );
+            pysigscan_scan_results_t *sequence_object );
 
 PyObject *pysigscan_scan_results_getitem(
-           pysigscan_scan_results_t *scan_results_object,
+           pysigscan_scan_results_t *sequence_object,
            Py_ssize_t item_index );
 
 PyObject *pysigscan_scan_results_iter(
-           pysigscan_scan_results_t *scan_results_object );
+           pysigscan_scan_results_t *sequence_object );
 
 PyObject *pysigscan_scan_results_iternext(
-           pysigscan_scan_results_t *scan_results_object );
+           pysigscan_scan_results_t *sequence_object );
 
 #if defined( __cplusplus )
 }
