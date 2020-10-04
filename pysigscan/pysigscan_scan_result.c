@@ -213,7 +213,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a scan result object
+/* Initializes a scan result object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scan_result_init(

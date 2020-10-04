@@ -220,7 +220,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a scan state object
+/* Initializes a scan state object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scan_state_init(

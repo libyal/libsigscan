@@ -255,7 +255,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a scanner object
+/* Initializes a scanner object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scanner_init(

@@ -215,7 +215,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a scan results sequence and iterator object
+/* Initializes a scan results sequence and iterator object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_scan_results_init(

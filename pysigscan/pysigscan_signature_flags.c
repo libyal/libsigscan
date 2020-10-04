@@ -270,7 +270,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a signature flags object
+/* Initializes a signature flags object
  * Returns 0 if successful or -1 on error
  */
 int pysigscan_signature_flags_init(
