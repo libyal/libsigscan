@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #endif
 
-#include "pysigscan_signature_flags.h"
 #include "pysigscan_libsigscan.h"
 #include "pysigscan_python.h"
+#include "pysigscan_signature_flags.h"
 #include "pysigscan_unused.h"
 
 PyTypeObject pysigscan_signature_flags_type_object = {

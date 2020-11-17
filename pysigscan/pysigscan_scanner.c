@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsigscan scanner
+ * Python object wrapper of libsigscan_scanner_t
  *
  * Copyright (C) 2014-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -37,13 +37,15 @@
 #include "pysigscan_unused.h"
 
 #if !defined( LIBSIGSCAN_HAVE_BFIO )
+
 LIBSIGSCAN_EXTERN \
 int libsigscan_scanner_scan_file_io_handle(
      libsigscan_scanner_t *scanner,
      libsigscan_scan_state_t *scan_state,
      libbfio_handle_t *file_io_handle,
      libsigscan_error_t **error );
-#endif
+
+#endif /* !defined( LIBSIGSCAN_HAVE_BFIO ) */
 
 PyMethodDef pysigscan_scanner_object_methods[] = {
 

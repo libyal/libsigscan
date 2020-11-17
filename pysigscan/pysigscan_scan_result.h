@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsigscan scan result
+ * Python object wrapper of libsigscan_scan_result_t
  *
  * Copyright (C) 2014-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -72,5 +72,5 @@ PyObject *pysigscan_scan_result_get_identifier(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_SCAN_RESULT_H ) */
 

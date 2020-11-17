@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsigscan scan state
+ * Python object wrapper of libsigscan_scan_state_t
  *
  * Copyright (C) 2014-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -84,5 +84,5 @@ PyObject *pysigscan_scan_state_get_scan_results(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_SCAN_STATE_H ) */
 

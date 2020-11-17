@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsigscan scanner
+ * Python object wrapper of libsigscan_scanner_t
  *
  * Copyright (C) 2014-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -100,5 +100,5 @@ PyObject *pysigscan_scanner_scan_file_object(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSIGSCAN_SCANNER_H ) */
 
