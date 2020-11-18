@@ -9,7 +9,7 @@ set -e;
 if test ${TRAVIS_OS_NAME} = "linux";
 then
 	sudo apt-get update;
-	sudo apt-mark hold openssh-server;
+	sudo apt-mark hold openssh-server postgresql-12;
 	sudo apt-get --fix-missing -o Dpkg::Options::="--force-confold" upgrade -y --allow-unauthenticated;
 
 	sudo apt-get install -y autoconf automake autopoint build-essential git libtool pkg-config python-dev-is-python3 python2-dev;
