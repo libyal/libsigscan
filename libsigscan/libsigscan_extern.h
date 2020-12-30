@@ -30,7 +30,7 @@
 
 #include <libsigscan/extern.h>
 
-#if defined( __CYGWIN__ )
+#if defined( __CYGWIN__ ) || defined( __MINGW32__ )
 #define LIBSIGSCAN_EXTERN_VARIABLE	extern
 #else
 #define LIBSIGSCAN_EXTERN_VARIABLE	LIBSIGSCAN_EXTERN
