@@ -1,5 +1,5 @@
 environment:
-  pypi_token:
+  PYPI_TOKEN:
     secure: VHuZiUWgTqTciKE2nsv/LiYTG6AIRwHGjUNIOkgIG00hcKAM4fHNpvesulVLhh26cWLxZFGtXY9btyD8oR4vxiU5uc4ofvEeLSUkLx47WBBuvC27zw1d/5NCBqomdnGRFW8IlsG6CRWlCY/64yUGuL9hmzo06w4NR+IPSUC+6CXgtipS5BLFEDcj1Ldx1biLrqo9P5erseshRQ2iMeVV/2TEmxSGUW3AJbXuJZEiWutmKBK7uGoVdMwAOzE981tJ9KCWcyloFN56wTQUvrBJDXcs0fRmaeSqsZa9Pzf20m0=
   matrix:
   - TARGET: vs2008

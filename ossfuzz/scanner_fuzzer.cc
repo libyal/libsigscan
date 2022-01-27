@@ -46,7 +46,7 @@ int LLVMFuzzerTestOneInput(
 	     "test1",
 	     5,
 	     13,
-	     "FuZzInG",
+	     (uint8_t *) "FuZzInG",
 	     7,
 	     LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
 	     NULL ) != 1 )
@@ -58,7 +58,7 @@ int LLVMFuzzerTestOneInput(
 	     "test2",
 	     5,
 	     -13,
-	     "OsSFuZz",
+	     (uint8_t *) "OsSFuZz",
 	     7,
 	     LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END,
 	     NULL ) != 1 )
