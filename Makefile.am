@@ -33,7 +33,6 @@ DPKG_FILES = \
 	dpkg/rules \
 	dpkg/libsigscan.install \
 	dpkg/libsigscan-dev.install \
-	dpkg/libsigscan-python.install \
 	dpkg/libsigscan-python3.install \
 	dpkg/libsigscan-tools.install \
 	dpkg/source/format
