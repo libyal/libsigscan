@@ -21,6 +21,7 @@
 
 #include <common.h>
 #include <file_stream.h>
+#include <memory.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
@@ -319,6 +320,634 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_scanner_set_scan_buffer_size function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_set_scan_buffer_size(
+     libsigscan_scanner_t *scanner )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          scanner,
+	          128,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          NULL,
+	          128,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          scanner,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          scanner,
+	          (size_t) SIZE_MAX + 1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scanner_add_signature function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_add_signature(
+     libsigscan_scanner_t *scanner )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "test",
+	          5,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_add_signature(
+	          NULL,
+	          "test",
+	          5,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          NULL,
+	          5,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "test",
+	          5,
+	          0,
+	          NULL,
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scanner_scan_start function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_scan_start(
+     libsigscan_scanner_t *scanner )
+{
+	libcerror_error_t *error            = NULL;
+	libsigscan_scan_state_t *scan_state = NULL;
+	int result                          = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_scan_state_initialize(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_scan_start(
+	          NULL,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_state_free(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scanner_scan_stop function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_scan_stop(
+     libsigscan_scanner_t *scanner )
+{
+	libcerror_error_t *error            = NULL;
+	libsigscan_scan_state_t *scan_state = NULL;
+	int result                          = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_scan_state_initialize(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_scan_stop(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_scan_stop(
+	          NULL,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_scan_stop(
+	          scanner,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_state_free(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scanner_scan_buffer function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner_scan_buffer(
+     libsigscan_scanner_t *scanner )
+{
+	uint8_t buffer[ 256 ];
+
+	libcerror_error_t *error            = NULL;
+	libsigscan_scan_state_t *scan_state = NULL;
+	void *memset_result                 = NULL;
+	int result                          = 0;
+
+	/* Initialize test
+	 */
+	memset_result = memory_set(
+	                 buffer,
+	                 0,
+	                 sizeof( uint8_t) * 256 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "memset_result",
+	 memset_result );
+
+	result = libsigscan_scan_state_initialize(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scanner_scan_buffer(
+	          scanner,
+	          scan_state,
+	          buffer,
+	          256,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scanner_scan_buffer(
+	          NULL,
+	          scan_state,
+	          buffer,
+	          256,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_scan_buffer(
+	          scanner,
+	          NULL,
+	          buffer,
+	          256,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scanner_scan_buffer(
+	          scanner,
+	          scan_state,
+	          NULL,
+	          256,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scanner_scan_stop(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_free(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -331,6 +960,12 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	libcerror_error_t *error      = NULL;
+	libsigscan_scanner_t *scanner = NULL;
+	int result                    = 0;
+#endif
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -342,17 +977,56 @@ int main(
 	 "libsigscan_scanner_free",
 	 sigscan_test_scanner_free );
 
-	/* TODO: add tests for sigscan_test_scanner_signal_abort */
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 
-	/* TODO: add tests for libsigscan_scanner_set_scan_buffer_size */
+	/* Initialize scanner for tests
+	 */
+	result = libsigscan_scanner_initialize(
+	          &scanner,
+	          &error );
 
-	/* TODO: add tests for libsigscan_scanner_add_signature */
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
-	/* TODO: add tests for libsigscan_scanner_scan_start */
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scanner",
+	 scanner );
 
-	/* TODO: add tests for libsigscan_scanner_scan_stop */
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
-	/* TODO: add tests for libsigscan_scanner_scan_buffer */
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_signal_abort",
+	 sigscan_test_scanner_signal_abort,
+	 scanner );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_set_scan_buffer_size",
+	 sigscan_test_scanner_set_scan_buffer_size,
+	 scanner );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_add_signature",
+	 sigscan_test_scanner_add_signature,
+	 scanner );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_scan_start",
+	 sigscan_test_scanner_scan_start,
+	 scanner );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_scan_stop",
+	 sigscan_test_scanner_scan_stop,
+	 scanner );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scanner_scan_buffer",
+	 sigscan_test_scanner_scan_buffer,
+	 scanner );
 
 	/* TODO: add tests for libsigscan_scanner_scan_file */
 
@@ -360,9 +1034,43 @@ int main(
 
 	/* TODO: add tests for libsigscan_scanner_scan_file_io_handle */
 
+	/* Clean up
+	 */
+	result = libsigscan_scanner_free(
+	          &scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scanner",
+	 scanner );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_SUCCESS );
 
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scanner != NULL )
+	{
+		libsigscan_scanner_free(
+		 &scanner,
+		 NULL );
+	}
+#endif
 	return( EXIT_FAILURE );
 }
 

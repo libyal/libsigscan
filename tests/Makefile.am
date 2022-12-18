@@ -138,6 +138,7 @@ sigscan_test_scan_result_LDADD = \
 	@LIBCERROR_LIBADD@
 
 sigscan_test_scan_state_SOURCES = \
+	sigscan_test_libcdata.h \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
@@ -146,10 +147,12 @@ sigscan_test_scan_state_SOURCES = \
 	sigscan_test_unused.h
 
 sigscan_test_scan_state_LDADD = \
+	@LIBCDATA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 
 sigscan_test_scan_tree_SOURCES = \
+	sigscan_test_libcdata.h \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
@@ -158,6 +161,7 @@ sigscan_test_scan_tree_SOURCES = \
 	sigscan_test_unused.h
 
 sigscan_test_scan_tree_LDADD = \
+	@LIBCDATA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 

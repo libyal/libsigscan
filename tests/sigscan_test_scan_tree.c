@@ -27,13 +27,17 @@
 #include <stdlib.h>
 #endif
 
+#include "sigscan_test_libcdata.h"
 #include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
 #include "sigscan_test_memory.h"
 #include "sigscan_test_unused.h"
 
+#include "../libsigscan/libsigscan_definitions.h"
+#include "../libsigscan/libsigscan_signature.h"
 #include "../libsigscan/libsigscan_scan_tree.h"
+#include "../libsigscan/libsigscan_scan_tree_node.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
@@ -270,6 +274,190 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_scan_tree_build function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_build(
+     void )
+{
+	libcdata_list_t *signatures_list  = NULL;
+	libcerror_error_t *error          = NULL;
+	libsigscan_scan_tree_t *scan_tree = NULL;
+	int result                        = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_scan_tree_initialize(
+	          &scan_tree,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_tree",
+	 scan_tree );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_build(
+	          NULL,
+	          signatures_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_tree_free(
+	          &scan_tree,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_tree",
+	 scan_tree );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_tree != NULL )
+	{
+		libsigscan_scan_tree_free(
+		 &scan_tree,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scan_tree_get_spanning_range function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_get_spanning_range(
+     libsigscan_scan_tree_t *scan_tree )
+{
+	libcerror_error_t *error = NULL;
+	uint64_t range_size      = 0;
+	uint64_t range_start     = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_tree_get_spanning_range(
+	          scan_tree,
+	          &range_size,
+	          &range_start,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_get_spanning_range(
+	          NULL,
+	          &range_start,
+	          &range_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scan_tree_get_spanning_range(
+	          scan_tree,
+	          NULL,
+	          &range_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scan_tree_get_spanning_range(
+	          scan_tree,
+	          &range_start,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
@@ -284,6 +472,16 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcerror_error_t *error          = NULL;
+	libsigscan_scan_tree_t *scan_tree = NULL;
+	int result                        = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -297,16 +495,6 @@ int main(
 	 "libsigscan_scan_tree_free",
 	 sigscan_test_scan_tree_free );
 
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights */
-
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights */
-
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_similarity_weights */
-
-	/* TODO: add tests for libsigscan_scan_tree_get_most_significant_pattern_offset */
-
-	/* TODO: add tests for libsigscan_scan_tree_get_spanning_range */
-
 	/* TODO: add tests for libsigscan_scan_tree_build_node */
 
 	/* TODO: add tests for libsigscan_scan_tree_build */
@@ -315,11 +503,85 @@ int main(
 
 	/* TODO: add tests for libsigscan_scan_tree_fill_range_list */
 
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize scan_tree for tests
+	 */
+	result = libsigscan_scan_tree_initialize(
+	          &scan_tree,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_tree",
+	 scan_tree );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* TODO: build tree for testing */
+
+	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights */
+
+	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights */
+
+	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_similarity_weights */
+
+	/* TODO: add tests for libsigscan_scan_tree_get_most_significant_pattern_offset */
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_tree_get_spanning_range",
+	 sigscan_test_scan_tree_get_spanning_range,
+	 scan_tree );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_tree_free(
+	          &scan_tree,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_tree",
+	 scan_tree );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_tree != NULL )
+	{
+		libsigscan_scan_tree_free(
+		 &scan_tree,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

@@ -1070,6 +1070,17 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 		return( -1 );
 	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
 	if( ( buffer_size == 0 )
 	 || ( buffer_size > (size_t) SSIZE_MAX ) )
 	{

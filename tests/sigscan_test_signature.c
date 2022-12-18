@@ -21,6 +21,7 @@
 
 #include <common.h>
 #include <file_stream.h>
+#include <memory.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
@@ -33,6 +34,7 @@
 #include "sigscan_test_memory.h"
 #include "sigscan_test_unused.h"
 
+#include "../libsigscan/libsigscan_definitions.h"
 #include "../libsigscan/libsigscan_signature.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
@@ -418,16 +420,14 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libsigscan_signature_get_identifier_size function
+/* Tests the libsigscan_signature_set function
  * Returns 1 if successful or 0 if not
  */
-int sigscan_test_signature_get_identifier_size(
+int sigscan_test_signature_set(
      void )
 {
 	libcerror_error_t *error          = NULL;
 	libsigscan_signature_t *signature = NULL;
-	size_t identifier_size            = 0;
-	int identifier_size_is_set        = 0;
 	int result                        = 0;
 
 	/* Initialize test
@@ -451,27 +451,35 @@ int sigscan_test_signature_get_identifier_size(
 
 	/* Test regular cases
 	 */
-	result = libsigscan_signature_get_identifier_size(
+	result = libsigscan_signature_set(
 	          signature,
-	          &identifier_size,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	identifier_size_is_set = result;
-
 	/* Test error cases
 	 */
-	result = libsigscan_signature_get_identifier_size(
+	result = libsigscan_signature_set(
 	          NULL,
-	          &identifier_size,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -486,25 +494,160 @@ int sigscan_test_signature_get_identifier_size(
 	libcerror_error_free(
 	 &error );
 
-	if( identifier_size_is_set != 0 )
-	{
-		result = libsigscan_signature_get_identifier_size(
-		          signature,
-		          NULL,
-		          &error );
+	result = libsigscan_signature_set(
+	          signature,
+	          NULL,
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
 
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          0,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE + 1,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          NULL,
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          0,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE + 1,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          -1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_signature_free(
@@ -541,6 +684,84 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_signature_get_identifier_size function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_signature_get_identifier_size(
+     libsigscan_signature_t *signature )
+{
+	libcerror_error_t *error = NULL;
+	size_t identifier_size   = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_get_identifier_size(
+	          signature,
+	          &identifier_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_SIZE(
+	 "identifier_size",
+	 identifier_size,
+	 (size_t) 5 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_signature_get_identifier_size(
+	          NULL,
+	          &identifier_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_get_identifier_size(
+	          signature,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
@@ -555,6 +776,16 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcerror_error_t *error          = NULL;
+	libsigscan_signature_t *signature = NULL;
+	int result                        = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -574,19 +805,98 @@ int main(
 	 "libsigscan_signature_clone",
 	 sigscan_test_signature_clone );
 
-	SIGSCAN_TEST_RUN(
+	/* TODO: add tests for libsigscan_signature_set */
+
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize signature for tests
+	 */
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_signature_get_identifier_size",
-	 sigscan_test_signature_get_identifier_size );
+	 sigscan_test_signature_get_identifier_size,
+	 signature );
 
 	/* TODO: add tests for libsigscan_signature_get_identifier */
 
-	/* TODO: add tests for libsigscan_signature_set */
+	/* Clean up
+	 */
+	result = libsigscan_signature_free(
+	          &signature,
+	          &error );
 
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

@@ -434,7 +434,7 @@ int libsigscan_scanner_add_signature(
 on_error:
 	if( signature != NULL )
 	{
-		libsigscan_signature_initialize(
+		libsigscan_signature_free(
 		 &signature,
 		 NULL );
 	}
@@ -648,6 +648,7 @@ int libsigscan_scanner_scan_buffer(
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_scanner_scan_buffer";
+	int result            = 0;
 
 	if( scanner == NULL )
 	{
@@ -660,11 +661,13 @@ int libsigscan_scanner_scan_buffer(
 
 		return( -1 );
 	}
-	if( libsigscan_scan_state_scan_buffer(
-	     scan_state,
-	     buffer,
-	     buffer_size,
-	     error ) != 1 )
+	result = libsigscan_scan_state_scan_buffer(
+	          scan_state,
+	          buffer,
+	          buffer_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
