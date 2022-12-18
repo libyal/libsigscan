@@ -116,6 +116,8 @@ int sigscan_test_byte_value_group_initialize(
 	          0,
 	          &error );
 
+	byte_value_group = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -127,8 +129,6 @@ int sigscan_test_byte_value_group_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	byte_value_group = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 

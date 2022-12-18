@@ -85,12 +85,7 @@ int libsigscan_signature_initialize(
 		 "%s: unable to clear signature.",
 		 function );
 
-		memory_free(
-		 *signature );
-
-		*signature = NULL;
-
-		return( -1 );
+		goto on_error;
 	}
 	( *signature )->pattern_offset = -1;
 

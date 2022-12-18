@@ -116,6 +116,8 @@ int sigscan_test_offset_group_initialize(
 	          1,
 	          &error );
 
+	offset_group = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -127,8 +129,6 @@ int sigscan_test_offset_group_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	offset_group = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 

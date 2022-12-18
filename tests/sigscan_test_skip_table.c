@@ -113,6 +113,8 @@ int sigscan_test_skip_table_initialize(
 	          &skip_table,
 	          &error );
 
+	skip_table = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int sigscan_test_skip_table_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	skip_table = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 

@@ -1559,6 +1559,8 @@ on_error:
 	return( 0 );
 }
 
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 /* Tests the libsigscan_scan_state_get_number_of_results function
  * Returns 1 if successful or 0 if not
  */
@@ -1754,8 +1756,6 @@ on_error:
 	}
 	return( 0 );
 }
-
-#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
  */

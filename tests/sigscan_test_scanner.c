@@ -110,6 +110,8 @@ int sigscan_test_scanner_initialize(
 	          &scanner,
 	          &error );
 
+	scanner = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -121,8 +123,6 @@ int sigscan_test_scanner_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	scanner = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 

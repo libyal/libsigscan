@@ -35,9 +35,12 @@
 #include "sigscan_test_unused.h"
 
 #include "../libsigscan/libsigscan_definitions.h"
+#include "../libsigscan/libsigscan_pattern_weights.h"
 #include "../libsigscan/libsigscan_signature.h"
+#include "../libsigscan/libsigscan_signature_table.h"
 #include "../libsigscan/libsigscan_scan_tree.h"
 #include "../libsigscan/libsigscan_scan_tree_node.h"
+#include "../libsigscan/libsigscan_signature.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
@@ -117,6 +120,8 @@ int sigscan_test_scan_tree_initialize(
 	          &scan_tree,
 	          &error );
 
+	scan_tree = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -128,8 +133,6 @@ int sigscan_test_scan_tree_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	scan_tree = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 
@@ -283,6 +286,7 @@ int sigscan_test_scan_tree_build(
 	libcdata_list_t *signatures_list  = NULL;
 	libcerror_error_t *error          = NULL;
 	libsigscan_scan_tree_t *scan_tree = NULL;
+	libsigscan_signature_t *signature = NULL;
 	int result                        = 0;
 
 	/* Initialize test
@@ -304,8 +308,91 @@ int sigscan_test_scan_tree_build(
 	 "error",
 	 error );
 
+	result = libcdata_list_initialize(
+	          &signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
 	/* Test regular cases
 	 */
+	result = libsigscan_scan_tree_build(
+	          scan_tree,
+	          signatures_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -327,8 +414,62 @@ int sigscan_test_scan_tree_build(
 	libcerror_error_free(
 	 &error );
 
+	result = libsigscan_scan_tree_build(
+	          scan_tree,
+	          NULL,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scan_tree_build(
+	          scan_tree,
+	          signatures_list,
+	          -1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_scan_tree_free(
 	          &scan_tree,
 	          &error );
@@ -354,10 +495,693 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
+	}
 	if( scan_tree != NULL )
 	{
 		libsigscan_scan_tree_free(
 		 &scan_tree,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_get_pattern_offset_by_byte_value_weights(
+     libsigscan_scan_tree_t *scan_tree )
+{
+	libcerror_error_t *error                         = NULL;
+	libsigscan_pattern_weights_t *byte_value_weights = NULL;
+	off64_t pattern_offset                           = 0;
+	int result                                       = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
+	          scan_tree,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
+	          NULL,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( byte_value_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &byte_value_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_get_pattern_offset_by_occurrence_weights(
+     libsigscan_scan_tree_t *scan_tree )
+{
+	libcerror_error_t *error                         = NULL;
+	libsigscan_pattern_weights_t *byte_value_weights = NULL;
+	libsigscan_pattern_weights_t *occurrence_weights = NULL;
+	off64_t pattern_offset                           = 0;
+	int result                                       = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
+	          scan_tree,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
+	          NULL,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_free(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( byte_value_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &byte_value_weights,
+		 NULL );
+	}
+	if( occurrence_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &occurrence_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scan_tree_get_pattern_offset_by_similarity_weights function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_get_pattern_offset_by_similarity_weights(
+     libsigscan_scan_tree_t *scan_tree )
+{
+	libcerror_error_t *error                         = NULL;
+	libsigscan_pattern_weights_t *byte_value_weights = NULL;
+	libsigscan_pattern_weights_t *occurrence_weights = NULL;
+	libsigscan_pattern_weights_t *similarity_weights = NULL;
+	off64_t pattern_offset                           = 0;
+	int result                                       = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_pattern_weights_initialize(
+	          &similarity_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "similarity_weights",
+	 similarity_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
+	          scan_tree,
+	          similarity_weights,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_get_pattern_offset_by_similarity_weights(
+	          NULL,
+	          similarity_weights,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_free(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_free(
+	          &similarity_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "similarity_weights",
+	 similarity_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( byte_value_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &byte_value_weights,
+		 NULL );
+	}
+	if( occurrence_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &occurrence_weights,
+		 NULL );
+	}
+	if( similarity_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &similarity_weights,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_scan_tree_get_most_significant_pattern_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scan_tree_get_most_significant_pattern_offset(
+     libsigscan_scan_tree_t *scan_tree )
+{
+	libcerror_error_t *error                         = NULL;
+	libsigscan_signature_table_t *signature_table    = NULL;
+	libsigscan_pattern_weights_t *byte_value_weights = NULL;
+	libsigscan_pattern_weights_t *occurrence_weights = NULL;
+	libsigscan_pattern_weights_t *similarity_weights = NULL;
+	off64_t pattern_offset                           = 0;
+	int result                                       = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_signature_table_initialize(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &similarity_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "similarity_weights",
+	 similarity_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_initialize(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_tree_get_most_significant_pattern_offset(
+	          scan_tree,
+	          signature_table,
+	          similarity_weights,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_scan_tree_get_most_significant_pattern_offset(
+	          NULL,
+	          signature_table,
+	          similarity_weights,
+	          occurrence_weights,
+	          byte_value_weights,
+	          &pattern_offset,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_pattern_weights_free(
+	          &byte_value_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "byte_value_weights",
+	 byte_value_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_free(
+	          &occurrence_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "occurrence_weights",
+	 occurrence_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_pattern_weights_free(
+	          &similarity_weights,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "similarity_weights",
+	 similarity_weights );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_table_free(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( byte_value_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &byte_value_weights,
+		 NULL );
+	}
+	if( occurrence_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &occurrence_weights,
+		 NULL );
+	}
+	if( similarity_weights != NULL )
+	{
+		libsigscan_pattern_weights_free(
+		 &similarity_weights,
+		 NULL );
+	}
+	if( signature_table != NULL )
+	{
+		libsigscan_signature_table_free(
+		 &signature_table,
 		 NULL );
 	}
 	return( 0 );
@@ -385,7 +1209,7 @@ int sigscan_test_scan_tree_get_spanning_range(
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -475,8 +1299,10 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 
+	libcdata_list_t *signatures_list  = NULL;
 	libcerror_error_t *error          = NULL;
 	libsigscan_scan_tree_t *scan_tree = NULL;
+	libsigscan_signature_t *signature = NULL;
 	int result                        = 0;
 
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
@@ -497,7 +1323,9 @@ int main(
 
 	/* TODO: add tests for libsigscan_scan_tree_build_node */
 
-	/* TODO: add tests for libsigscan_scan_tree_build */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_scan_tree_build",
+	 sigscan_test_scan_tree_build );
 
 	/* TODO: add tests for libsigscan_scan_tree_fill_pattern_weights */
 
@@ -524,15 +1352,109 @@ int main(
 	 "error",
 	 error );
 
-	/* TODO: build tree for testing */
+	result = libcdata_list_initialize(
+	          &signatures_list,
+	          &error );
 
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights */
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights */
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
 
-	/* TODO: add tests for libsigscan_scan_tree_get_pattern_offset_by_similarity_weights */
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
-	/* TODO: add tests for libsigscan_scan_tree_get_most_significant_pattern_offset */
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	result = libsigscan_scan_tree_build(
+	          scan_tree,
+	          signatures_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights",
+	 sigscan_test_scan_tree_get_pattern_offset_by_byte_value_weights,
+	 scan_tree );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights",
+	 sigscan_test_scan_tree_get_pattern_offset_by_occurrence_weights,
+	 scan_tree );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_tree_get_pattern_offset_by_similarity_weights",
+	 sigscan_test_scan_tree_get_pattern_offset_by_similarity_weights,
+	 scan_tree );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_tree_get_most_significant_pattern_offset",
+	 sigscan_test_scan_tree_get_most_significant_pattern_offset,
+	 scan_tree );
 
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_scan_tree_get_spanning_range",
@@ -541,6 +1463,24 @@ int main(
 
 	/* Clean up
 	 */
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_scan_tree_free(
 	          &scan_tree,
 	          &error );
@@ -571,6 +1511,19 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
 	}
 	if( scan_tree != NULL )
 	{

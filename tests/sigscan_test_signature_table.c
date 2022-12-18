@@ -113,6 +113,8 @@ int sigscan_test_signature_table_initialize(
 	          &signature_table,
 	          &error );
 
+	signature_table = NULL;
+
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int sigscan_test_signature_table_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	signature_table = NULL;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
 
