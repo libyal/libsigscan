@@ -24,6 +24,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_offset_group",
 		{35423269-669C-4978-9141-7A18B1228BB6} = {35423269-669C-4978-9141-7A18B1228BB6}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_offsets_list", "sigscan_test_offsets_list\sigscan_test_offsets_list.vcproj", "{34968790-A5F0-4174-BD73-0AB22DFBB6E2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
+		{35423269-669C-4978-9141-7A18B1228BB6} = {35423269-669C-4978-9141-7A18B1228BB6}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_pattern_weights", "sigscan_test_pattern_weights\sigscan_test_pattern_weights.vcproj", "{8F6FBF85-33DE-4E41-A1C6-63630C31D0F6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
@@ -225,6 +231,10 @@ Global
 		{E0957DE9-F0A9-4886-B70E-42F9735D364B}.Release|Win32.Build.0 = Release|Win32
 		{E0957DE9-F0A9-4886-B70E-42F9735D364B}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{E0957DE9-F0A9-4886-B70E-42F9735D364B}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{34968790-A5F0-4174-BD73-0AB22DFBB6E2}.Release|Win32.ActiveCfg = Release|Win32
+		{34968790-A5F0-4174-BD73-0AB22DFBB6E2}.Release|Win32.Build.0 = Release|Win32
+		{34968790-A5F0-4174-BD73-0AB22DFBB6E2}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{34968790-A5F0-4174-BD73-0AB22DFBB6E2}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{8F6FBF85-33DE-4E41-A1C6-63630C31D0F6}.Release|Win32.ActiveCfg = Release|Win32
 		{8F6FBF85-33DE-4E41-A1C6-63630C31D0F6}.Release|Win32.Build.0 = Release|Win32
 		{8F6FBF85-33DE-4E41-A1C6-63630C31D0F6}.VSDebug|Win32.ActiveCfg = VSDebug|Win32

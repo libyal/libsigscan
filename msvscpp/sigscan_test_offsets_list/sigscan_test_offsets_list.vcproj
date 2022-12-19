@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="sigscan_test_pattern_weights"
-	ProjectGUID="{8F6FBF85-33DE-4E41-A1C6-63630C31D0F6}"
-	RootNamespace="sigscan_test_pattern_weights"
+	Name="sigscan_test_offsets_list"
+	ProjectGUID="{34968790-A5F0-4174-BD73-0AB22DFBB6E2}"
+	RootNamespace="sigscan_test_offsets_list"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -180,7 +180,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\sigscan_test_pattern_weights.c"
+				RelativePath="..\..\tests\sigscan_test_offsets_list.c"
 				>
 			</File>
 		</Filter>
@@ -189,10 +189,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\tests\sigscan_test_libcdata.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\tests\sigscan_test_libcerror.h"
 				>

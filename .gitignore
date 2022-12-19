@@ -132,6 +132,7 @@ stamp-h[1-9]
 /tests/sigscan_test_error
 /tests/sigscan_test_notify
 /tests/sigscan_test_offset_group
+/tests/sigscan_test_offsets_list
 /tests/sigscan_test_pattern_weights
 /tests/sigscan_test_scan_object
 /tests/sigscan_test_scan_result

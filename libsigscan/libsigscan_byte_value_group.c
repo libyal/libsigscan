@@ -257,9 +257,9 @@ int libsigscan_byte_value_group_get_signature_group(
      libsigscan_signature_group_t **signature_group,
      libcerror_error_t **error )
 {
-	libcdata_list_element_t *list_element = NULL;
-	static char *function                 = "libsigscan_byte_value_group_get_signature_group";
-	int result                            = 0;
+	libcdata_list_element_t *list_element              = NULL;
+	libsigscan_signature_group_t *safe_signature_group = NULL;
+	static char *function                              = "libsigscan_byte_value_group_get_signature_group";
 
 	if( byte_value_group == NULL )
 	{
@@ -283,6 +283,8 @@ int libsigscan_byte_value_group_get_signature_group(
 
 		return( -1 );
 	}
+	*signature_group = NULL;
+
 	if( libcdata_list_get_first_element(
 	     byte_value_group->signature_groups_list,
 	     &list_element,
@@ -301,7 +303,7 @@ int libsigscan_byte_value_group_get_signature_group(
 	{
 		if( libcdata_list_element_get_value(
 		     list_element,
-		     (intptr_t **) signature_group,
+		     (intptr_t **) &safe_signature_group,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -313,7 +315,7 @@ int libsigscan_byte_value_group_get_signature_group(
 
 			return( -1 );
 		}
-		if( *signature_group == NULL )
+		if( safe_signature_group == NULL )
 		{
 			libcerror_error_set(
 			 error,
@@ -324,13 +326,13 @@ int libsigscan_byte_value_group_get_signature_group(
 
 			return( -1 );
 		}
-		if( ( *signature_group )->byte_value == byte_value )
+		if( safe_signature_group->byte_value == byte_value )
 		{
-			result = 1;
+			*signature_group = safe_signature_group;
 
-			break;
+			return( 1 );
 		}
-		if( ( *signature_group )->byte_value > byte_value )
+		if( safe_signature_group->byte_value > byte_value )
 		{
 			break;
 		}
@@ -349,11 +351,7 @@ int libsigscan_byte_value_group_get_signature_group(
 			return( -1 );
 		}
 	}
-	if( result == 0 )
-	{
-		*signature_group = NULL;
-	}
-	return( result );
+	return( 0 );
 }
 
 /* Inserts a signature for a specific byte value

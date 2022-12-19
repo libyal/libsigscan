@@ -41,7 +41,7 @@ int libsigscan_offset_clone(
      off64_t *source_offset,
      libcerror_error_t **error );
 
-int libsigscan_offset_list_compare(
+int libsigscan_offsets_list_compare(
      off64_t *first_offset,
      off64_t *second_offset,
      libcerror_error_t **error );

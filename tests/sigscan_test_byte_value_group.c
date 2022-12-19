@@ -34,6 +34,7 @@
 #include "sigscan_test_unused.h"
 
 #include "../libsigscan/libsigscan_byte_value_group.h"
+#include "../libsigscan/libsigscan_signature.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
@@ -48,7 +49,7 @@ int sigscan_test_byte_value_group_initialize(
 	int result                                      = 0;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
-	int number_of_malloc_fail_tests                 = 1;
+	int number_of_malloc_fail_tests                 = 2;
 	int number_of_memset_fail_tests                 = 1;
 	int test_number                                 = 0;
 #endif
@@ -439,32 +440,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_byte_value_group_get_pattern_offset(
-     void )
+     libsigscan_byte_value_group_t *byte_value_group )
 {
-	libcerror_error_t *error                        = NULL;
-	libsigscan_byte_value_group_t *byte_value_group = NULL;
-	off64_t pattern_offset                          = 0;
-	int result                                      = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_byte_value_group_initialize(
-	          &byte_value_group,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error = NULL;
+	off64_t pattern_offset   = 0;
+	int result               = 0;
 
 	/* Test regular cases
 	 */
@@ -523,25 +503,6 @@ int sigscan_test_byte_value_group_get_pattern_offset(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_byte_value_group_free(
-	          &byte_value_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -549,12 +510,6 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
-	}
-	if( byte_value_group != NULL )
-	{
-		libsigscan_byte_value_group_free(
-		 &byte_value_group,
-		 NULL );
 	}
 	return( 0 );
 }
@@ -740,111 +695,107 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_byte_value_group_get_signature_group function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_byte_value_group_get_signature_group(
+     libsigscan_byte_value_group_t *byte_value_group )
+{
+	libcerror_error_t *error                      = NULL;
+	libsigscan_signature_group_t *signature_group = 0;
+	int result                                    = 0;
+
+	/* Test regular cases
+	 */
+	signature_group = NULL;
+
+	result = libsigscan_byte_value_group_get_signature_group(
+	          byte_value_group,
+	          (uint8_t) 't',
+	          &signature_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature_group",
+	 signature_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	signature_group = NULL;
+
+	result = libsigscan_byte_value_group_get_signature_group(
+	          NULL,
+	          (uint8_t) 't',
+	          &signature_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_group",
+	 signature_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_byte_value_group_get_signature_group(
+	          byte_value_group,
+	          0,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_group",
+	 signature_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* Tests the libsigscan_byte_value_group_get_number_of_signature_groups function
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_byte_value_group_get_number_of_signature_groups(
-     void )
+     libsigscan_byte_value_group_t *byte_value_group )
 {
-	libcerror_error_t *error                        = NULL;
-	libsigscan_byte_value_group_t *byte_value_group = NULL;
-	libsigscan_signature_t *signature               = NULL;
-	int number_of_signature_groups                  = 0;
-	int result                                      = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_signature_initialize(
-	          &signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "signature",
-	 signature );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_signature_set(
-	          signature,
-	          "identifier",
-	          10,
-	          0,
-	          (uint8_t *) "pattern",
-	          7,
-	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_byte_value_group_initialize(
-	          &byte_value_group,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test regular cases
-	 */
-	result = libsigscan_byte_value_group_get_number_of_signature_groups(
-	          byte_value_group,
-	          &number_of_signature_groups,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "number_of_signature_groups",
-	 number_of_signature_groups,
-	 0 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Initialize test
-	 */
-	result = libsigscan_byte_value_group_insert_signature(
-	          byte_value_group,
-	          (uint8_t) 't',
-	          signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error       = NULL;
+	int number_of_signature_groups = 0;
+	int result                     = 0;
 
 	/* Test regular cases
 	 */
@@ -903,42 +854,6 @@ int sigscan_test_byte_value_group_get_number_of_signature_groups(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_byte_value_group_free(
-	          &byte_value_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_signature_free(
-	          &signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "signature",
-	 signature );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -947,18 +862,6 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( byte_value_group != NULL )
-	{
-		libsigscan_byte_value_group_free(
-		 &byte_value_group,
-		 NULL );
-	}
-	if( signature != NULL )
-	{
-		libsigscan_signature_free(
-		 &signature,
-		 NULL );
-	}
 	return( 0 );
 }
 
@@ -966,84 +869,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_byte_value_group_get_signature_group_by_index(
-     void )
+     libsigscan_byte_value_group_t *byte_value_group )
 {
-	libcerror_error_t *error                        = NULL;
-	libsigscan_byte_value_group_t *byte_value_group = NULL;
-	libsigscan_signature_t *signature               = NULL;
-	libsigscan_signature_group_t *signature_group   = 0;
-	int result                                      = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_signature_initialize(
-	          &signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "signature",
-	 signature );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_signature_set(
-	          signature,
-	          "identifier",
-	          10,
-	          0,
-	          (uint8_t *) "pattern",
-	          7,
-	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_byte_value_group_initialize(
-	          &byte_value_group,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_byte_value_group_insert_signature(
-	          byte_value_group,
-	          (uint8_t) 't',
-	          signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error                      = NULL;
+	libsigscan_signature_group_t *signature_group = 0;
+	int result                                    = 0;
 
 	/* Test regular cases
 	 */
@@ -1138,42 +968,6 @@ int sigscan_test_byte_value_group_get_signature_group_by_index(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_byte_value_group_free(
-	          &byte_value_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "byte_value_group",
-	 byte_value_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_signature_free(
-	          &signature,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "signature",
-	 signature );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -1181,18 +975,6 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
-	}
-	if( byte_value_group != NULL )
-	{
-		libsigscan_byte_value_group_free(
-		 &byte_value_group,
-		 NULL );
-	}
-	if( signature != NULL )
-	{
-		libsigscan_signature_free(
-		 &signature,
-		 NULL );
 	}
 	return( 0 );
 }
@@ -1211,6 +993,17 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcerror_error_t *error                        = NULL;
+	libsigscan_byte_value_group_t *byte_value_group = NULL;
+	libsigscan_signature_t *signature               = NULL;
+	int result                                      = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -1229,28 +1022,168 @@ int main(
 	 sigscan_test_byte_value_group_compare );
 
 	SIGSCAN_TEST_RUN(
-	 "libsigscan_byte_value_group_get_pattern_offset",
-	 sigscan_test_byte_value_group_get_pattern_offset );
-
-	/* TODO: add tests for libsigscan_byte_value_group_get_signature_group */
-
-	SIGSCAN_TEST_RUN(
 	 "libsigscan_byte_value_group_insert_signature",
 	 sigscan_test_byte_value_group_insert_signature );
 
-	SIGSCAN_TEST_RUN(
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize byte_value_group for tests
+	 */
+	result = libsigscan_byte_value_group_initialize(
+	          &byte_value_group,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "byte_value_group",
+	 byte_value_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "identifier",
+	          10,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_byte_value_group_insert_signature(
+	          byte_value_group,
+	          (uint8_t) 't',
+	          signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_byte_value_group_get_pattern_offset",
+	 sigscan_test_byte_value_group_get_pattern_offset,
+	 byte_value_group );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_byte_value_group_get_signature_group",
+	 sigscan_test_byte_value_group_get_signature_group,
+	 byte_value_group );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_byte_value_group_get_number_of_signature_groups",
-	 sigscan_test_byte_value_group_get_number_of_signature_groups );
+	 sigscan_test_byte_value_group_get_number_of_signature_groups,
+	 byte_value_group );
 
-	SIGSCAN_TEST_RUN(
+	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_byte_value_group_get_signature_group_by_index",
-	 sigscan_test_byte_value_group_get_signature_group_by_index );
+	 sigscan_test_byte_value_group_get_signature_group_by_index,
+	 byte_value_group );
 
+	/* Clean up
+	 */
+	result = libsigscan_signature_free(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_byte_value_group_free(
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "byte_value_group",
+	 byte_value_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( byte_value_group != NULL )
+	{
+		libsigscan_byte_value_group_free(
+		 &byte_value_group,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

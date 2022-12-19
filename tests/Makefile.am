@@ -43,6 +43,7 @@ check_PROGRAMS = \
 	sigscan_test_error \
 	sigscan_test_notify \
 	sigscan_test_offset_group \
+	sigscan_test_offsets_list \
 	sigscan_test_pattern_weights \
 	sigscan_test_scan_object \
 	sigscan_test_scan_result \
@@ -101,7 +102,20 @@ sigscan_test_offset_group_LDADD = \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 
+sigscan_test_offsets_list_SOURCES = \
+	sigscan_test_libcerror.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_macros.h \
+	sigscan_test_memory.c sigscan_test_memory.h \
+	sigscan_test_offsets_list.c \
+	sigscan_test_unused.h
+
+sigscan_test_offsets_list_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@
+
 sigscan_test_pattern_weights_SOURCES = \
+	sigscan_test_libcdata.h \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \

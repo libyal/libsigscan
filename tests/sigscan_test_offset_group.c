@@ -48,7 +48,7 @@ int sigscan_test_offset_group_initialize(
 	int result                              = 0;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
-	int number_of_malloc_fail_tests         = 1;
+	int number_of_malloc_fail_tests         = 2;
 	int number_of_memset_fail_tests         = 1;
 	int test_number                         = 0;
 #endif
@@ -439,32 +439,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_offset_group_get_weight(
-     void )
+     libsigscan_offset_group_t *offset_group )
 {
-	libcerror_error_t *error                = NULL;
-	libsigscan_offset_group_t *offset_group = NULL;
-	int result                              = 0;
-	int weight                              = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_offset_group_initialize(
-	          &offset_group,
-	          1,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+	int weight               = 0;
 
 	/* Test regular cases
 	 */
@@ -518,25 +497,6 @@ int sigscan_test_offset_group_get_weight(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_offset_group_free(
-	          &offset_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -544,12 +504,6 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
-	}
-	if( offset_group != NULL )
-	{
-		libsigscan_offset_group_free(
-		 &offset_group,
-		 NULL );
 	}
 	return( 0 );
 }
@@ -558,69 +512,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_offset_group_get_number_of_offsets(
-     void )
+     libsigscan_offset_group_t *offset_group )
 {
-	libcerror_error_t *error                = NULL;
-	libsigscan_offset_group_t *offset_group = NULL;
-	int number_of_offsets                   = 0;
-	int result                              = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_offset_group_initialize(
-	          &offset_group,
-	          1,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test regular cases
-	 */
-	result = libsigscan_offset_group_get_number_of_offsets(
-	          offset_group,
-	          &number_of_offsets,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "number_of_offsets",
-	 number_of_offsets,
-	 0 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Initialize test
-	 */
-	result = libsigscan_offset_group_append_offset(
-	          offset_group,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error = NULL;
+	int number_of_offsets    = 0;
+	int result               = 0;
 
 	/* Test regular cases
 	 */
@@ -679,25 +575,6 @@ int sigscan_test_offset_group_get_number_of_offsets(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_offset_group_free(
-	          &offset_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -706,12 +583,6 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( offset_group != NULL )
-	{
-		libsigscan_offset_group_free(
-		 &offset_group,
-		 NULL );
-	}
 	return( 0 );
 }
 
@@ -719,46 +590,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_offset_group_get_offset_by_index(
-     void )
+     libsigscan_offset_group_t *offset_group )
 {
-	libcerror_error_t *error                = NULL;
-	libsigscan_offset_group_t *offset_group = NULL;
-	off64_t offset_by_index                 = 0;
-	int result                              = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_offset_group_initialize(
-	          &offset_group,
-	          1,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libsigscan_offset_group_append_offset(
-	          offset_group,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error = NULL;
+	off64_t offset_by_index  = 0;
+	int result               = 0;
 
 	/* Test regular cases
 	 */
@@ -833,25 +669,6 @@ int sigscan_test_offset_group_get_offset_by_index(
 	libcerror_error_free(
 	 &error );
 
-	/* Clean up
-	 */
-	result = libsigscan_offset_group_free(
-	          &offset_group,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "offset_group",
-	 offset_group );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
 	return( 1 );
 
 on_error:
@@ -859,12 +676,6 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
-	}
-	if( offset_group != NULL )
-	{
-		libsigscan_offset_group_free(
-		 &offset_group,
-		 NULL );
 	}
 	return( 0 );
 }
@@ -1015,6 +826,16 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcerror_error_t *error                = NULL;
+	libsigscan_offset_group_t *offset_group = NULL;
+	int result                              = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -1033,26 +854,103 @@ int main(
 	 sigscan_test_offset_group_compare );
 
 	SIGSCAN_TEST_RUN(
-	 "libsigscan_offset_group_get_weight",
-	 sigscan_test_offset_group_get_weight );
-
-	SIGSCAN_TEST_RUN(
-	 "libsigscan_offset_group_get_number_of_offsets",
-	 sigscan_test_offset_group_get_number_of_offsets );
-
-	SIGSCAN_TEST_RUN(
-	 "libsigscan_offset_group_get_offset_by_index",
-	 sigscan_test_offset_group_get_offset_by_index );
-
-	SIGSCAN_TEST_RUN(
 	 "libsigscan_offset_group_append_offset",
 	 sigscan_test_offset_group_append_offset );
 
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize offset_group for tests
+	 */
+	result = libsigscan_offset_group_initialize(
+	          &offset_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "offset_group",
+	 offset_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_offset_group_append_offset(
+	          offset_group,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_offset_group_get_weight",
+	 sigscan_test_offset_group_get_weight,
+	 offset_group );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_offset_group_get_number_of_offsets",
+	 sigscan_test_offset_group_get_number_of_offsets,
+	 offset_group );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_offset_group_get_offset_by_index",
+	 sigscan_test_offset_group_get_offset_by_index,
+	 offset_group );
+
+	/* Clean up
+	 */
+	result = libsigscan_offset_group_free(
+	          &offset_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "offset_group",
+	 offset_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( offset_group != NULL )
+	{
+		libsigscan_offset_group_free(
+		 &offset_group,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

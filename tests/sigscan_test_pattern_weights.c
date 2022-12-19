@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "sigscan_test_libcdata.h"
 #include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
@@ -48,7 +49,7 @@ int sigscan_test_pattern_weights_initialize(
 	int result                                    = 0;
 
 #if defined( HAVE_SIGSCAN_TEST_MEMORY )
-	int number_of_malloc_fail_tests               = 1;
+	int number_of_malloc_fail_tests               = 3;
 	int number_of_memset_fail_tests               = 1;
 	int test_number                               = 0;
 #endif
@@ -480,6 +481,7 @@ on_error:
 int sigscan_test_pattern_weights_get_largest_weight(
      void )
 {
+	libcdata_list_t *offset_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	int largest_weight                            = 0;
@@ -594,6 +596,29 @@ int sigscan_test_pattern_weights_get_largest_weight(
 	libcerror_error_free(
 	 &error );
 
+	offset_groups_list = pattern_weights->offset_groups_list;
+
+	pattern_weights->offset_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_get_largest_weight(
+	          pattern_weights,
+	          &largest_weight,
+	          &error );
+
+	pattern_weights->offset_groups_list = offset_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -636,6 +661,7 @@ on_error:
 int sigscan_test_pattern_weights_get_offset_group(
      void )
 {
+	libcdata_list_t *offset_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_offset_group_t *offset_group       = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
@@ -741,6 +767,48 @@ int sigscan_test_pattern_weights_get_offset_group(
 	libcerror_error_free(
 	 &error );
 
+	result = libsigscan_pattern_weights_get_offset_group(
+	          pattern_weights,
+	          1,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	offset_groups_list = pattern_weights->offset_groups_list;
+
+	pattern_weights->offset_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_get_offset_group(
+	          pattern_weights,
+	          1,
+	          &offset_group,
+	          &error );
+
+	pattern_weights->offset_groups_list = offset_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -783,6 +851,7 @@ on_error:
 int sigscan_test_pattern_weights_insert_offset(
      void )
 {
+	libcdata_list_t *offset_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	int result                                    = 0;
@@ -843,6 +912,30 @@ int sigscan_test_pattern_weights_insert_offset(
 	libcerror_error_free(
 	 &error );
 
+	offset_groups_list = pattern_weights->offset_groups_list;
+
+	pattern_weights->offset_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_insert_offset(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	pattern_weights->offset_groups_list = offset_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -885,6 +978,7 @@ on_error:
 int sigscan_test_pattern_weights_get_weight_group(
      void )
 {
+	libcdata_list_t *weight_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	libsigscan_weight_group_t *weight_group       = NULL;
@@ -990,6 +1084,48 @@ int sigscan_test_pattern_weights_get_weight_group(
 	libcerror_error_free(
 	 &error );
 
+	result = libsigscan_pattern_weights_get_weight_group(
+	          pattern_weights,
+	          0,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	weight_groups_list = pattern_weights->weight_groups_list;
+
+	pattern_weights->weight_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_get_weight_group(
+	          pattern_weights,
+	          0,
+	          &weight_group,
+	          &error );
+
+	pattern_weights->weight_groups_list = weight_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -1032,6 +1168,7 @@ on_error:
 int sigscan_test_pattern_weights_insert_add_weight(
      void )
 {
+	libcdata_list_t *weight_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	int result                                    = 0;
@@ -1092,6 +1229,30 @@ int sigscan_test_pattern_weights_insert_add_weight(
 	libcerror_error_free(
 	 &error );
 
+	weight_groups_list = pattern_weights->weight_groups_list;
+
+	pattern_weights->weight_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_insert_add_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	pattern_weights->weight_groups_list = weight_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libsigscan_pattern_weights_free(
@@ -1134,6 +1295,7 @@ on_error:
 int sigscan_test_pattern_weights_insert_set_weight(
      void )
 {
+	libcdata_list_t *weight_groups_list           = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_pattern_weights_t *pattern_weights = NULL;
 	int result                                    = 0;
@@ -1181,6 +1343,30 @@ int sigscan_test_pattern_weights_insert_set_weight(
 	          0,
 	          1,
 	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	weight_groups_list = pattern_weights->weight_groups_list;
+
+	pattern_weights->weight_groups_list = NULL;
+
+	result = libsigscan_pattern_weights_insert_set_weight(
+	          pattern_weights,
+	          0,
+	          1,
+	          &error );
+
+	pattern_weights->weight_groups_list = weight_groups_list;
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -1293,7 +1479,11 @@ int main(
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

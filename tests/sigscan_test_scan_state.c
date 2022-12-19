@@ -1559,8 +1559,6 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
-
 /* Tests the libsigscan_scan_state_get_number_of_results function
  * Returns 1 if successful or 0 if not
  */
@@ -1757,6 +1755,8 @@ on_error:
 	return( 0 );
 }
 
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1769,6 +1769,7 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 
 	libcerror_error_t *error            = NULL;
@@ -1776,6 +1777,7 @@ int main(
 	int result                          = 0;
 
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
@@ -1796,6 +1798,7 @@ int main(
 	 "libsigscan_scan_state_set_data_size",
 	 sigscan_test_scan_state_set_data_size );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 
 	/* Initialize scan_state for tests
@@ -1823,8 +1826,6 @@ int main(
 	 "libsigscan_scan_state_start",
 	 sigscan_test_scan_state_start,
 	 scan_state );
-
-#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_scan_state_flush",
@@ -1860,8 +1861,6 @@ int main(
 	 "libsigscan_scan_state_scan_buffer",
 	 sigscan_test_scan_state_scan_buffer,
 	 scan_state );
-
-#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_scan_state_get_number_of_results",
@@ -1900,10 +1899,12 @@ int main(
 	 error );
 
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
 on_error:
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( error != NULL )
 	{
@@ -1917,6 +1918,7 @@ on_error:
 		 NULL );
 	}
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_FAILURE );
 }

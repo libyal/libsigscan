@@ -117,12 +117,12 @@ int libsigscan_offset_clone(
 /* Compares two offsets
  * Returns return LIBCDATA_COMPARE_LESS, LIBCDATA_COMPARE_EQUAL, LIBCDATA_COMPARE_GREATER if successful or -1 on error
  */
-int libsigscan_offset_list_compare(
+int libsigscan_offsets_list_compare(
      off64_t *first_offset,
      off64_t *second_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_offset_list_compare";
+	static char *function = "libsigscan_offsets_list_compare";
 
 	if( first_offset == NULL )
 	{
@@ -269,7 +269,7 @@ int libsigscan_offsets_list_insert_offset(
 	if( libcdata_list_insert_value(
 	     offsets_list,
 	     (intptr_t *) offset_value,
-	     (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_offset_list_compare,
+	     (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_offsets_list_compare,
 	     LIBCDATA_INSERT_FLAG_UNIQUE_ENTRIES,
 	     error ) != 1 )
 	{
