@@ -47,7 +47,6 @@ struct libsigscan_internal_scan_result
 	libsigscan_signature_t *signature;
 };
 
-LIBSIGSCAN_EXTERN \
 int libsigscan_scan_result_initialize(
      libsigscan_scan_result_t **scan_result,
      off64_t offset,

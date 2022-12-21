@@ -39,6 +39,7 @@
 #include "../libsigscan/libsigscan_scan_state.h"
 #include "../libsigscan/libsigscan_scan_tree.h"
 #include "../libsigscan/libsigscan_scan_tree_node.h"
+#include "../libsigscan/libsigscan_signature.h"
 
 /* Tests the libsigscan_scan_state_initialize function
  * Returns 1 if successful or 0 if not
@@ -1182,9 +1183,11 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 {
 	uint8_t buffer[ 256 ];
 
+	libcdata_list_t *signatures_list         = NULL;
 	libcerror_error_t *error                 = NULL;
 	libsigscan_scan_tree_t *scan_tree        = NULL;
 	libsigscan_scan_tree_node_t *active_node = NULL;
+	libsigscan_signature_t *signature        = NULL;
 	void *memset_result                      = NULL;
 	int result                               = 0;
 
@@ -1216,9 +1219,92 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	 "error",
 	 error );
 
+	result = libcdata_list_initialize(
+	          &signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	result = libsigscan_scan_tree_build(
+	          scan_tree,
+	          signatures_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	/* Test regular cases
 	 */
-/* TODO build functional scan tree
 	active_node = scan_tree->root_node;
 
 	result = libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
@@ -1235,12 +1321,11 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-*/
 
 	/* Test error cases
 	 */
@@ -1267,8 +1352,95 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	libcerror_error_free(
 	 &error );
 
+	result = libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+	          (libsigscan_internal_scan_state_t *) scan_state,
+	          NULL,
+	          &active_node,
+	          0,
+	          128,
+	          buffer,
+	          256,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+	          (libsigscan_internal_scan_state_t *) scan_state,
+	          scan_tree,
+	          NULL,
+	          0,
+	          128,
+	          buffer,
+	          256,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+	          (libsigscan_internal_scan_state_t *) scan_state,
+	          scan_tree,
+	          &active_node,
+	          0,
+	          128,
+	          NULL,
+	          256,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_scan_tree_free(
 	          &scan_tree,
 	          &error );
@@ -1293,6 +1465,19 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
 	}
 	if( scan_tree != NULL )
 	{
@@ -1580,6 +1765,11 @@ int sigscan_test_scan_state_get_number_of_results(
 	 "result",
 	 result,
 	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "number_of_results",
+	 number_of_results,
+	 0 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
