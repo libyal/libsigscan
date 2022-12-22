@@ -27,6 +27,7 @@ MSVSCPP_FILES = \
 	sigscan_test_signature/sigscan_test_signature.vcproj \
 	sigscan_test_signature_group/sigscan_test_signature_group.vcproj \
 	sigscan_test_signature_table/sigscan_test_signature_table.vcproj \
+	sigscan_test_signatures_list/sigscan_test_signatures_list.vcproj \
 	sigscan_test_skip_table/sigscan_test_skip_table.vcproj \
 	sigscan_test_support/sigscan_test_support.vcproj \
 	sigscan_test_weight_group/sigscan_test_weight_group.vcproj \

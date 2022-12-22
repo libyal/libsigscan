@@ -37,6 +37,206 @@
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
+/* Tests the libsigscan_weight_group_initialize function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_weight_group_initialize(
+     void )
+{
+	libcerror_error_t *error                = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	int result                              = 0;
+
+#if defined( HAVE_SIGSCAN_TEST_MEMORY )
+	int number_of_malloc_fail_tests         = 2;
+	int number_of_memset_fail_tests         = 1;
+	int test_number                         = 0;
+#endif
+
+	/* Test regular cases
+	 */
+	result = libsigscan_weight_group_initialize(
+	          &weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_weight_group_free(
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_weight_group_initialize(
+	          NULL,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	weight_group = (libsigscan_weight_group_t *) 0x12345678UL;
+
+	result = libsigscan_weight_group_initialize(
+	          &weight_group,
+	          1,
+	          &error );
+
+	weight_group = NULL;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+#if defined( HAVE_SIGSCAN_TEST_MEMORY )
+
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
+	{
+		/* Test libsigscan_weight_group_initialize with malloc failing
+		 */
+		sigscan_test_malloc_attempts_before_fail = test_number;
+
+		result = libsigscan_weight_group_initialize(
+		          &weight_group,
+		          1,
+		          &error );
+
+		if( sigscan_test_malloc_attempts_before_fail != -1 )
+		{
+			sigscan_test_malloc_attempts_before_fail = -1;
+
+			if( weight_group != NULL )
+			{
+				libsigscan_weight_group_free(
+				 &weight_group,
+				 NULL );
+			}
+		}
+		else
+		{
+			SIGSCAN_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SIGSCAN_TEST_ASSERT_IS_NULL(
+			 "weight_group",
+			 weight_group );
+
+			SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
+		}
+	}
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
+	{
+		/* Test libsigscan_weight_group_initialize with memset failing
+		 */
+		sigscan_test_memset_attempts_before_fail = test_number;
+
+		result = libsigscan_weight_group_initialize(
+		          &weight_group,
+		          1,
+		          &error );
+
+		if( sigscan_test_memset_attempts_before_fail != -1 )
+		{
+			sigscan_test_memset_attempts_before_fail = -1;
+
+			if( weight_group != NULL )
+			{
+				libsigscan_weight_group_free(
+				 &weight_group,
+				 NULL );
+			}
+		}
+		else
+		{
+			SIGSCAN_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SIGSCAN_TEST_ASSERT_IS_NULL(
+			 "weight_group",
+			 weight_group );
+
+			SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
+		}
+	}
+#endif /* defined( HAVE_SIGSCAN_TEST_MEMORY ) */
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &weight_group,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libsigscan_weight_group_free function
  * Returns 1 if successful or 0 if not
  */
@@ -75,6 +275,487 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_weight_group_compare function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_weight_group_compare(
+     void )
+{
+	libcerror_error_t *error                       = NULL;
+	libsigscan_weight_group_t *first_weight_group  = NULL;
+	libsigscan_weight_group_t *second_weight_group = NULL;
+	int result                                     = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_weight_group_initialize(
+	          &first_weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "first_weight_group",
+	 first_weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_weight_group_initialize(
+	          &second_weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "second_weight_group",
+	 second_weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_weight_group_compare(
+	          first_weight_group,
+	          second_weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 LIBCDATA_COMPARE_EQUAL );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_weight_group_compare(
+	          NULL,
+	          second_weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_weight_group_compare(
+	          first_weight_group,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_weight_group_free(
+	          &second_weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "second_weight_group",
+	 second_weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_weight_group_free(
+	          &first_weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "first_weight_group",
+	 first_weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( second_weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &second_weight_group,
+		 NULL );
+	}
+	if( first_weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &first_weight_group,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_weight_group_add_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_weight_group_add_weight(
+     void )
+{
+	libcerror_error_t *error                = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	int result                              = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_weight_group_initialize(
+	          &weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_weight_group_add_weight(
+	          weight_group,
+	          99,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_weight_group_add_weight(
+	          NULL,
+	          99,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_weight_group_free(
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &weight_group,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_weight_group_get_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_weight_group_get_weight(
+     void )
+{
+	libcerror_error_t *error                = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	int result                              = 0;
+	int weight                              = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_weight_group_initialize(
+	          &weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_weight_group_get_weight(
+	          weight_group,
+	          &weight,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_weight_group_get_weight(
+	          NULL,
+	          &weight,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_weight_group_get_weight(
+	          weight_group,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_weight_group_free(
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &weight_group,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_weight_group_set_weight function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_weight_group_set_weight(
+     void )
+{
+	libcerror_error_t *error                = NULL;
+	libsigscan_weight_group_t *weight_group = NULL;
+	int result                              = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_weight_group_initialize(
+	          &weight_group,
+	          1,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_weight_group_set_weight(
+	          weight_group,
+	          99,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_weight_group_set_weight(
+	          NULL,
+	          99,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsigscan_weight_group_free(
+	          &weight_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "weight_group",
+	 weight_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( weight_group != NULL )
+	{
+		libsigscan_weight_group_free(
+		 &weight_group,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 /* The main program
@@ -94,25 +775,39 @@ int main(
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
-	/* TODO: add tests for libsigscan_weight_group_initialize */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_weight_group_initialize",
+	 sigscan_test_weight_group_initialize );
 
 	SIGSCAN_TEST_RUN(
 	 "libsigscan_weight_group_free",
 	 sigscan_test_weight_group_free );
 
-	/* TODO: add tests for libsigscan_weight_group_compare */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_weight_group_compare",
+	 sigscan_test_weight_group_compare );
 
-	/* TODO: add tests for libsigscan_weight_group_add_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_weight_group_add_weight",
+	 sigscan_test_weight_group_add_weight );
 
-	/* TODO: add tests for libsigscan_weight_group_get_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_weight_group_get_weight",
+	 sigscan_test_weight_group_get_weight );
 
-	/* TODO: add tests for libsigscan_weight_group_set_weight */
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_weight_group_set_weight",
+	 sigscan_test_weight_group_set_weight );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

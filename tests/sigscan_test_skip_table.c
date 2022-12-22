@@ -27,12 +27,14 @@
 #include <stdlib.h>
 #endif
 
+#include "sigscan_test_libcdata.h"
 #include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
 #include "sigscan_test_memory.h"
 #include "sigscan_test_unused.h"
 
+#include "../libsigscan/libsigscan_signature.h"
 #include "../libsigscan/libsigscan_skip_table.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
@@ -270,17 +272,17 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libsigscan_skip_table_get_smallest_pattern_size function
+/* Tests the libsigscan_skip_table_fill function
  * Returns 1 if successful or 0 if not
  */
-int sigscan_test_skip_table_get_smallest_pattern_size(
+int sigscan_test_skip_table_fill(
      void )
 {
+	libcdata_list_t *signatures_list    = NULL;
 	libcerror_error_t *error            = NULL;
+	libsigscan_signature_t *signature   = NULL;
 	libsigscan_skip_table_t *skip_table = NULL;
-	size_t smallest_pattern_size        = 0;
 	int result                          = 0;
-	int smallest_pattern_size_is_set    = 0;
 
 	/* Initialize test
 	 */
@@ -301,29 +303,96 @@ int sigscan_test_skip_table_get_smallest_pattern_size(
 	 "error",
 	 error );
 
-	/* Test regular cases
-	 */
-	result = libsigscan_skip_table_get_smallest_pattern_size(
-	          skip_table,
-	          &smallest_pattern_size,
+	result = libcdata_list_initialize(
+	          &signatures_list,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	smallest_pattern_size_is_set = result;
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_skip_table_fill(
+	          skip_table,
+	          signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
-	result = libsigscan_skip_table_get_smallest_pattern_size(
+	result = libsigscan_skip_table_fill(
 	          NULL,
-	          &smallest_pattern_size,
+	          signatures_list,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -338,27 +407,43 @@ int sigscan_test_skip_table_get_smallest_pattern_size(
 	libcerror_error_free(
 	 &error );
 
-	if( smallest_pattern_size_is_set != 0 )
-	{
-		result = libsigscan_skip_table_get_smallest_pattern_size(
-		          skip_table,
-		          NULL,
-		          &error );
+	result = libsigscan_skip_table_fill(
+	          skip_table,
+	          NULL,
+	          &error );
 
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_skip_table_free(
 	          &skip_table,
 	          &error );
@@ -384,6 +469,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
+	}
 	if( skip_table != NULL )
 	{
 		libsigscan_skip_table_free(
@@ -392,6 +490,212 @@ on_error:
 	}
 	return( 0 );
 }
+
+/* Tests the libsigscan_skip_table_get_smallest_pattern_size function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_skip_table_get_smallest_pattern_size(
+     libsigscan_skip_table_t *skip_table )
+{
+	libcerror_error_t *error     = NULL;
+	size_t smallest_pattern_size = 0;
+	int result                   = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_skip_table_get_smallest_pattern_size(
+	          skip_table,
+	          &smallest_pattern_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_skip_table_get_smallest_pattern_size(
+	          NULL,
+	          &smallest_pattern_size,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_skip_table_get_smallest_pattern_size(
+	          skip_table,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_skip_table_get_skip_value function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_skip_table_get_skip_value(
+     libsigscan_skip_table_t *skip_table )
+{
+	libcerror_error_t *error = NULL;
+	size_t skip_value        = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_skip_table_get_skip_value(
+	          skip_table,
+	          (uint8_t) 't',
+	          &skip_value,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_skip_table_get_skip_value(
+	          NULL,
+	          (uint8_t) 't',
+	          &skip_value,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_skip_table_get_skip_value(
+	          skip_table,
+	          (uint8_t) 't',
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#if defined( HAVE_DEBUG_OUTPUT )
+
+/* Tests the libsigscan_skip_table_printf function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_skip_table_printf(
+     libsigscan_skip_table_t *skip_table )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_skip_table_printf(
+	          skip_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_skip_table_printf(
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
@@ -407,6 +711,18 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcdata_list_t *signatures_list    = NULL;
+	libcerror_error_t *error            = NULL;
+	libsigscan_signature_t *signature   = NULL;
+	libsigscan_skip_table_t *skip_table = NULL;
+	int result                          = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -420,21 +736,207 @@ int main(
 	 "libsigscan_skip_table_free",
 	 sigscan_test_skip_table_free );
 
-	/* TODO: add tests for libsigscan_skip_table_fill */
-
 	SIGSCAN_TEST_RUN(
+	 "libsigscan_skip_table_fill",
+	 sigscan_test_skip_table_fill );
+
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize skip_table for tests
+	 */
+	result = libsigscan_skip_table_initialize(
+	          &skip_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "skip_table",
+	 skip_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_initialize(
+	          &signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	result = libsigscan_skip_table_fill(
+	          skip_table,
+	          signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_skip_table_get_smallest_pattern_size",
-	 sigscan_test_skip_table_get_smallest_pattern_size );
+	 sigscan_test_skip_table_get_smallest_pattern_size,
+	 skip_table );
 
-	/* TODO: add tests for libsigscan_skip_table_get_skip_value */
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_skip_table_get_skip_value",
+	 sigscan_test_skip_table_get_skip_value,
+	 skip_table );
 
-	/* TODO: add tests for libsigscan_skip_table_printf */
+#if defined( HAVE_DEBUG_OUTPUT )
 
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_skip_table_printf",
+	 sigscan_test_skip_table_printf,
+	 skip_table );
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
+	/* Clean up
+	 */
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_skip_table_free(
+	          &skip_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "skip_table",
+	 skip_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
+	}
+	if( skip_table != NULL )
+	{
+		libsigscan_skip_table_free(
+		 &skip_table,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 }
 

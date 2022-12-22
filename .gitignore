@@ -143,6 +143,7 @@ stamp-h[1-9]
 /tests/sigscan_test_signature
 /tests/sigscan_test_signature_group
 /tests/sigscan_test_signature_table
+/tests/sigscan_test_signatures_list
 /tests/sigscan_test_skip_table
 /tests/sigscan_test_support
 /tests/sigscan_test_weight_group

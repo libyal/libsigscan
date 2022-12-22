@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="byte_value_group error notify offset_group offsets_list pattern_weights scan_object scan_result scan_state scan_tree scan_tree_node scanner signature signature_group signature_table skip_table support weight_group";
+LIBRARY_TESTS="byte_value_group error notify offset_group offsets_list pattern_weights scan_object scan_result scan_state scan_tree scan_tree_node scanner signature signature_group signature_table signatures_list skip_table support weight_group";
 LIBRARY_TESTS_WITH_INPUT="";
 OPTION_SETS="";
 

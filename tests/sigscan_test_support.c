@@ -203,6 +203,18 @@ int main(
 	 "libsigscan_get_version",
 	 sigscan_test_get_version );
 
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_get_access_flags_read",
+	 sigscan_test_get_access_flags_read );
+
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_get_codepage",
+	 sigscan_test_get_codepage );
+
+	SIGSCAN_TEST_RUN(
+	 "libsigscan_set_codepage",
+	 sigscan_test_set_codepage );
+
 	return( EXIT_SUCCESS );
 
 on_error:

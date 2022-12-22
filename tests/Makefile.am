@@ -54,6 +54,7 @@ check_PROGRAMS = \
 	sigscan_test_signature \
 	sigscan_test_signature_group \
 	sigscan_test_signature_table \
+	sigscan_test_signatures_list \
 	sigscan_test_skip_table \
 	sigscan_test_support \
 	sigscan_test_weight_group
@@ -239,6 +240,19 @@ sigscan_test_signature_table_LDADD = \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 
+sigscan_test_signatures_list_SOURCES = \
+	sigscan_test_libcerror.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_macros.h \
+	sigscan_test_memory.c sigscan_test_memory.h \
+	sigscan_test_signatures_list.c \
+	sigscan_test_unused.h
+
+sigscan_test_signatures_list_LDADD = \
+	@LIBCDATA_LIBADD@ \
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@
+
 sigscan_test_skip_table_SOURCES = \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
@@ -248,6 +262,7 @@ sigscan_test_skip_table_SOURCES = \
 	sigscan_test_unused.h
 
 sigscan_test_skip_table_LDADD = \
+	@LIBCDATA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 
