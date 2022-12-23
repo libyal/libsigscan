@@ -229,6 +229,7 @@ sigscan_test_signature_group_LDADD = \
 	@LIBCERROR_LIBADD@
 
 sigscan_test_signature_table_SOURCES = \
+	sigscan_test_libcdata.h \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
@@ -237,6 +238,7 @@ sigscan_test_signature_table_SOURCES = \
 	sigscan_test_unused.h
 
 sigscan_test_signature_table_LDADD = \
+	@LIBCDATA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 

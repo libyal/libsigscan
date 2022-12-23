@@ -27,12 +27,15 @@
 #include <stdlib.h>
 #endif
 
+#include "sigscan_test_libcdata.h"
 #include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
 #include "sigscan_test_memory.h"
 #include "sigscan_test_unused.h"
 
+#include "../libsigscan/libsigscan_definitions.h"
+#include "../libsigscan/libsigscan_signature.h"
 #include "../libsigscan/libsigscan_signature_table.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
@@ -274,12 +277,261 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_signature_table_get_number_of_byte_value_groups(
+     libsigscan_signature_table_t *signature_table )
+{
+	libcerror_error_t *error        = NULL;
+	int number_of_byte_value_groups = 0;
+	int result                      = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_table_get_number_of_byte_value_groups(
+	          signature_table,
+	          &number_of_byte_value_groups,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "number_of_byte_value_groups",
+	 number_of_byte_value_groups,
+	 7 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_signature_table_get_number_of_byte_value_groups(
+	          NULL,
+	          &number_of_byte_value_groups,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_table_get_number_of_byte_value_groups(
+	          signature_table,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_signature_table_get_byte_value_group_by_index function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_signature_table_get_byte_value_group_by_index(
+     libsigscan_signature_table_t *signature_table )
+{
+	libcerror_error_t *error                        = NULL;
+	libsigscan_byte_value_group_t *byte_value_group = NULL;
+	int result                                      = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_table_get_byte_value_group_by_index(
+	          signature_table,
+	          0,
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_signature_table_get_byte_value_group_by_index(
+	          NULL,
+	          0,
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_table_get_byte_value_group_by_index(
+	          signature_table,
+	          -1,
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_table_get_byte_value_group_by_index(
+	          signature_table,
+	          0,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_signature_table_get_byte_value_group_by_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_signature_table_get_byte_value_group_by_offset(
+     libsigscan_signature_table_t *signature_table )
+{
+	libcerror_error_t *error                        = NULL;
+	libsigscan_byte_value_group_t *byte_value_group = NULL;
+	int result                                      = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_table_get_byte_value_group_by_offset(
+	          signature_table,
+	          0,
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_signature_table_get_byte_value_group_by_offset(
+	          NULL,
+	          0,
+	          &byte_value_group,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_table_get_byte_value_group_by_offset(
+	          signature_table,
+	          0,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsigscan_signature_table_fill function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_signature_table_fill(
      void )
 {
+	libcdata_list_t *offsets_ignore_list          = NULL;
+	libcdata_list_t *signatures_list              = NULL;
 	libcerror_error_t *error                      = NULL;
+	libsigscan_signature_t *signature             = NULL;
 	libsigscan_signature_table_t *signature_table = NULL;
-	int number_of_byte_value_groups               = 0;
-	int number_of_byte_value_groups_is_set        = 0;
 	int result                                    = 0;
 
 	/* Initialize test
@@ -301,29 +553,119 @@ int sigscan_test_signature_table_get_number_of_byte_value_groups(
 	 "error",
 	 error );
 
-	/* Test regular cases
-	 */
-	result = libsigscan_signature_table_get_number_of_byte_value_groups(
-	          signature_table,
-	          &number_of_byte_value_groups,
+	result = libcdata_list_initialize(
+	          &signatures_list,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	number_of_byte_value_groups_is_set = result;
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	result = libcdata_list_initialize(
+	          &offsets_ignore_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "offsets_ignore_list",
+	 offsets_ignore_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_signature_table_fill(
+	          signature_table,
+	          signatures_list,
+	          offsets_ignore_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
-	result = libsigscan_signature_table_get_number_of_byte_value_groups(
+	result = libsigscan_signature_table_fill(
 	          NULL,
-	          &number_of_byte_value_groups,
+	          signatures_list,
+	          offsets_ignore_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -338,27 +680,64 @@ int sigscan_test_signature_table_get_number_of_byte_value_groups(
 	libcerror_error_free(
 	 &error );
 
-	if( number_of_byte_value_groups_is_set != 0 )
-	{
-		result = libsigscan_signature_table_get_number_of_byte_value_groups(
-		          signature_table,
-		          NULL,
-		          &error );
+	result = libsigscan_signature_table_fill(
+	          signature_table,
+	          NULL,
+	          offsets_ignore_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          0,
+	          &error );
 
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
+	result = libcdata_list_free(
+	          &offsets_ignore_list,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "offsets_ignore_list",
+	 offsets_ignore_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libsigscan_signature_table_free(
 	          &signature_table,
 	          &error );
@@ -383,6 +762,26 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
+	}
+	if( offsets_ignore_list != NULL )
+	{
+		libcdata_list_free(
+		 &offsets_ignore_list,
+		 NULL,
+		 NULL );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
 	}
 	if( signature_table != NULL )
 	{
@@ -397,32 +796,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_signature_table_get_number_of_signatures(
-     void )
+     libsigscan_signature_table_t *signature_table )
 {
-	libcerror_error_t *error                      = NULL;
-	libsigscan_signature_table_t *signature_table = NULL;
-	int number_of_signatures                      = 0;
-	int number_of_signatures_is_set               = 0;
-	int result                                    = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_signature_table_initialize(
-	          &signature_table,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "signature_table",
-	 signature_table );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcerror_error_t *error = NULL;
+	int number_of_signatures = 0;
+	int result               = 0;
 
 	/* Test regular cases
 	 */
@@ -431,16 +809,19 @@ int sigscan_test_signature_table_get_number_of_signatures(
 	          &number_of_signatures,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "number_of_signatures",
+	 number_of_signatures,
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	number_of_signatures_is_set = result;
 
 	/* Test error cases
 	 */
@@ -461,43 +842,22 @@ int sigscan_test_signature_table_get_number_of_signatures(
 	libcerror_error_free(
 	 &error );
 
-	if( number_of_signatures_is_set != 0 )
-	{
-		result = libsigscan_signature_table_get_number_of_signatures(
-		          signature_table,
-		          NULL,
-		          &error );
-
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-	/* Clean up
-	 */
-	result = libsigscan_signature_table_free(
-	          &signature_table,
+	result = libsigscan_signature_table_get_number_of_signatures(
+	          signature_table,
+	          NULL,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "signature_table",
-	 signature_table );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "error",
 	 error );
+
+	libcerror_error_free(
+	 &error );
 
 	return( 1 );
 
@@ -507,12 +867,6 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( signature_table != NULL )
-	{
-		libsigscan_signature_table_free(
-		 &signature_table,
-		 NULL );
-	}
 	return( 0 );
 }
 
@@ -520,32 +874,11 @@ on_error:
  * Returns 1 if successful or 0 if not
  */
 int sigscan_test_signature_table_get_signatures_list_clone(
-     void )
+     libsigscan_signature_table_t *signature_table )
 {
-	libcerror_error_t *error                      = NULL;
-	libsigscan_signature_table_t *signature_table = NULL;
-	libcdata_list_t *signatures_list_clone        = 0;
-	int result                                    = 0;
-	int signatures_list_clone_is_set              = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_signature_table_initialize(
-	          &signature_table,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "signature_table",
-	 signature_table );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
+	libcdata_list_t *signatures_list_clone = 0;
+	libcerror_error_t *error               = NULL;
+	int result                             = 0;
 
 	/* Test regular cases
 	 */
@@ -554,55 +887,15 @@ int sigscan_test_signature_table_get_signatures_list_clone(
 	          &signatures_list_clone,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	signatures_list_clone_is_set = result;
-
-	/* Test error cases
-	 */
-	result = libsigscan_signature_table_get_signatures_list_clone(
-	          NULL,
-	          &signatures_list_clone,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	if( signatures_list_clone_is_set != 0 )
-	{
-		result = libsigscan_signature_table_get_signatures_list_clone(
-		          signature_table,
-		          NULL,
-		          &error );
-
-		SIGSCAN_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
 	/* Clean up
 	 */
 	result = libsigscan_signature_table_free_signatures_list_clone(
@@ -622,22 +915,41 @@ int sigscan_test_signature_table_get_signatures_list_clone(
 	 "error",
 	 error );
 
-	result = libsigscan_signature_table_free(
-	          &signature_table,
+	/* Test error cases
+	 */
+	result = libsigscan_signature_table_get_signatures_list_clone(
+	          NULL,
+	          &signatures_list_clone,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "signature_table",
-	 signature_table );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "error",
 	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_signature_table_get_signatures_list_clone(
+	          signature_table,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
 
 	return( 1 );
 
@@ -651,12 +963,6 @@ on_error:
 	{
 		libsigscan_signature_table_free_signatures_list_clone(
 		 &signatures_list_clone,
-		 NULL );
-	}
-	if( signature_table != NULL )
-	{
-		libsigscan_signature_table_free(
-		 &signature_table,
 		 NULL );
 	}
 	return( 0 );
@@ -676,6 +982,19 @@ int main(
      char * const argv[] SIGSCAN_TEST_ATTRIBUTE_UNUSED )
 #endif
 {
+#if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	libcdata_list_t *offsets_ignore_list          = NULL;
+	libcdata_list_t *signatures_list              = NULL;
+	libcerror_error_t *error                      = NULL;
+	libsigscan_signature_t *signature             = NULL;
+	libsigscan_signature_table_t *signature_table = NULL;
+	int result                                    = 0;
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
+
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argc )
 	SIGSCAN_TEST_UNREFERENCED_PARAMETER( argv )
 
@@ -689,26 +1008,219 @@ int main(
 	 "libsigscan_signature_table_free",
 	 sigscan_test_signature_table_free );
 
-	/* TODO: add tests for libsigscan_signature_table_fill */
-
 	SIGSCAN_TEST_RUN(
-	 "libsigscan_signature_table_get_number_of_byte_value_groups",
-	 sigscan_test_signature_table_get_number_of_byte_value_groups );
+	 "libsigscan_signature_table_fill",
+	 sigscan_test_signature_table_fill );
 
-	/* TODO: add tests for libsigscan_signature_table_get_byte_value_group_by_index */
-
-	/* TODO: add tests for libsigscan_signature_table_get_byte_value_group_by_offset */
-
-	SIGSCAN_TEST_RUN(
-	 "libsigscan_signature_table_get_number_of_signatures",
-	 sigscan_test_signature_table_get_number_of_signatures );
-
-	SIGSCAN_TEST_RUN(
-	 "libsigscan_signature_table_get_signatures_list_clone",
-	 sigscan_test_signature_table_get_signatures_list_clone );
+	/* TODO: add tests for libsigscan_signature_table_free_signatures_list_clone */
 
 	/* TODO: add tests for libsigscan_signature_table_insert_signature */
 
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+
+	/* Initialize signature_table for tests
+	 */
+	result = libsigscan_signature_table_initialize(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_initialize(
+	          &signatures_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_initialize(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_append_value(
+	          signatures_list,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	signature = NULL;
+
+	result = libcdata_list_initialize(
+	          &offsets_ignore_list,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "offsets_ignore_list",
+	 offsets_ignore_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_table_fill(
+	          signature_table,
+	          signatures_list,
+	          offsets_ignore_list,
+	          LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START,
+	          0,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_signature_table_get_number_of_byte_value_groups",
+	 sigscan_test_signature_table_get_number_of_byte_value_groups,
+	 signature_table );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_signature_table_get_byte_value_group_by_index",
+	 sigscan_test_signature_table_get_byte_value_group_by_index,
+	 signature_table );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_signature_table_get_byte_value_group_by_offset",
+	 sigscan_test_signature_table_get_byte_value_group_by_offset,
+	 signature_table );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_signature_table_get_number_of_signatures",
+	 sigscan_test_signature_table_get_number_of_signatures,
+	 signature_table );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_signature_table_get_signatures_list_clone",
+	 sigscan_test_signature_table_get_signatures_list_clone,
+	 signature_table );
+
+	/* Clean up
+	 */
+	result = libcdata_list_free(
+	          &offsets_ignore_list,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "offsets_ignore_list",
+	 offsets_ignore_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_list_free(
+	          &signatures_list,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signatures_list",
+	 signatures_list );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_table_free(
+	          &signature_table,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_table",
+	 signature_table );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
@@ -716,6 +1228,40 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT )
 
 on_error:
+#if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( signature != NULL )
+	{
+		libsigscan_signature_free(
+		 &signature,
+		 NULL );
+	}
+	if( offsets_ignore_list != NULL )
+	{
+		libcdata_list_free(
+		 &offsets_ignore_list,
+		 NULL,
+		 NULL );
+	}
+	if( signatures_list != NULL )
+	{
+		libcdata_list_free(
+		 &signatures_list,
+		 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free,
+		 NULL );
+	}
+	if( signature_table != NULL )
+	{
+		libsigscan_signature_table_free(
+		 &signature_table,
+		 NULL );
+	}
+#endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
 	return( EXIT_FAILURE );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBSIGSCAN_DLL_IMPORT ) */

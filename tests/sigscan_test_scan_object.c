@@ -362,10 +362,10 @@ int sigscan_test_scan_object_get_type(
 	          &type,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_UINT8(
 	 "type",
@@ -440,10 +440,10 @@ int sigscan_test_scan_object_get_value(
 	          &value,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "value",
@@ -517,10 +517,10 @@ int sigscan_test_scan_object_printf(
 	          scan_object,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",

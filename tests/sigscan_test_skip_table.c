@@ -508,10 +508,10 @@ int sigscan_test_skip_table_get_smallest_pattern_size(
 	          &smallest_pattern_size,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -582,10 +582,10 @@ int sigscan_test_skip_table_get_skip_value(
 	          &skip_value,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -657,10 +657,10 @@ int sigscan_test_skip_table_printf(
 	          skip_table,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",

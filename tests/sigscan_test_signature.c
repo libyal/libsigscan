@@ -489,6 +489,15 @@ int sigscan_test_signature_set(
 	libsigscan_signature_t *signature = NULL;
 	int result                        = 0;
 
+#if defined( HAVE_SIGSCAN_TEST_MEMORY )
+	int number_of_malloc_fail_tests   = 2;
+	int test_number                   = 0;
+
+#if defined( OPTIMIZATION_DISABLED )
+	int number_of_memcpy_fail_tests   = 2;
+#endif
+#endif /* defined( HAVE_SIGSCAN_TEST_MEMORY ) */
+
 	/* Initialize test
 	 */
 	result = libsigscan_signature_initialize(
@@ -516,6 +525,25 @@ int sigscan_test_signature_set(
 	          4,
 	          0,
 	          (uint8_t *) "pattern",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_signature_set(
+	          signature,
+	          "test",
+	          4,
+	          0,
+	          (uint8_t *) "another",
 	          7,
 	          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
 	          &error );
@@ -707,6 +735,86 @@ int sigscan_test_signature_set(
 	libcerror_error_free(
 	 &error );
 
+#if defined( HAVE_SIGSCAN_TEST_MEMORY )
+
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
+	{
+		/* Test libsigscan_signature_set with malloc failing
+		 */
+		sigscan_test_malloc_attempts_before_fail = test_number;
+
+		result = libsigscan_signature_set(
+		          signature,
+		          "test",
+		          4,
+		          0,
+		          (uint8_t *) "pattern",
+		          7,
+		          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+		          &error );
+
+		if( sigscan_test_malloc_attempts_before_fail != -1 )
+		{
+			sigscan_test_malloc_attempts_before_fail = -1;
+		}
+		else
+		{
+			SIGSCAN_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
+		}
+	}
+#if defined( OPTIMIZATION_DISABLED )
+	for( test_number = 0;
+	     test_number < number_of_memcpy_fail_tests;
+	     test_number++ )
+	{
+		/* Test libsigscan_signature_set with memcpy failing
+		 */
+		sigscan_test_memcpy_attempts_before_fail = test_number;
+
+		result = libsigscan_signature_set(
+		          signature,
+		          "test",
+		          4,
+		          0,
+		          (uint8_t *) "pattern",
+		          7,
+		          LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START,
+		          &error );
+
+		if( sigscan_test_memcpy_attempts_before_fail != -1 )
+		{
+			sigscan_test_memcpy_attempts_before_fail = -1;
+		}
+		else
+		{
+			SIGSCAN_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
+		}
+	}
+#endif /* defined( OPTIMIZATION_DISABLED ) */
+#endif /* defined( HAVE_SIGSCAN_TEST_MEMORY ) */
+
 	/* Clean up
 	 */
 	result = libsigscan_signature_free(
@@ -760,10 +868,10 @@ int sigscan_test_signature_get_identifier_size(
 	          &identifier_size,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_SIZE(
 	 "identifier_size",
@@ -840,10 +948,10 @@ int sigscan_test_signature_get_identifier(
 	          16,
 	          &error );
 
-	SIGSCAN_TEST_ASSERT_NOT_EQUAL_INT(
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -922,6 +1030,38 @@ int sigscan_test_signature_get_identifier(
 
 	libcerror_error_free(
 	 &error );
+
+#if defined( HAVE_SIGSCAN_TEST_MEMORY ) && defined( OPTIMIZATION_DISABLED )
+
+	/* Test libsigscan_signature_get_identifier with memcpy failing
+	 */
+	sigscan_test_memcpy_attempts_before_fail = 0;
+
+	result = libsigscan_signature_get_identifier(
+	          signature,
+	          identifier,
+	          16,
+	          &error );
+
+	if( sigscan_test_memcpy_attempts_before_fail != -1 )
+	{
+		sigscan_test_memcpy_attempts_before_fail = -1;
+	}
+	else
+	{
+		SIGSCAN_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_SIGSCAN_TEST_MEMORY ) && defined( OPTIMIZATION_DISABLED ) */
 
 	return( 1 );
 

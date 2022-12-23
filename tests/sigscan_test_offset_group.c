@@ -593,7 +593,7 @@ int sigscan_test_offset_group_get_offset_by_index(
      libsigscan_offset_group_t *offset_group )
 {
 	libcerror_error_t *error = NULL;
-	off64_t offset_by_index  = 0;
+	off64_t offset           = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -601,7 +601,7 @@ int sigscan_test_offset_group_get_offset_by_index(
 	result = libsigscan_offset_group_get_offset_by_index(
 	          offset_group,
 	          0,
-	          &offset_by_index,
+	          &offset,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -618,7 +618,7 @@ int sigscan_test_offset_group_get_offset_by_index(
 	result = libsigscan_offset_group_get_offset_by_index(
 	          NULL,
 	          0,
-	          &offset_by_index,
+	          &offset,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -636,7 +636,7 @@ int sigscan_test_offset_group_get_offset_by_index(
 	result = libsigscan_offset_group_get_offset_by_index(
 	          offset_group,
 	          -1,
-	          &offset_by_index,
+	          &offset,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(

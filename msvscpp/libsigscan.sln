@@ -88,6 +88,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_signature_grou
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigscan_test_signature_table", "sigscan_test_signature_table\sigscan_test_signature_table.vcproj", "{F5E600D3-781F-497E-9284-AA807FCCD9F9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{8FC30BAE-89E0-45D8-A1B8-82011DCB2829} = {8FC30BAE-89E0-45D8-A1B8-82011DCB2829}
 		{9765D206-1CB8-417F-9BB2-AE813F8AAEF8} = {9765D206-1CB8-417F-9BB2-AE813F8AAEF8}
 		{35423269-669C-4978-9141-7A18B1228BB6} = {35423269-669C-4978-9141-7A18B1228BB6}
 	EndProjectSection
