@@ -716,6 +716,9 @@ int scan_handle_read_signature_definitions(
 			pattern_offset_string      = &( buffer[ line_offset ] );
 			pattern_offset_string_size = line_offset;
 
+			/* The offset should be formatted as [-+]?[0-9]+ or as an empty string
+			 * if the pattern is unbounded.
+			 */
 			if( ( buffer[ line_offset ] == '-' )
 			 || ( buffer[ line_offset ] == '+' ) )
 			{
@@ -733,8 +736,6 @@ int scan_handle_read_signature_definitions(
 					goto on_error;
 				}
 			}
-			/* The offset should be formatted as [-+]?[0-9]+
-			 */
 			while( ( buffer[ line_offset ] >= '0' )
 			    && ( buffer[ line_offset ] <= '9' ) )
 			{
@@ -752,8 +753,14 @@ int scan_handle_read_signature_definitions(
 					goto on_error;
 				}
 			}
-			pattern_offset_string_size = line_offset - pattern_offset_string_size + 1;
-
+			if( line_offset == pattern_offset_string_size )
+			{
+				pattern_offset_string_size = 0;
+			}
+			else
+			{
+				pattern_offset_string_size = line_offset - pattern_offset_string_size + 1;
+			}
 			while( ( buffer[ line_offset ] == ' ' )
 			    || ( buffer[ line_offset ] == '\t' ) )
 			{
@@ -805,20 +812,37 @@ int scan_handle_read_signature_definitions(
 			pattern_offset_string[ pattern_offset_string_size - 1 ] = 0;
 			pattern_string[ pattern_string_size - 1 ]               = 0;
 
-			if( scan_handle_copy_string_to_offset(
-			     pattern_offset_string,
-			     pattern_offset_string_size,
-			     &pattern_offset,
-			     error ) != 1 )
+			if( pattern_offset_string_size == 0 )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy string to offset.",
-				 function );
+				pattern_offset  = 0;
+				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET;
+			}
+			else
+			{
+				if( scan_handle_copy_string_to_offset(
+				     pattern_offset_string,
+				     pattern_offset_string_size,
+				     &pattern_offset,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+					 "%s: unable to copy string to offset.",
+					 function );
 
-				goto on_error;
+					goto on_error;
+				}
+				if( pattern_offset < 0 )
+				{
+					signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END;
+					pattern_offset *= -1;
+				}
+				else
+				{
+					signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START;
+				}
 			}
 			if( scan_handle_copy_string_to_pattern(
 			     pattern_string,
@@ -835,15 +859,6 @@ int scan_handle_read_signature_definitions(
 				 function );
 
 				goto on_error;
-			}
-			if( pattern_offset < 0 )
-			{
-				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_END;
-				pattern_offset *= -1;
-			}
-			else
-			{
-				signature_flags = LIBSIGSCAN_SIGNATURE_FLAG_OFFSET_RELATIVE_FROM_START;
 			}
 			if( libsigscan_scanner_add_signature(
 			     scan_handle->scanner,

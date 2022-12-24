@@ -113,12 +113,7 @@ int libsigscan_scan_object_initialize(
 		 "%s: unable to clear scan object.",
 		 function );
 
-		memory_free(
-		 *scan_object );
-
-		*scan_object = NULL;
-
-		return( -1 );
+		goto on_error;
 	}
 	( *scan_object )->type  = type;
 	( *scan_object )->value = value;

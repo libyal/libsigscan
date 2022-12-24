@@ -156,6 +156,24 @@ int sigscan_test_scan_result_initialize(
 
 	result = libsigscan_scan_result_initialize(
 	          &scan_result,
+	          -1,
+	          signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scan_result_initialize(
+	          &scan_result,
 	          0,
 	          NULL,
 	          &error );

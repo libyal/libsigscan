@@ -313,7 +313,14 @@ int libsigscan_signature_table_fill(
 				break;
 
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
-				add_signature = 1;
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
 				break;
 
 			default:
@@ -725,9 +732,10 @@ int libsigscan_signature_table_insert_signature(
      libsigscan_signature_t *signature,
      libcerror_error_t **error )
 {
-	libsigscan_byte_value_group_t *byte_value_group = NULL;
-	static char *function                           = "libsigscan_signature_table_insert_signature";
-	int result                                      = 0;
+	libsigscan_byte_value_group_t *byte_value_group      = NULL;
+	libsigscan_byte_value_group_t *safe_byte_value_group = NULL;
+	static char *function                                = "libsigscan_signature_table_insert_signature";
+	int result                                           = 0;
 
 	if( signature_table == NULL )
 	{
@@ -743,7 +751,7 @@ int libsigscan_signature_table_insert_signature(
 	result = libsigscan_signature_table_get_byte_value_group_by_offset(
 	          signature_table,
 	          pattern_offset,
-	          &byte_value_group,
+	          &safe_byte_value_group,
 	          error );
 
 	if( result == -1 )
@@ -756,7 +764,7 @@ int libsigscan_signature_table_insert_signature(
 		 function,
 		 pattern_offset );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -773,7 +781,7 @@ int libsigscan_signature_table_insert_signature(
 			 function,
 			 pattern_offset );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libcdata_list_insert_value(
 		     signature_table->byte_value_groups_list,
@@ -790,15 +798,13 @@ int libsigscan_signature_table_insert_signature(
 			 function,
 			 pattern_offset );
 
-			libsigscan_byte_value_group_free(
-			 &byte_value_group,
-			 NULL );
-
-			return( -1 );
+			goto on_error;
 		}
+		safe_byte_value_group = byte_value_group;
+		byte_value_group      = 0;
 	}
 	if( libsigscan_byte_value_group_insert_signature(
-	     byte_value_group,
+	     safe_byte_value_group,
 	     byte_value,
 	     signature,
 	     error ) != 1 )
@@ -811,8 +817,17 @@ int libsigscan_signature_table_insert_signature(
 		 function,
 		 pattern_offset );
 
-		return( -1 );
+		goto on_error;
 	}
 	return( 1 );
+
+on_error:
+	if( byte_value_group != NULL )
+	{
+		libsigscan_byte_value_group_free(
+		 &byte_value_group,
+		 NULL );
+	}
+	return( -1 );
 }
 

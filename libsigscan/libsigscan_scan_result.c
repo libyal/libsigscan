@@ -110,10 +110,7 @@ int libsigscan_scan_result_initialize(
 		 "%s: unable to clear scan result.",
 		 function );
 
-		memory_free(
-		 internal_scan_result );
-
-		return( -1 );
+		goto on_error;
 	}
 	internal_scan_result->offset    = offset;
 	internal_scan_result->signature = signature;

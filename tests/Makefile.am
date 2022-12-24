@@ -61,6 +61,7 @@ check_PROGRAMS = \
 
 sigscan_test_byte_value_group_SOURCES = \
 	sigscan_test_byte_value_group.c \
+	sigscan_test_libcdata.h \
 	sigscan_test_libcerror.h \
 	sigscan_test_libsigscan.h \
 	sigscan_test_macros.h \
@@ -193,14 +194,27 @@ sigscan_test_scan_tree_node_LDADD = \
 	@LIBCERROR_LIBADD@
 
 sigscan_test_scanner_SOURCES = \
+	sigscan_test_functions.c sigscan_test_functions.h \
+	sigscan_test_getopt.c sigscan_test_getopt.h \
+	sigscan_test_libbfio.h \
 	sigscan_test_libcerror.h \
+	sigscan_test_libclocale.h \
+	sigscan_test_libcnotify.h \
 	sigscan_test_libsigscan.h \
+	sigscan_test_libuna.h \
 	sigscan_test_macros.h \
 	sigscan_test_memory.c sigscan_test_memory.h \
-	sigscan_test_scanner.c \
-	sigscan_test_unused.h
+	sigscan_test_scanner.c
 
 sigscan_test_scanner_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libsigscan/libsigscan.la \
 	@LIBCERROR_LIBADD@
 

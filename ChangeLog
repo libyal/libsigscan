@@ -1,19 +1,17 @@
 TODO:
-* check how duplicate definitions are handled
-* make sure scan buffer is sufficient large for bounded scan
-* state add relative_from_start, relative_from_end and unbound scan trees and active nodes
-* dpkg add sigscan.conf
-
-* is there a pratical need to support signature with patterns that contain pattern gaps?
+* buffer scan
+  - align with footer range
 * unbounded scan
   - determine optimal buffer size
   - buffer size vs scan block size?
   - handle boundary matches
   - add range to determine size of scan buffer?
-* signature table
-  - add support for unbounded signatures (LIBSIGSCAN_PATTERN_OFFSET_UNBOUND)
-* scanner
-  - add support for unbounded signatures
+
+* patterns support
+  - remove duplicate patterns in unbounded scan use insert pattern to find duplicates
+  - is there a pratical need to support signature with patterns that contain pattern gaps?
+* make sure scan buffer is sufficient large for bounded scan
+* state add relative_from_start, relative_from_end and unbound scan trees and active nodes
 * add memory aligned reads?
 
 Tools:

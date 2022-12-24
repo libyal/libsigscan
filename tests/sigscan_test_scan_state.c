@@ -274,123 +274,6 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libsigscan_scan_state_set_data_offset function
- * Returns 1 if successful or 0 if not
- */
-int sigscan_test_scan_state_set_data_offset(
-     void )
-{
-	libcerror_error_t *error            = NULL;
-	libsigscan_scan_state_t *scan_state = NULL;
-	int result                          = 0;
-
-	/* Initialize test
-	 */
-	result = libsigscan_scan_state_initialize(
-	          &scan_state,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "scan_state",
-	 scan_state );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test regular cases
-	 */
-	result = libsigscan_scan_state_set_data_offset(
-	          scan_state,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libsigscan_scan_state_set_data_offset(
-	          NULL,
-	          0,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libsigscan_scan_state_set_data_offset(
-	          scan_state,
-	          -1,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	/* Clean up
-	 */
-	result = libsigscan_scan_state_free(
-	          &scan_state,
-	          &error );
-
-	SIGSCAN_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "scan_state",
-	 scan_state );
-
-	SIGSCAN_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	if( scan_state != NULL )
-	{
-		libsigscan_scan_state_free(
-		 &scan_state,
-		 NULL );
-	}
-	return( 0 );
-}
-
 /* Tests the libsigscan_scan_state_set_data_size function
  * Returns 1 if successful or 0 if not
  */
@@ -893,7 +776,7 @@ int sigscan_test_scan_state_start(
 	          header_scan_tree,
 	          footer_scan_tree,
 	          scan_tree,
-	          128,
+	          64,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -912,7 +795,7 @@ int sigscan_test_scan_state_start(
 	          header_scan_tree,
 	          footer_scan_tree,
 	          scan_tree,
-	          128,
+	          64,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -932,7 +815,7 @@ int sigscan_test_scan_state_start(
 	          NULL,
 	          footer_scan_tree,
 	          scan_tree,
-	          128,
+	          64,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -952,7 +835,7 @@ int sigscan_test_scan_state_start(
 	          header_scan_tree,
 	          NULL,
 	          scan_tree,
-	          128,
+	          64,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -972,7 +855,7 @@ int sigscan_test_scan_state_start(
 	          header_scan_tree,
 	          footer_scan_tree,
 	          NULL,
-	          128,
+	          64,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -1181,13 +1064,14 @@ on_error:
 int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
      libsigscan_scan_state_t *scan_state )
 {
-	uint8_t buffer[ 256 ];
+	uint8_t buffer[ 128 ];
 
 	libcdata_list_t *signatures_list         = NULL;
 	libcerror_error_t *error                 = NULL;
 	libsigscan_scan_tree_t *scan_tree        = NULL;
 	libsigscan_scan_tree_node_t *active_node = NULL;
 	libsigscan_signature_t *signature        = NULL;
+	void *memcpy_result                      = NULL;
 	void *memset_result                      = NULL;
 	int result                               = 0;
 
@@ -1196,11 +1080,20 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	memset_result = memory_set(
 	                 buffer,
 	                 0,
-	                 sizeof( uint8_t) * 256 );
+	                 sizeof( uint8_t ) * 128 );
 
 	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "memset_result",
 	 memset_result );
+
+	memcpy_result = memory_copy(
+	                 buffer,
+	                 "pattern",
+	                 sizeof( uint8_t ) * 7 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "memcpy_result",
+	 memcpy_result );
 
 	result = libsigscan_scan_tree_initialize(
 	          &scan_tree,
@@ -1312,9 +1205,9 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          128,
+	          64,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1334,9 +1227,9 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          128,
+	          64,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1357,9 +1250,9 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          NULL,
 	          &active_node,
 	          0,
-	          128,
+	          64,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1380,9 +1273,9 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          NULL,
 	          0,
-	          128,
+	          64,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1403,9 +1296,9 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          128,
+	          64,
 	          NULL,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1494,9 +1387,10 @@ on_error:
 int sigscan_test_internal_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state )
 {
-	uint8_t buffer[ 256 ];
+	uint8_t buffer[ 128 ];
 
 	libcerror_error_t *error = NULL;
+	void *memcpy_result      = NULL;
 	void *memset_result      = NULL;
 	int result               = 0;
 
@@ -1505,25 +1399,34 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	memset_result = memory_set(
 	                 buffer,
 	                 0,
-	                 sizeof( uint8_t) * 256 );
+	                 sizeof( uint8_t ) * 128 );
 
 	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "memset_result",
 	 memset_result );
+
+	memcpy_result = memory_copy(
+	                 buffer,
+	                 "pattern",
+	                 sizeof( uint8_t ) * 7 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "memcpy_result",
+	 memcpy_result );
 
 	/* Test regular cases
 	 */
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -1534,7 +1437,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          NULL,
 	          buffer,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1553,7 +1456,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
 	          NULL,
-	          256,
+	          128,
 	          0,
 	          &error );
 
@@ -1610,7 +1513,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
 	          buffer,
-	          256,
+	          128,
 	          1024,
 	          &error );
 
@@ -1643,9 +1546,10 @@ on_error:
 int sigscan_test_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state )
 {
-	uint8_t buffer[ 256 ];
+	uint8_t buffer[ 128 ];
 
 	libcerror_error_t *error = NULL;
+	void *memcpy_result      = NULL;
 	void *memset_result      = NULL;
 	int result               = 0;
 
@@ -1654,24 +1558,33 @@ int sigscan_test_scan_state_scan_buffer(
 	memset_result = memory_set(
 	                 buffer,
 	                 0,
-	                 sizeof( uint8_t) * 256 );
+	                 sizeof( uint8_t ) * 128 );
 
 	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "memset_result",
 	 memset_result );
+
+	memcpy_result = memory_copy(
+	                 buffer,
+	                 "pattern",
+	                 sizeof( uint8_t ) * 7 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "memcpy_result",
+	 memcpy_result );
 
 	/* Test regular cases
 	 */
 	result = libsigscan_scan_state_scan_buffer(
 	          scan_state,
 	          buffer,
-	          256,
+	          128,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -1682,7 +1595,7 @@ int sigscan_test_scan_state_scan_buffer(
 	result = libsigscan_scan_state_scan_buffer(
 	          NULL,
 	          buffer,
-	          256,
+	          128,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -1700,7 +1613,7 @@ int sigscan_test_scan_state_scan_buffer(
 	result = libsigscan_scan_state_scan_buffer(
 	          scan_state,
 	          NULL,
-	          256,
+	          128,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -1769,7 +1682,7 @@ int sigscan_test_scan_state_get_number_of_results(
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
 	 "number_of_results",
 	 number_of_results,
-	 0 );
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -1834,10 +1747,6 @@ int sigscan_test_scan_state_get_result(
 
 	/* Test regular cases
 	 */
-#ifdef TODO
-/* TODO change test to work */
-	scan_result = NULL;
-
 	result = libsigscan_scan_state_get_result(
 	          scan_state,
 	          0,
@@ -1856,12 +1765,28 @@ int sigscan_test_scan_state_get_result(
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-#endif
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_result_free(
+	          &scan_result,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_result",
+	 scan_result );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
-	scan_result = NULL;
-
 	result = libsigscan_scan_state_get_result(
 	          NULL,
 	          0,
@@ -1981,10 +1906,6 @@ int main(
 	 sigscan_test_scan_state_free );
 
 	SIGSCAN_TEST_RUN(
-	 "libsigscan_scan_state_set_data_offset",
-	 sigscan_test_scan_state_set_data_offset );
-
-	SIGSCAN_TEST_RUN(
 	 "libsigscan_scan_state_set_data_size",
 	 sigscan_test_scan_state_set_data_size );
 
@@ -2005,6 +1926,20 @@ int main(
 	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
 	 "scan_state",
 	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_set_data_size(
+	          scan_state,
+	          64,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
 	SIGSCAN_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -2052,6 +1987,14 @@ int main(
 	 sigscan_test_scan_state_scan_buffer,
 	 scan_state );
 
+	/* Make sure to run the stop test before libsigscan_scan_state_get_number_of_results
+	 * and libsigscan_scan_state_get_result
+	 */
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_scan_state_stop",
+	 sigscan_test_scan_state_stop,
+	 scan_state );
+
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_scan_state_get_number_of_results",
 	 sigscan_test_scan_state_get_number_of_results,
@@ -2060,13 +2003,6 @@ int main(
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_scan_state_get_result",
 	 sigscan_test_scan_state_get_result,
-	 scan_state );
-
-	/* Make sure to run the stop test last
-	 */
-	SIGSCAN_TEST_RUN_WITH_ARGS(
-	 "libsigscan_scan_state_stop",
-	 sigscan_test_scan_state_stop,
 	 scan_state );
 
 	/* Clean up

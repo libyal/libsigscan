@@ -179,46 +179,6 @@ int libsigscan_scan_state_free(
 	return( result );
 }
 
-/* Sets the data offset
- * Returns 1 if successful or -1 on error
- */
-int libsigscan_scan_state_set_data_offset(
-     libsigscan_scan_state_t *scan_state,
-     off64_t data_offset,
-     libcerror_error_t **error )
-{
-	libsigscan_internal_scan_state_t *internal_scan_state = NULL;
-	static char *function                                 = "libsigscan_scan_state_set_data_offset";
-
-	if( scan_state == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid scan state.",
-		 function );
-
-		return( -1 );
-	}
-	internal_scan_state = (libsigscan_internal_scan_state_t *) scan_state;
-
-	if( data_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid data offset value less than zero.",
-		 function );
-
-		return( -1 );
-	}
-	internal_scan_state->data_offset = data_offset;
-
-	return( 1 );
-}
-
 /* Sets the data size
  * Returns 1 if successful or -1 on error
  */
@@ -1124,10 +1084,12 @@ int libsigscan_internal_scan_state_scan_buffer(
 			 internal_scan_state->header_range_end );
 		}
 #endif
+		/* Check if the current data range overlaps with the header range
+		 */
 		if( ( ( range_start_offset >= (off64_t) internal_scan_state->header_range_start )
-		  && ( range_start_offset < (off64_t) internal_scan_state->header_range_end ) )
+		  && ( range_start_offset <= (off64_t) internal_scan_state->header_range_end ) )
 		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->header_range_start )
-		  && ( range_end_offset < (off64_t) internal_scan_state->header_range_end ) ) )
+		  && ( range_end_offset <= (off64_t) internal_scan_state->header_range_end ) ) )
 		{
 			range_offset = buffer_offset;
 			range_size   = buffer_size;
@@ -1192,10 +1154,12 @@ int libsigscan_internal_scan_state_scan_buffer(
 			 internal_scan_state->footer_range_end );
 		}
 #endif
+		/* Check if the current data range overlaps with the footer range
+		 */
 		if( ( ( range_start_offset >= (off64_t) internal_scan_state->footer_range_start )
-		  && ( range_start_offset < (off64_t) internal_scan_state->footer_range_end ) )
+		  && ( range_start_offset <= (off64_t) internal_scan_state->footer_range_end ) )
 		 ||  ( ( range_end_offset >= (off64_t) internal_scan_state->footer_range_start )
-		  && ( range_end_offset < (off64_t) internal_scan_state->footer_range_end ) ) )
+		  && ( range_end_offset <= (off64_t) internal_scan_state->footer_range_end ) ) )
 		{
 			range_offset = buffer_offset;
 			range_size   = buffer_size;
@@ -1222,15 +1186,17 @@ int libsigscan_internal_scan_state_scan_buffer(
 #endif
 			if( range_offset < range_size )
 			{
+				/* The footer scan tree uses offset values relative to the first footer signature
+				 */
 				if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 				     internal_scan_state,
 				     internal_scan_state->footer_scan_tree,
 				     &( internal_scan_state->active_footer_node ),
 				     range_start_offset,
 				     internal_scan_state->data_size,
-				     buffer,
-				     range_size,
-				     range_offset,
+				     &( buffer[ range_offset ] ),
+				     range_size - range_offset,
+				     0,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
@@ -1245,9 +1211,31 @@ int libsigscan_internal_scan_state_scan_buffer(
 			}
 		}
 	}
-/* TODO handle unbound */
-	return( 1 );
+	if( ( internal_scan_state->scan_tree != NULL )
+	 && ( internal_scan_state->active_node != NULL ) )
+	{
+		if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
+		     internal_scan_state,
+		     internal_scan_state->scan_tree,
+		     &( internal_scan_state->active_node ),
+		     internal_scan_state->data_offset,
+		     internal_scan_state->data_size,
+		     buffer,
+		     buffer_size,
+		     buffer_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GENERIC,
+			 "%s: unable to scan buffer by unbounded scan tree.",
+			 function );
 
+			return( -1 );
+		}
+	}
+	return( 1 );
 }
 
 /* Scans the buffer and updates the scan state

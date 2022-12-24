@@ -469,31 +469,31 @@ int libsigscan_scan_tree_node_scan_buffer(
 				if( result == 1 )
 				{
 					libcnotify_printf(
-					 "%s: offset: %" PRIi64 " ",
-					 function,
-					 scan_offset );
+					 "%s: scanning for",
+					 function );
 
 					if( scan_tree_node->scan_objects_table[ byte_value ] != NULL )
 					{
 						libcnotify_printf(
-						 "scan object: byte value: 0x%02" PRIx8 "",
+						 " scan object: byte value: 0x%02" PRIx8 "",
 						 byte_value );
 					}
 					else if( scan_tree_node->default_scan_object != NULL )
 					{
 						libcnotify_printf(
-						 "scan object: default" );
+						 " scan object: default" );
 					}
 					else
 					{
 						libcnotify_printf(
-						 "scan object: N/A" );
+						 " scan object: N/A" );
 					}
 					libcnotify_printf(
-					 ".\n" );
+					 " at offset: %" PRIi64 ".\n",
+					 scan_offset );
 				}
 			}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
 		if( result == -1 )
 		{
@@ -538,6 +538,14 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					return( -1 );
 				}
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					libcnotify_printf(
+					 "%s: scan object: scan tree node.\n",
+					 function );
+				}
+#endif
 			}
 			else if( scan_object_type == LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE )
 			{
@@ -566,15 +574,34 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 					return( -1 );
 				}
-				if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+				switch( pattern_offsets_mode )
 				{
-					pattern_offset = signature->pattern_offset;
+					case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
+						pattern_offset = signature->pattern_offset;
+						scan_offset = buffer_offset + ( pattern_offset - data_offset );
+						break;
+
+					case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
+						pattern_offset = data_size - signature->pattern_offset;
+						scan_offset = buffer_offset + ( pattern_offset - data_offset );
+						break;
+
+					case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
+						pattern_offset = buffer_offset + data_offset;
+						scan_offset = buffer_offset;
+						break;
 				}
-				else if( pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
 				{
-					pattern_offset = data_size - signature->pattern_offset;
+					libcnotify_printf(
+					 "%s: scanning for signature: %s at offset: %" PRIi64 " of size: %" PRIzd ".\n",
+					 function,
+					 signature->identifier,
+					 pattern_offset,
+					 signature->pattern_size );
 				}
-				scan_offset = buffer_offset + ( pattern_offset - data_offset );
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 				if( ( (size64_t) signature->pattern_size > remaining_data_size )
 				 || ( (size64_t) scan_offset > ( remaining_data_size - signature->pattern_size ) ) )
@@ -588,14 +615,20 @@ int libsigscan_scan_tree_node_scan_buffer(
 				if( ( signature->pattern_size > buffer_size )
 				 || ( (size64_t) scan_offset > ( buffer_size - signature->pattern_size ) ) )
 				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-					 "%s: invalid pattern size value out of bounds.",
-					 function );
+					if( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+						 "%s: invalid pattern size value out of bounds.",
+						 function );
 
-					return( -1 );
+						return( -1 );
+					}
+					result = 0;
+
+					break;
 				}
 				if( memory_compare(
 				     &( buffer[ scan_offset ] ),
@@ -608,21 +641,18 @@ int libsigscan_scan_tree_node_scan_buffer(
 				}
 				scan_offset += data_offset;
 
-#if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
-				{
-					libcnotify_printf(
-					 "%s: offset: %" PRIi64 " signature: %s.\n",
-					 function,
-					 scan_offset,
-					 signature->identifier );
-				}
-#endif
-/* TODO add support for unbounded signatures */
 				result = ( scan_offset == pattern_offset );
 
 				break;
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			else if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: scan object: other.\n",
+				 function );
+			}
+#endif
 		}
 	}
 	while( result != 0 );

@@ -694,7 +694,7 @@ int libsigscan_scan_tree_get_pattern_offset_by_occurrence_weights(
 #endif
 	if( number_of_offsets == 0 )
 	{
-		/* No occurrnece offset fall back on the byte value weights.
+		/* No occurrence offset fall back on the byte value weights.
 		 */
 		result = libsigscan_scan_tree_get_pattern_offset_by_byte_value_weights(
 		          scan_tree,
@@ -2530,7 +2530,14 @@ int libsigscan_scan_tree_fill_range_list(
 				break;
 
 			case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
-				add_signature = 1;
+				if( ( signature->signature_flags & LIBSIGSCAN_SIGNATURE_FLAGS_MASK ) == LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET )
+				{
+					add_signature = 1;
+				}
+				else
+				{
+					add_signature = 0;
+				}
 				break;
 
 			default:

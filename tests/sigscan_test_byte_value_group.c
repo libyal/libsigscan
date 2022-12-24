@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "sigscan_test_libcdata.h"
 #include "sigscan_test_libcerror.h"
 #include "sigscan_test_libsigscan.h"
 #include "sigscan_test_macros.h"
@@ -520,6 +521,7 @@ on_error:
 int sigscan_test_byte_value_group_insert_signature(
      void )
 {
+	libcdata_list_t *signature_groups_list          = NULL;
 	libcerror_error_t *error                        = NULL;
 	libsigscan_byte_value_group_t *byte_value_group = NULL;
 	libsigscan_signature_t *signature               = NULL;
@@ -618,6 +620,30 @@ int sigscan_test_byte_value_group_insert_signature(
 	libcerror_error_free(
 	 &error );
 
+	signature_groups_list = byte_value_group->signature_groups_list;
+
+	byte_value_group->signature_groups_list = NULL;
+
+	result = libsigscan_byte_value_group_insert_signature(
+	          byte_value_group,
+	          (uint8_t) 't',
+	          signature,
+	          &error );
+
+	byte_value_group->signature_groups_list = signature_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	result = libsigscan_byte_value_group_insert_signature(
 	          byte_value_group,
 	          (uint8_t) 't',
@@ -701,6 +727,7 @@ on_error:
 int sigscan_test_byte_value_group_get_signature_group(
      libsigscan_byte_value_group_t *byte_value_group )
 {
+	libcdata_list_t *signature_groups_list        = NULL;
 	libcerror_error_t *error                      = NULL;
 	libsigscan_signature_group_t *signature_group = 0;
 	int result                                    = 0;
@@ -754,9 +781,37 @@ int sigscan_test_byte_value_group_get_signature_group(
 	libcerror_error_free(
 	 &error );
 
+	signature_groups_list = byte_value_group->signature_groups_list;
+
+	byte_value_group->signature_groups_list = NULL;
+
 	result = libsigscan_byte_value_group_get_signature_group(
 	          byte_value_group,
-	          0,
+	          (uint8_t) 't',
+	          &signature_group,
+	          &error );
+
+	byte_value_group->signature_groups_list = signature_groups_list;
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature_group",
+	 signature_group );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_byte_value_group_get_signature_group(
+	          byte_value_group,
+	          (uint8_t) 't',
 	          NULL,
 	          &error );
 

@@ -157,6 +157,24 @@ int sigscan_test_scan_object_initialize(
 
 	result = libsigscan_scan_object_initialize(
 	          &scan_object,
+	          (uint8_t) 0xff,
+	          (intptr_t *) signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_scan_object_initialize(
+	          &scan_object,
 	          LIBSIGSCAN_SCAN_OBJECT_TYPE_SIGNATURE,
 	          NULL,
 	          &error );
