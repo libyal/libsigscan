@@ -559,6 +559,27 @@ int libsigscan_scan_state_start(
 	}
 	if( scan_tree != NULL )
 	{
+		result = libsigscan_scan_tree_get_spanning_range(
+		          scan_tree,
+		          &range_start,
+		          &range_size,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve unbounded pattern spanning range.",
+			 function );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			internal_scan_state->unbounded_range_size = range_size;
+		}
 		internal_scan_state->active_node = scan_tree->root_node;
 	}
 	internal_scan_state->data_offset       = 0;
@@ -610,6 +631,7 @@ int libsigscan_scan_state_stop(
 	{
 		if( libsigscan_internal_scan_state_scan_buffer(
 		     internal_scan_state,
+		     internal_scan_state->data_offset,
 		     internal_scan_state->buffer,
 		     internal_scan_state->buffer_data_size,
 		     0,
@@ -684,6 +706,7 @@ int libsigscan_scan_state_flush(
 	{
 		if( libsigscan_internal_scan_state_scan_buffer(
 		     internal_scan_state,
+		     internal_scan_state->data_offset,
 		     internal_scan_state->buffer,
 		     internal_scan_state->buffer_data_size,
 		     0,
@@ -712,7 +735,6 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
      libsigscan_scan_tree_t *scan_tree,
      libsigscan_scan_tree_node_t **active_node,
      off64_t data_offset,
-     size64_t data_size,
      const uint8_t *buffer,
      size_t buffer_size,
      size_t buffer_offset,
@@ -747,6 +769,17 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid scan tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( scan_tree->skip_table == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid scan tree - missing skip table.",
 		 function );
 
 		return( -1 );
@@ -807,8 +840,8 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 
 		return( -1 );
 	}
-	if( ( data_size == 0 )
-	 || ( (size64_t) data_offset >= data_size ) )
+	if( ( internal_scan_state->data_size == 0 )
+	 || ( (size64_t) data_offset >= internal_scan_state->data_size ) )
 	{
 		return( 0 );
 	}
@@ -818,7 +851,7 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		          *active_node,
 		          scan_tree->pattern_offsets_mode,
 		          data_offset,
-		          data_size,
+		          internal_scan_state->data_size,
 		          buffer,
 		          buffer_size,
 		          buffer_offset,
@@ -923,53 +956,60 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		}
 		if( result == 0 )
 		{
-			if( libsigscan_skip_table_get_smallest_pattern_size(
-			     scan_tree->skip_table,
-			     &smallest_pattern_size,
-			     error ) != 1 )
+			if( scan_tree->pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve smallest pattern size.",
-				 function );
-
-				goto on_error;
+				skip_value = scan_tree->skip_table->smallest_skip_value;
 			}
-			if( smallest_pattern_size > buffer_size )
+			else
 			{
-				smallest_pattern_size = buffer_size;
-			}
-			buffer_end_offset = buffer_offset + smallest_pattern_size - 1;
-
-			if( buffer_end_offset >= buffer_size )
-			{
-				buffer_end_offset = buffer_size - 1;
-			}
-			skip_value = 0;
-
-			do
-			{
-				if( libsigscan_skip_table_get_skip_value(
+				if( libsigscan_skip_table_get_smallest_pattern_size(
 				     scan_tree->skip_table,
-				     buffer[ buffer_end_offset ],
-				     &skip_value,
+				     &smallest_pattern_size,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to retrieve skip value.",
+					 "%s: unable to retrieve smallest pattern size.",
 					 function );
 
 					goto on_error;
 				}
-				buffer_end_offset -= 1;
+				if( smallest_pattern_size > buffer_size )
+				{
+					smallest_pattern_size = buffer_size;
+				}
+				buffer_end_offset = buffer_offset + smallest_pattern_size - 1;
+
+				if( buffer_end_offset >= buffer_size )
+				{
+					buffer_end_offset = buffer_size - 1;
+				}
+				skip_value = 0;
+
+				do
+				{
+					if( libsigscan_skip_table_get_skip_value(
+					     scan_tree->skip_table,
+					     buffer[ buffer_end_offset ],
+					     &skip_value,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve skip value.",
+						 function );
+
+						goto on_error;
+					}
+					buffer_end_offset -= 1;
+				}
+				while( ( buffer_end_offset > buffer_offset )
+				    && ( skip_value == 0 ) );
 			}
-			while( ( buffer_end_offset > buffer_offset )
-			    && ( skip_value == 0 ) );
 		}
 		if( scan_tree->pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
 		{
@@ -997,6 +1037,7 @@ on_error:
  */
 int libsigscan_internal_scan_state_scan_buffer(
      libsigscan_internal_scan_state_t *internal_scan_state,
+     off64_t data_offset,
      const uint8_t *buffer,
      size_t buffer_size,
      size_t buffer_offset,
@@ -1019,13 +1060,13 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 		return( -1 );
 	}
-	if( internal_scan_state->data_offset < 0 )
+	if( data_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid scan state - data offset value out of bounds.",
+		 "%s: invalid data offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1065,14 +1106,14 @@ int libsigscan_internal_scan_state_scan_buffer(
 		return( -1 );
 	}
 	if( ( internal_scan_state->data_size == 0 )
-	 || ( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size ) )
+	 || ( (size64_t) data_offset >= internal_scan_state->data_size ) )
 	{
 		return( 0 );
 	}
 	if( internal_scan_state->header_range_size > 0 )
 	{
-		range_start_offset = internal_scan_state->data_offset;
-		range_end_offset   = internal_scan_state->data_offset + buffer_size;
+		range_start_offset = data_offset;
+		range_end_offset   = data_offset + buffer_size;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
@@ -1121,7 +1162,6 @@ int libsigscan_internal_scan_state_scan_buffer(
 				     internal_scan_state->header_scan_tree,
 				     &( internal_scan_state->active_header_node ),
 				     range_start_offset,
-				     internal_scan_state->data_size,
 				     buffer,
 				     range_size,
 				     range_offset,
@@ -1141,8 +1181,8 @@ int libsigscan_internal_scan_state_scan_buffer(
 	}
 	if( internal_scan_state->footer_range_size > 0 )
 	{
-		range_start_offset = internal_scan_state->data_offset;
-		range_end_offset   = internal_scan_state->data_offset + buffer_size;
+		range_start_offset = data_offset;
+		range_end_offset   = data_offset + buffer_size;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
@@ -1193,7 +1233,6 @@ int libsigscan_internal_scan_state_scan_buffer(
 				     internal_scan_state->footer_scan_tree,
 				     &( internal_scan_state->active_footer_node ),
 				     range_start_offset,
-				     internal_scan_state->data_size,
 				     &( buffer[ range_offset ] ),
 				     range_size - range_offset,
 				     0,
@@ -1211,15 +1250,13 @@ int libsigscan_internal_scan_state_scan_buffer(
 			}
 		}
 	}
-	if( ( internal_scan_state->scan_tree != NULL )
-	 && ( internal_scan_state->active_node != NULL ) )
+	if( internal_scan_state->unbounded_range_size > 0 )
 	{
 		if( libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		     internal_scan_state,
 		     internal_scan_state->scan_tree,
 		     &( internal_scan_state->active_node ),
-		     internal_scan_state->data_offset,
-		     internal_scan_state->data_size,
+		     data_offset,
 		     buffer,
 		     buffer_size,
 		     buffer_offset,
@@ -1243,6 +1280,7 @@ int libsigscan_internal_scan_state_scan_buffer(
  */
 int libsigscan_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state,
+     off64_t data_offset,
      const uint8_t *buffer,
      size_t buffer_size,
      libcerror_error_t **error )
@@ -1277,6 +1315,17 @@ int libsigscan_scan_state_scan_buffer(
 
 		return( -1 );
 	}
+	if( data_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid data offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	if( buffer == NULL )
 	{
 		libcerror_error_set(
@@ -1300,14 +1349,14 @@ int libsigscan_scan_state_scan_buffer(
 		return( -1 );
 	}
 	if( ( internal_scan_state->data_size == 0 )
-	 || ( (size64_t) internal_scan_state->data_offset >= internal_scan_state->data_size ) )
+	 || ( (size64_t) data_offset >= internal_scan_state->data_size ) )
 	{
 		return( 0 );
 	}
 	if( ( (size64_t) buffer_size > internal_scan_state->data_size )
-	 || ( (size64_t) internal_scan_state->data_offset > ( internal_scan_state->data_size - buffer_size ) ) )
+	 || ( (size64_t) data_offset > ( internal_scan_state->data_size - buffer_size ) ) )
 	{
-		buffer_size = (size_t) ( internal_scan_state->data_size - internal_scan_state->data_offset );
+		buffer_size = (size_t) ( internal_scan_state->data_size - data_offset );
 	}
 	scan_size = buffer_size;
 
@@ -1341,6 +1390,7 @@ int libsigscan_scan_state_scan_buffer(
 	{
 		if( libsigscan_internal_scan_state_scan_buffer(
 		     internal_scan_state,
+		     internal_scan_state->data_offset,
 		     internal_scan_state->buffer,
 		     internal_scan_state->buffer_data_size,
 		     0,
@@ -1365,6 +1415,7 @@ int libsigscan_scan_state_scan_buffer(
 
 		if( libsigscan_internal_scan_state_scan_buffer(
 		     internal_scan_state,
+		     data_offset,
 		     buffer,
 		     buffer_offset + read_size,
 		     buffer_offset,
@@ -1379,10 +1430,12 @@ int libsigscan_scan_state_scan_buffer(
 
 			return( -1 );
 		}
-		internal_scan_state->data_offset += read_size;
-		buffer_offset                    += read_size;
-		scan_size                        -= read_size;
+		data_offset   += read_size;
+		buffer_offset += read_size;
+		scan_size     -= read_size;
 	}
+	internal_scan_state->data_offset = data_offset;
+
 	if( scan_size > 0 )
 	{
 		if( memory_copy(

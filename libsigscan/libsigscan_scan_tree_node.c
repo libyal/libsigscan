@@ -343,7 +343,6 @@ int libsigscan_scan_tree_node_scan_buffer(
 	static char *function             = "libsigscan_scan_tree_node_scan_buffer";
 	off64_t pattern_offset            = 0;
 	off64_t scan_offset               = 0;
-	size64_t remaining_data_size      = 0;
 	uint8_t byte_value                = 0;
 	uint8_t scan_object_type          = 0;
 	int result                        = 0;
@@ -417,8 +416,6 @@ int libsigscan_scan_tree_node_scan_buffer(
 
 		return( -1 );
 	}
-	remaining_data_size = data_size - data_offset;
-
 	do
 	{
 		if( buffer_offset >= buffer_size )
@@ -434,7 +431,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 		}
 		scan_offset = (off64_t) ( buffer_offset + scan_tree_node->pattern_offset );
 
-		if( (size64_t) scan_offset >= remaining_data_size )
+		if( (size64_t) scan_offset >= data_size )
 		{
 			/* If the pattern offset exceeds the data size
 			 * continue with the default scan object if available.
@@ -587,7 +584,7 @@ int libsigscan_scan_tree_node_scan_buffer(
 						break;
 
 					case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
-						pattern_offset = buffer_offset + data_offset;
+						pattern_offset = data_offset;
 						scan_offset = buffer_offset;
 						break;
 				}
@@ -603,8 +600,8 @@ int libsigscan_scan_tree_node_scan_buffer(
 				}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
-				if( ( (size64_t) signature->pattern_size > remaining_data_size )
-				 || ( (size64_t) scan_offset > ( remaining_data_size - signature->pattern_size ) ) )
+				if( ( (size64_t) signature->pattern_size > data_size )
+				 || ( (size64_t) pattern_offset > ( data_size - signature->pattern_size ) ) )
 				{
 					/* If the pattern size exceeds the data size were are done scanning.
 					 */
@@ -641,8 +638,14 @@ int libsigscan_scan_tree_node_scan_buffer(
 				}
 				scan_offset += data_offset;
 
-				result = ( scan_offset == pattern_offset );
-
+				if( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+				{
+					result = ( scan_offset == pattern_offset );
+				}
+				else
+				{
+					result = 1;
+				}
 				break;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -684,13 +687,11 @@ int libsigscan_scan_tree_node_printf(
 		return( -1 );
 	}
 	libcnotify_printf(
-	 "%s: scan tree node: 0x%08" PRIjx "\n",
-	 function,
+	 "Scan tree node: 0x%08" PRIjx "\n",
 	 (intptr_t *) scan_tree_node );
 
 	libcnotify_printf(
-	 "%s: pattern offset: %" PRIi64 "\n",
-	 function,
+	 "\tpattern offset:\t\t%" PRIi64 "\n",
 	 scan_tree_node->pattern_offset );
 
 	for( byte_value = 0;
@@ -702,8 +703,7 @@ int libsigscan_scan_tree_node_printf(
 			continue;
 		}
 		libcnotify_printf(
-		 "%s: byte value: 0x%02" PRIx16 ": ",
-		 function,
+		 "\tbyte value: 0x%02" PRIx16 ":\t",
 		 byte_value );
 
 		if( libsigscan_scan_object_printf(
@@ -726,8 +726,7 @@ int libsigscan_scan_tree_node_printf(
 	if( scan_tree_node->default_scan_object != NULL )
 	{
 		libcnotify_printf(
-		 "%s: default: ",
-		 function );
+		 "\tdefault:\t\t" );
 
 		if( libsigscan_scan_object_printf(
 		     scan_tree_node->default_scan_object,

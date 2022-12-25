@@ -162,6 +162,8 @@ int libsigscan_skip_table_fill(
 
 		return( -1 );
 	}
+	skip_table->number_of_signatures = 0;
+
 	/* First determine the smallest pattern size
 	 */
 	if( libcdata_list_get_first_element(
@@ -205,6 +207,8 @@ int libsigscan_skip_table_fill(
 
 			return( -1 );
 		}
+		skip_table->number_of_signatures += 1;
+
 		if( ( skip_table->largest_pattern_size == 0 )
 		 || ( skip_table->largest_pattern_size < signature->pattern_size ) )
 		{
@@ -275,6 +279,8 @@ int libsigscan_skip_table_fill(
 		}
 		skip_value = skip_table->smallest_pattern_size;
 
+		skip_table->smallest_skip_value = skip_value;
+
 		for( pattern_index = 0;
 		     pattern_index < skip_table->smallest_pattern_size;
 		     pattern_index++ )
@@ -286,6 +292,12 @@ int libsigscan_skip_table_fill(
 			 || ( skip_value < skip_table->skip_values[ byte_value ] ) )
 			{
 				skip_table->skip_values[ byte_value ] = skip_value;
+
+				if( ( skip_value > 0 )
+				 && ( skip_value < skip_table->smallest_skip_value ) )
+				{
+					skip_table->smallest_skip_value = skip_value;
+				}
 			}
 		}
 		if( libcdata_list_element_get_next_element(
@@ -333,7 +345,7 @@ int libsigscan_skip_table_get_smallest_pattern_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid smalles _pattern size.",
+		 "%s: invalid smallest pattern size.",
 		 function );
 
 		return( -1 );
@@ -413,6 +425,10 @@ int libsigscan_skip_table_printf(
 	libcnotify_printf(
 	 "Skip table:\n" );
 
+	libcnotify_printf(
+	 "\tNumber of signatures\t: %d\n",
+         skip_table->number_of_signatures );
+
 	for( byte_value_index = 0;
 	     byte_value_index < 256;
 	     byte_value_index++ )
@@ -422,11 +438,11 @@ int libsigscan_skip_table_printf(
 			libcnotify_printf(
 			 "\tByte value: 0x%02" PRIx16 "\t: %" PRIzd "\n",
 			 byte_value_index,
-			 skip_table->skip_values[ byte_value_index] );
+			 skip_table->skip_values[ byte_value_index ] );
 		}
 	}
 	libcnotify_printf(
-	 "\tDefault\t\t: %" PRIzd "\n",
+	 "\tDefault\t\t\t: %" PRIzd "\n",
          skip_table->smallest_pattern_size );
 
 	libcnotify_printf(
@@ -435,5 +451,5 @@ int libsigscan_skip_table_printf(
 	return( 1 );
 }
 
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 

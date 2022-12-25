@@ -82,9 +82,9 @@ uint8_t sigscan_test_scanner_data2[ 128 ] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 uint8_t sigscan_test_scanner_data3[ 128 ] = {
-        0x20, 0x20, 0x20, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x20, 0x6f, 0x66, 0x20, 0x75, 0x6e,
-        0x62, 0x6f, 0x75, 0x6e, 0x64, 0x65, 0x64, 0x20, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x20,
-	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x65,
+	0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x20, 0x6f, 0x66, 0x20, 0x75, 0x6e, 0x62, 0x6f, 0x75, 0x6e,
+	0x64, 0x65, 0x64, 0x20, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x20, 0x20, 0x20, 0x0a, 0x20,
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
@@ -479,8 +479,8 @@ int sigscan_test_scanner_add_signature(
 	 */
 	result = libsigscan_scanner_add_signature(
 	          scanner,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          0,
 	          (uint8_t *) "pattern",
 	          7,
@@ -500,8 +500,8 @@ int sigscan_test_scanner_add_signature(
 	 */
 	result = libsigscan_scanner_add_signature(
 	          NULL,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          0,
 	          (uint8_t *) "pattern",
 	          7,
@@ -544,8 +544,8 @@ int sigscan_test_scanner_add_signature(
 
 	result = libsigscan_scanner_add_signature(
 	          scanner,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          0,
 	          NULL,
 	          7,
@@ -1694,8 +1694,8 @@ int sigscan_test_scanner1(
 
 	result = libsigscan_scanner_add_signature(
 	          scanner,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          0,
 	          (uint8_t *) "Client UrlCache MMF Ver ",
 	          24,
@@ -1927,8 +1927,8 @@ int sigscan_test_scanner2(
 
 	result = libsigscan_scanner_add_signature(
 	          scanner,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          8,
 	          (uint8_t *) "conectix",
 	          8,
@@ -2146,11 +2146,214 @@ int sigscan_test_scanner3(
 
 	result = libsigscan_scanner_add_signature(
 	          scanner,
-	          "test",
-	          5,
+	          "test1",
+	          6,
 	          0,
 	          (uint8_t *) "example of unbounded pattern",
 	          28,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_initialize(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_state_set_data_size(
+	          scan_state,
+	          64,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_buffer(
+	          scanner,
+	          scan_state,
+	          sigscan_test_scanner_data3,
+	          128,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_stop(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_get_number_of_results(
+	          scan_state,
+	          &number_of_results,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "number_of_results",
+	 number_of_results,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_state_free(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_free(
+	          &scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scanner",
+	 scanner );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libsigscan_scanner_initialize(
+	          &scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scanner",
+	 scanner );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          scanner,
+	          64,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "test1",
+	          6,
+	          0,
+	          (uint8_t *) "example of unbounded pattern",
+	          28,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "test2",
+	          6,
+	          0,
+	          (uint8_t *) "another example",
+	          15,
 	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
 	          &error );
 

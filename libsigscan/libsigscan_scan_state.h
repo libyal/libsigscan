@@ -67,7 +67,7 @@ struct libsigscan_internal_scan_state
 	 */
 	uint64_t header_range_end;
 
-	/* The footer (offset relative from start) range size
+	/* The footer range size
 	 */
 	uint64_t header_range_size;
 
@@ -87,7 +87,7 @@ struct libsigscan_internal_scan_state
 	 */
 	uint64_t footer_range_end;
 
-	/* The footer (offset relative from start) range size
+	/* The footer range size
 	 */
 	uint64_t footer_range_size;
 
@@ -98,6 +98,10 @@ struct libsigscan_internal_scan_state
 	/* The active (unbounded scan tree) node
 	 */
 	libsigscan_scan_tree_node_t *active_node;
+
+	/* The unbounded range size
+	 */
+	uint64_t unbounded_range_size;
 
 	/* The (scan) buffer
 	 */
@@ -172,7 +176,6 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
      libsigscan_scan_tree_t *scan_tree,
      libsigscan_scan_tree_node_t **active_node,
      off64_t data_offset,
-     size64_t data_size,
      const uint8_t *buffer,
      size_t buffer_size,
      size_t buffer_offset,
@@ -180,6 +183,7 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 
 int libsigscan_internal_scan_state_scan_buffer(
      libsigscan_internal_scan_state_t *internal_scan_state,
+     off64_t data_offset,
      const uint8_t *buffer,
      size_t buffer_size,
      size_t buffer_offset,
@@ -187,6 +191,7 @@ int libsigscan_internal_scan_state_scan_buffer(
 
 int libsigscan_scan_state_scan_buffer(
      libsigscan_scan_state_t *scan_state,
+     off64_t data_offset,
      const uint8_t *buffer,
      size_t buffer_size,
      libcerror_error_t **error );

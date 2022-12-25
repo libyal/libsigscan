@@ -1934,7 +1934,8 @@ int libsigscan_scan_tree_build_node(
 			goto on_error;
 		}
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	return( 1 );
 
 on_error:
@@ -2209,6 +2210,24 @@ int libsigscan_scan_tree_build(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		if( libsigscan_skip_table_printf(
+		     scan_tree->skip_table,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print skip table.",
+			 function );
+
+			goto on_error;
+		}
+	}
+#endif
 	scan_tree->pattern_offsets_mode = pattern_offsets_mode;
 
 	return( 1 );

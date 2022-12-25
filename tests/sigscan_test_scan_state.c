@@ -1205,7 +1205,6 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          64,
 	          buffer,
 	          128,
 	          0,
@@ -1227,7 +1226,6 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          64,
 	          buffer,
 	          128,
 	          0,
@@ -1250,7 +1248,6 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          NULL,
 	          &active_node,
 	          0,
-	          64,
 	          buffer,
 	          128,
 	          0,
@@ -1273,7 +1270,6 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          NULL,
 	          0,
-	          64,
 	          buffer,
 	          128,
 	          0,
@@ -1296,7 +1292,6 @@ int sigscan_test_internal_scan_state_scan_buffer_by_scan_tree(
 	          scan_tree,
 	          &active_node,
 	          0,
-	          64,
 	          NULL,
 	          128,
 	          0,
@@ -1418,6 +1413,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	 */
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
+	          0,
 	          buffer,
 	          128,
 	          0,
@@ -1436,6 +1432,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 	 */
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          NULL,
+	          0,
 	          buffer,
 	          128,
 	          0,
@@ -1455,6 +1452,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
+	          0,
 	          NULL,
 	          128,
 	          0,
@@ -1474,6 +1472,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
+	          0,
 	          buffer,
 	          0,
 	          0,
@@ -1493,6 +1492,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
+	          0,
 	          buffer,
 	          (size_t) SSIZE_MAX + 1,
 	          0,
@@ -1512,6 +1512,7 @@ int sigscan_test_internal_scan_state_scan_buffer(
 
 	result = libsigscan_internal_scan_state_scan_buffer(
 	          (libsigscan_internal_scan_state_t *) scan_state,
+	          0,
 	          buffer,
 	          128,
 	          1024,
@@ -1577,6 +1578,7 @@ int sigscan_test_scan_state_scan_buffer(
 	 */
 	result = libsigscan_scan_state_scan_buffer(
 	          scan_state,
+	          0,
 	          buffer,
 	          128,
 	          &error );
@@ -1594,6 +1596,7 @@ int sigscan_test_scan_state_scan_buffer(
 	 */
 	result = libsigscan_scan_state_scan_buffer(
 	          NULL,
+	          0,
 	          buffer,
 	          128,
 	          &error );
@@ -1612,6 +1615,7 @@ int sigscan_test_scan_state_scan_buffer(
 
 	result = libsigscan_scan_state_scan_buffer(
 	          scan_state,
+	          0,
 	          NULL,
 	          128,
 	          &error );
@@ -1630,6 +1634,7 @@ int sigscan_test_scan_state_scan_buffer(
 
 	result = libsigscan_scan_state_scan_buffer(
 	          scan_state,
+	          0,
 	          buffer,
 	          (size_t) SSIZE_MAX + 1,
 	          &error );

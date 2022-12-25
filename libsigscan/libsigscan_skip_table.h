@@ -36,6 +36,10 @@ typedef struct libsigscan_skip_table libsigscan_skip_table_t;
 
 struct libsigscan_skip_table
 {
+	/* The number of signatures
+	 */
+	int number_of_signatures;
+
 	/* The largest pattern size
 	 */
 	size_t largest_pattern_size;
@@ -47,6 +51,10 @@ struct libsigscan_skip_table
 	/* The skip values
 	 */
 	size_t skip_values[ 256 ];
+
+	/* The smallest skip value
+	 */
+	size_t smallest_skip_value;
 };
 
 int libsigscan_skip_table_initialize(

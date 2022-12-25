@@ -355,7 +355,8 @@ int libsigscan_signature_table_fill(
 				 signature->pattern_size,
 				 0 );
 			}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 			for( pattern_index = 0;
 			     pattern_index < signature->pattern_size;
 			     pattern_index++ )
