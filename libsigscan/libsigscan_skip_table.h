@@ -81,6 +81,11 @@ int libsigscan_skip_table_get_skip_value(
      size_t *skip_value,
      libcerror_error_t **error );
 
+int libsigscan_skip_table_get_smallest_skip_value(
+     libsigscan_skip_table_t *skip_table,
+     size_t *smallest_skip_value,
+     libcerror_error_t **error );
+
 #if defined( HAVE_DEBUG_OUTPUT )
 
 int libsigscan_skip_table_printf(

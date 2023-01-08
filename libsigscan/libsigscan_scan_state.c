@@ -956,60 +956,90 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 		}
 		if( result == 0 )
 		{
-			if( scan_tree->pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+			if( libsigscan_skip_table_get_smallest_pattern_size(
+			     scan_tree->skip_table,
+			     &smallest_pattern_size,
+			     error ) != 1 )
 			{
-				skip_value = scan_tree->skip_table->smallest_skip_value;
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve smallest pattern size.",
+				 function );
+
+				goto on_error;
 			}
-			else
+			if( smallest_pattern_size > buffer_size )
 			{
-				if( libsigscan_skip_table_get_smallest_pattern_size(
+				smallest_pattern_size = buffer_size;
+			}
+			buffer_end_offset = buffer_offset + smallest_pattern_size - 1;
+
+			if( buffer_end_offset >= buffer_size )
+			{
+				buffer_end_offset = buffer_size - 1;
+			}
+			skip_value = 0;
+
+			do
+			{
+				if( libsigscan_skip_table_get_skip_value(
 				     scan_tree->skip_table,
-				     &smallest_pattern_size,
+				     buffer[ buffer_end_offset ],
+				     &skip_value,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to retrieve smallest pattern size.",
+					 "%s: unable to retrieve skip value.",
 					 function );
 
 					goto on_error;
 				}
-				if( smallest_pattern_size > buffer_size )
+				if( skip_value == 0 )
 				{
-					smallest_pattern_size = buffer_size;
-				}
-				buffer_end_offset = buffer_offset + smallest_pattern_size - 1;
-
-				if( buffer_end_offset >= buffer_size )
-				{
-					buffer_end_offset = buffer_size - 1;
-				}
-				skip_value = 0;
-
-				do
-				{
-					if( libsigscan_skip_table_get_skip_value(
-					     scan_tree->skip_table,
-					     buffer[ buffer_end_offset ],
-					     &skip_value,
-					     error ) != 1 )
+					if( scan_tree->pattern_offsets_mode == LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
 					{
-						libcerror_error_set(
-						 error,
-						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-						 "%s: unable to retrieve skip value.",
-						 function );
+						if( libsigscan_skip_table_get_smallest_skip_value(
+						     scan_tree->skip_table,
+						     &skip_value,
+						     error ) != 1 )
+						{
+							libcerror_error_set(
+							 error,
+							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+							 "%s: unable to retrieve smallest skip value.",
+							 function );
 
-						goto on_error;
+							goto on_error;
+						}
 					}
-					buffer_end_offset -= 1;
+					else
+					{
+						if( libsigscan_skip_table_get_smallest_pattern_size(
+						     scan_tree->skip_table,
+						     &skip_value,
+						     error ) != 1 )
+						{
+							libcerror_error_set(
+							 error,
+							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+							 "%s: unable to retrieve smallest pattern size.",
+							 function );
+
+							goto on_error;
+						}
+					}
 				}
-				while( ( buffer_end_offset > buffer_offset )
-				    && ( skip_value == 0 ) );
+				buffer_end_offset -= 1;
 			}
+			while( ( buffer_end_offset > buffer_offset )
+			    && ( skip_value == 0 ) );
 		}
 		if( scan_tree->pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
 		{

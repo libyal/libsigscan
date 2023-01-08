@@ -640,6 +640,79 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsigscan_skip_table_get_smallest_skip_value function
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_skip_table_get_smallest_skip_value(
+     libsigscan_skip_table_t *skip_table )
+{
+	libcerror_error_t *error   = NULL;
+	size_t smallest_skip_value = 0;
+	int result                 = 0;
+
+	/* Test regular cases
+	 */
+	result = libsigscan_skip_table_get_smallest_skip_value(
+	          skip_table,
+	          &smallest_skip_value,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsigscan_skip_table_get_smallest_skip_value(
+	          NULL,
+	          &smallest_skip_value,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libsigscan_skip_table_get_smallest_skip_value(
+	          skip_table,
+	          NULL,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 #if defined( HAVE_DEBUG_OUTPUT )
 
 /* Tests the libsigscan_skip_table_printf function
@@ -852,6 +925,11 @@ int main(
 	SIGSCAN_TEST_RUN_WITH_ARGS(
 	 "libsigscan_skip_table_get_skip_value",
 	 sigscan_test_skip_table_get_skip_value,
+	 skip_table );
+
+	SIGSCAN_TEST_RUN_WITH_ARGS(
+	 "libsigscan_skip_table_get_smallest_skip_value",
+	 sigscan_test_skip_table_get_smallest_skip_value,
 	 skip_table );
 
 #if defined( HAVE_DEBUG_OUTPUT )
