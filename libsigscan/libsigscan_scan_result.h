@@ -45,12 +45,17 @@ struct libsigscan_internal_scan_result
 	/* The signature
 	 */
 	libsigscan_signature_t *signature;
+
+	/* The signature identifier index
+	 */
+	int signature_identifier_index;
 };
 
 int libsigscan_scan_result_initialize(
      libsigscan_scan_result_t **scan_result,
      off64_t offset,
      libsigscan_signature_t *signature,
+     int signature_identifier_index,
      libcerror_error_t **error );
 
 LIBSIGSCAN_EXTERN \

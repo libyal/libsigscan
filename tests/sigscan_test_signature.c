@@ -908,6 +908,7 @@ int sigscan_test_signature_get_identifier_size(
 	 */
 	result = libsigscan_signature_get_identifier_size(
 	          signature,
+	          0,
 	          &identifier_size,
 	          &error );
 
@@ -929,6 +930,7 @@ int sigscan_test_signature_get_identifier_size(
 	 */
 	result = libsigscan_signature_get_identifier_size(
 	          NULL,
+	          0,
 	          &identifier_size,
 	          &error );
 
@@ -946,6 +948,7 @@ int sigscan_test_signature_get_identifier_size(
 
 	result = libsigscan_signature_get_identifier_size(
 	          signature,
+	          0,
 	          NULL,
 	          &error );
 
@@ -987,6 +990,7 @@ int sigscan_test_signature_get_identifier(
 	 */
 	result = libsigscan_signature_get_identifier(
 	          signature,
+	          0,
 	          identifier,
 	          16,
 	          &error );
@@ -1004,6 +1008,7 @@ int sigscan_test_signature_get_identifier(
 	 */
 	result = libsigscan_signature_get_identifier(
 	          NULL,
+	          0,
 	          identifier,
 	          16,
 	          &error );
@@ -1022,6 +1027,7 @@ int sigscan_test_signature_get_identifier(
 
 	result = libsigscan_signature_get_identifier(
 	          signature,
+	          0,
 	          NULL,
 	          16,
 	          &error );
@@ -1040,6 +1046,7 @@ int sigscan_test_signature_get_identifier(
 
 	result = libsigscan_signature_get_identifier(
 	          signature,
+	          0,
 	          identifier,
 	          (size_t) SSIZE_MAX + 1,
 	          &error );
@@ -1058,6 +1065,7 @@ int sigscan_test_signature_get_identifier(
 
 	result = libsigscan_signature_get_identifier(
 	          signature,
+	          0,
 	          identifier,
 	          0,
 	          &error );
@@ -1082,6 +1090,7 @@ int sigscan_test_signature_get_identifier(
 
 	result = libsigscan_signature_get_identifier(
 	          signature,
+	          0,
 	          identifier,
 	          16,
 	          &error );

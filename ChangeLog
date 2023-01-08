@@ -1,6 +1,4 @@
 TODO:
-* support duplicate patterns with different identifiers
-  - return a result for each identifier
 * buffer scan
   - align with footer range
 * unbounded scan

@@ -749,6 +749,8 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 	size_t smallest_pattern_size          = 0;
 	uint8_t scan_object_type              = 0;
 	int entry_index                       = 0;
+	int identifier_index                  = 0;
+	int number_of_identifiers             = 0;
 	int result                            = 0;
 
 	if( internal_scan_state == NULL )
@@ -910,49 +912,58 @@ int libsigscan_internal_scan_state_scan_buffer_by_scan_tree(
 
 				goto on_error;
 			}
-			if( signature == NULL )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-				 "%s: missing signature.",
-				 function );
-
-				goto on_error;
-			}
-			if( libsigscan_scan_result_initialize(
-			     &scan_result,
-			     data_offset,
+			if( libsigscan_signature_get_number_of_identifiers(
 			     signature,
+			     &number_of_identifiers,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create scan result.",
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve number of identifiers in signature.",
 				 function );
 
 				goto on_error;
 			}
-			if( libcdata_array_append_entry(
-			     internal_scan_state->scan_results_array,
-			     &entry_index,
-			     (intptr_t *) scan_result,
-			     error ) != 1 )
+			for( identifier_index = 0;
+			     identifier_index < number_of_identifiers;
+			     identifier_index++ )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append scan result.",
-				 function );
+				if( libsigscan_scan_result_initialize(
+				     &scan_result,
+				     data_offset,
+				     signature,
+				     identifier_index,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 "%s: unable to create scan result.",
+					 function );
 
-				goto on_error;
+					goto on_error;
+				}
+				if( libcdata_array_append_entry(
+				     internal_scan_state->scan_results_array,
+				     &entry_index,
+				     (intptr_t *) scan_result,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+					 "%s: unable to append scan result.",
+					 function );
+
+					goto on_error;
+				}
+				scan_result = NULL;
 			}
-			scan_result = NULL;
-			skip_value  = signature->pattern_size;
+			skip_value = signature->pattern_size;
 		}
 		if( result == 0 )
 		{

@@ -88,13 +88,20 @@ int libsigscan_signature_compare_by_pattern(
      libsigscan_signature_t *second_signature,
      libcerror_error_t **error );
 
+int libsigscan_signature_get_number_of_identifiers(
+     libsigscan_signature_t *signature,
+     int *number_of_identifiers,
+     libcerror_error_t **error );
+
 int libsigscan_signature_get_identifier_size(
      libsigscan_signature_t *signature,
+     int identifier_index,
      size_t *identifier_size,
      libcerror_error_t **error );
 
 int libsigscan_signature_get_identifier(
      libsigscan_signature_t *signature,
+     int identifier_index,
      char *identifier,
      size_t identifier_size,
      libcerror_error_t **error );

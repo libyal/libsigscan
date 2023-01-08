@@ -35,6 +35,7 @@ int libsigscan_scan_result_initialize(
      libsigscan_scan_result_t **scan_result,
      off64_t offset,
      libsigscan_signature_t *signature,
+     int signature_identifier_index,
      libcerror_error_t **error )
 {
 	libsigscan_internal_scan_result_t *internal_scan_result = NULL;
@@ -112,8 +113,9 @@ int libsigscan_scan_result_initialize(
 
 		goto on_error;
 	}
-	internal_scan_result->offset    = offset;
-	internal_scan_result->signature = signature;
+	internal_scan_result->offset                     = offset;
+	internal_scan_result->signature                  = signature;
+	internal_scan_result->signature_identifier_index = signature_identifier_index;
 
 	*scan_result = (libsigscan_scan_result_t *) internal_scan_result;
 
@@ -214,6 +216,7 @@ int libsigscan_scan_result_get_identifier_size(
 
 	if( libsigscan_signature_get_identifier_size(
 	     internal_scan_result->signature,
+	     internal_scan_result->signature_identifier_index,
 	     identifier_size,
 	     error ) != 1 )
 	{
@@ -257,6 +260,7 @@ int libsigscan_scan_result_get_identifier(
 
 	if( libsigscan_signature_get_identifier(
 	     internal_scan_result->signature,
+	     internal_scan_result->signature_identifier_index,
 	     identifier,
 	     identifier_size,
 	     error ) != 1 )

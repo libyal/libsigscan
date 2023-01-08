@@ -80,6 +80,7 @@ int sigscan_test_scan_result_initialize(
 	          &scan_result,
 	          0,
 	          signature,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -118,6 +119,7 @@ int sigscan_test_scan_result_initialize(
 	          NULL,
 	          0,
 	          signature,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -138,6 +140,7 @@ int sigscan_test_scan_result_initialize(
 	          &scan_result,
 	          0,
 	          signature,
+	          0,
 	          &error );
 
 	scan_result = NULL;
@@ -158,6 +161,7 @@ int sigscan_test_scan_result_initialize(
 	          &scan_result,
 	          -1,
 	          signature,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -176,6 +180,7 @@ int sigscan_test_scan_result_initialize(
 	          &scan_result,
 	          0,
 	          NULL,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(
@@ -204,6 +209,7 @@ int sigscan_test_scan_result_initialize(
 		          &scan_result,
 		          0,
 		          signature,
+		          0,
 		          &error );
 
 		if( sigscan_test_malloc_attempts_before_fail != -1 )
@@ -248,6 +254,7 @@ int sigscan_test_scan_result_initialize(
 		          &scan_result,
 		          0,
 		          signature,
+		          0,
 		          &error );
 
 		if( sigscan_test_memset_attempts_before_fail != -1 )
@@ -685,6 +692,7 @@ int main(
 	          &scan_result,
 	          0,
 	          signature,
+	          0,
 	          &error );
 
 	SIGSCAN_TEST_ASSERT_EQUAL_INT(

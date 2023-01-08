@@ -336,16 +336,15 @@ int libsigscan_signature_compare_by_pattern(
 	return( LIBCDATA_COMPARE_EQUAL );
 }
 
-/* Retrieves the size of the identifier
- * The returned size includes the end of string character
+/* Retrieves the number of identifiers
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_signature_get_identifier_size(
+int libsigscan_signature_get_number_of_identifiers(
      libsigscan_signature_t *signature,
-     size_t *identifier_size,
+     int *number_of_identifiers,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_get_identifier_size";
+	static char *function = "libsigscan_signature_get_number_of_identifiers";
 
 	if( signature == NULL )
 	{
@@ -358,19 +357,78 @@ int libsigscan_signature_get_identifier_size(
 
 		return( -1 );
 	}
-	if( identifier_size == NULL )
+	if( libcdata_list_get_number_of_elements(
+	     signature->identifiers_list,
+	     number_of_identifiers,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of elements of identifiers list.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_get_identifier_size(
+     libsigscan_signature_t *signature,
+     int identifier_index,
+     size_t *identifier_size,
+     libcerror_error_t **error )
+{
+	libsigscan_identifier_t *safe_identifier = NULL;
+	static char *function                    = "libsigscan_signature_get_identifier_size";
+
+	if( signature == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid identifier size.",
+		 "%s: invalid signature.",
 		 function );
 
 		return( -1 );
 	}
-	*identifier_size = signature->identifier_size;
+	if( libcdata_list_get_value_by_index(
+	     signature->identifiers_list,
+	     identifier_index,
+	     (intptr_t **) &safe_identifier,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier: %d.",
+		 function,
+		 identifier_index );
 
+		return( -1 );
+	}
+	if( libsigscan_identifier_get_string_size(
+	     safe_identifier,
+	     identifier_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier: %d string size.",
+		 function,
+		 identifier_index );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -380,11 +438,13 @@ int libsigscan_signature_get_identifier_size(
  */
 int libsigscan_signature_get_identifier(
      libsigscan_signature_t *signature,
+     int identifier_index,
      char *identifier,
      size_t identifier_size,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_get_identifier";
+	libsigscan_identifier_t *safe_identifier = NULL;
+	static char *function                    = "libsigscan_signature_get_identifier";
 
 	if( signature == NULL )
 	{
@@ -397,50 +457,35 @@ int libsigscan_signature_get_identifier(
 
 		return( -1 );
 	}
-	if( identifier == NULL )
+	if( libcdata_list_get_value_by_index(
+	     signature->identifiers_list,
+	     identifier_index,
+	     (intptr_t **) &safe_identifier,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid identifier.",
-		 function );
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier: %d.",
+		 function,
+		 identifier_index );
 
 		return( -1 );
 	}
-	if( identifier_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid identifier size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( identifier_size < signature->identifier_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: invalid identifier value too small.",
-		 function );
-
-		return( -1 );
-	}
-	if( memory_copy(
+	if( libsigscan_identifier_get_string(
+	     safe_identifier,
 	     identifier,
-	     signature->identifier,
-	     signature->identifier_size ) == NULL )
+	     identifier_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy identifier.",
-		 function );
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve identifier: %d string.",
+		 function,
+		 identifier_index );
 
 		return( -1 );
 	}
