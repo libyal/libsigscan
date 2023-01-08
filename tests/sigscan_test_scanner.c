@@ -58,8 +58,8 @@ int libsigscan_scanner_scan_file_io_handle(
 #endif
 
 /* Define to make sigscan_test_scanner generate verbose output
-#define SIGSCAN_TEST_SCANNER_VERBOSE
  */
+#define SIGSCAN_TEST_SCANNER_VERBOSE
 
 uint8_t sigscan_test_scanner_data1[ 128 ] = {
 	0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x20, 0x55, 0x72, 0x6c, 0x43, 0x61, 0x63, 0x68, 0x65, 0x20,
@@ -2521,6 +2521,588 @@ on_error:
 	return( 0 );
 }
 
+/* Tests scanning an unbounded signature
+ * Returns 1 if successful or 0 if not
+ */
+int sigscan_test_scanner4(
+     void )
+{
+	libcerror_error_t *error            = NULL;
+	libsigscan_scan_state_t *scan_state = NULL;
+	libsigscan_scanner_t *scanner       = NULL;
+	int number_of_results               = 0;
+	int result                          = 0;
+
+	/* Initialize test
+	 */
+	result = libsigscan_scanner_initialize(
+	          &scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scanner",
+	 scanner );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_set_scan_buffer_size(
+	          scanner,
+	          64,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access0",
+	          15,
+	          0,
+	          (uint8_t *) "\"CONNECT ",
+	          9,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access1",
+	          15,
+	          0,
+	          (uint8_t *) "\"DELETE ",
+	          8,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access2",
+	          15,
+	          0,
+	          (uint8_t *) "\"GET ",
+	          5,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access3",
+	          15,
+	          0,
+	          (uint8_t *) "\"HEAD ",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access4",
+	          15,
+	          0,
+	          (uint8_t *) " HTTP/",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access5",
+	          15,
+	          0,
+	          (uint8_t *) "\"OPTIONS ",
+	          9,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access6",
+	          15,
+	          0,
+	          (uint8_t *) "\"PATCH ",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access7",
+	          15,
+	          0,
+	          (uint8_t *) "\"POST ",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access8",
+	          15,
+	          0,
+	          (uint8_t *) "\"PUT ",
+	          5,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "apache_access9",
+	          15,
+	          0,
+	          (uint8_t *) "\"TRACE ",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access0",
+	          19,
+	          0,
+	          (uint8_t *) " CONNECT ",
+	          9,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access1",
+	          19,
+	          0,
+	          (uint8_t *) " DELETE ",
+	          8,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access2",
+	          19,
+	          0,
+	          (uint8_t *) " GET ",
+	          5,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access3",
+	          19,
+	          0,
+	          (uint8_t *) " HEAD ",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access4",
+	          19,
+	          0,
+	          (uint8_t *) " HTTP/",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access5",
+	          19,
+	          0,
+	          (uint8_t *) " OPTIONS ",
+	          9,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access6",
+	          19,
+	          0,
+	          (uint8_t *) " PATCH ",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access7",
+	          19,
+	          0,
+	          (uint8_t *) " POST ",
+	          6,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access8",
+	          19,
+	          0,
+	          (uint8_t *) " PUT ",
+	          5,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_add_signature(
+	          scanner,
+	          "confluence_access9",
+	          19,
+	          0,
+	          (uint8_t *) " TRACE ",
+	          7,
+	          LIBSIGSCAN_SIGNATURE_FLAG_NO_OFFSET,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_initialize(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NOT_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsigscan_scan_state_set_data_size(
+	          scan_state,
+	          64,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_start(
+	          scanner,
+	          scan_state,
+	          &error );
+
+SIGSCAN_TEST_FPRINT_ERROR( error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_buffer(
+	          scanner,
+	          scan_state,
+	          sigscan_test_scanner_data3,
+	          128,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_scan_stop(
+	          scanner,
+	          scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scan_state_get_number_of_results(
+	          scan_state,
+	          &number_of_results,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "number_of_results",
+	 number_of_results,
+	 0 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Clean up
+	 */
+	result = libsigscan_scan_state_free(
+	          &scan_state,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scan_state",
+	 scan_state );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libsigscan_scanner_free(
+	          &scanner,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "scanner",
+	 scanner );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( scan_state != NULL )
+	{
+		libsigscan_scan_state_free(
+		 &scan_state,
+		 NULL );
+	}
+	if( scanner != NULL )
+	{
+		libsigscan_scanner_free(
+		 &scanner,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -2687,6 +3269,10 @@ int main(
 	SIGSCAN_TEST_RUN(
 	 "sigscan_test_scanner3",
 	 sigscan_test_scanner3 );
+
+	SIGSCAN_TEST_RUN(
+	 "sigscan_test_scanner4",
+	 sigscan_test_scanner4 );
 
 	/* TODO add test to scan for unbounded signature on buffer boundary */
 

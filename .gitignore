@@ -130,6 +130,7 @@ stamp-h[1-9]
 /tests/input
 /tests/sigscan_test_byte_value_group
 /tests/sigscan_test_error
+/tests/sigscan_test_identifier
 /tests/sigscan_test_notify
 /tests/sigscan_test_offset_group
 /tests/sigscan_test_offsets_list

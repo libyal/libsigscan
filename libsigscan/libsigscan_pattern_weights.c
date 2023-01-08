@@ -165,7 +165,7 @@ int libsigscan_pattern_weights_free(
 	{
 		if( libcdata_list_free(
 		     &( ( *pattern_weights )->offset_groups_list ),
-		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_offset_group_free,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_offset_group_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -179,7 +179,7 @@ int libsigscan_pattern_weights_free(
 		}
 		if( libcdata_list_free(
 		     &( ( *pattern_weights )->weight_groups_list ),
-		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_weight_group_free,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_weight_group_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

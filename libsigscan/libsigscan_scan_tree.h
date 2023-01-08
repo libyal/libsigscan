@@ -108,6 +108,7 @@ int libsigscan_scan_tree_build_node(
      int pattern_offsets_mode,
      uint64_t pattern_offsets_range_size,
      libsigscan_scan_tree_node_t **scan_tree_node,
+     int recursion_depth,
      libcerror_error_t **error );
 
 int libsigscan_scan_tree_build(

@@ -974,6 +974,7 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 {
 	libsigscan_byte_value_group_t *byte_value_group = NULL;
 	static char *function                           = "libsigscan_scan_tree_get_most_significant_pattern_offset";
+	int number_of_byte_value_groups                 = 0;
 	int number_of_signatures                        = 0;
 	int result                                      = 0;
 
@@ -1081,36 +1082,53 @@ int libsigscan_scan_tree_get_most_significant_pattern_offset(
 	}
 	if( result == 0 )
 	{
-		if( libsigscan_signature_table_get_byte_value_group_by_index(
+		if( libsigscan_signature_table_get_number_of_byte_value_groups(
 		     signature_table,
-		     0,
-		     &byte_value_group,
+		     &number_of_byte_value_groups,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve byte value group: 0.",
+			 "%s: unable to retrieve number of byte value groups.",
 			 function );
 
 			return( -1 );
 		}
-		result = libsigscan_byte_value_group_get_pattern_offset(
-		          byte_value_group,
-		          pattern_offset,
-		          error );
-
-		if( result != 1 )
+		if( number_of_byte_value_groups > 0 )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve pattern offset from byte value group: 0.",
-			 function );
+			if( libsigscan_signature_table_get_byte_value_group_by_index(
+			     signature_table,
+			     0,
+			     &byte_value_group,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve byte value group: 0.",
+				 function );
 
-			return( -1 );
+				return( -1 );
+			}
+			result = libsigscan_byte_value_group_get_pattern_offset(
+			          byte_value_group,
+			          pattern_offset,
+			          error );
+
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve pattern offset from byte value group: 0.",
+				 function );
+
+				return( -1 );
+			}
 		}
 	}
 	return( result );
@@ -1169,6 +1187,7 @@ int libsigscan_scan_tree_build_node(
      int pattern_offsets_mode,
      uint64_t pattern_offsets_range_size,
      libsigscan_scan_tree_node_t **scan_tree_node,
+     int recursion_depth,
      libcerror_error_t **error )
 {
 	libcdata_list_t *remaining_signatures_list        = NULL;
@@ -1222,6 +1241,18 @@ int libsigscan_scan_tree_build_node(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid scan tree node value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( recursion_depth < 0 )
+	 || ( recursion_depth > LIBSIGSCAN_MAXIMUM_SCAN_TREE_RECURSION_DEPTH ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid recursion depth value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1675,6 +1706,7 @@ int libsigscan_scan_tree_build_node(
 			     pattern_offsets_mode,
 			     pattern_offsets_range_size,
 			     (libsigscan_scan_tree_node_t **) &scan_object_value,
+			     recursion_depth + 1,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1824,6 +1856,7 @@ int libsigscan_scan_tree_build_node(
 		     pattern_offsets_mode,
 		     pattern_offsets_range_size,
 		     (libsigscan_scan_tree_node_t **) &scan_object_value,
+		     recursion_depth + 1,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2143,6 +2176,7 @@ int libsigscan_scan_tree_build(
 	     pattern_offsets_mode,
 	     range_size,
 	     &( scan_tree->root_node ),
+	     0,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

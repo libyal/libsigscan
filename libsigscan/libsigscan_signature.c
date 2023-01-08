@@ -24,6 +24,8 @@
 #include <types.h>
 
 #include "libsigscan_definitions.h"
+#include "libsigscan_identifier.h"
+#include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 #include "libsigscan_signature.h"
 
@@ -85,6 +87,24 @@ int libsigscan_signature_initialize(
 		 "%s: unable to clear signature.",
 		 function );
 
+		memory_free(
+		 *signature );
+
+		*signature = NULL;
+
+		return( -1 );
+	}
+	if( libcdata_list_initialize(
+	     &( ( *signature )->identifiers_list ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create identifiers list.",
+		 function );
+
 		goto on_error;
 	}
 	( *signature )->pattern_offset = -1;
@@ -110,6 +130,7 @@ int libsigscan_signature_free(
      libcerror_error_t **error )
 {
 	static char *function = "libsigscan_signature_free";
+	int result            = 1;
 
 	if( signature == NULL )
 	{
@@ -124,10 +145,19 @@ int libsigscan_signature_free(
 	}
 	if( *signature != NULL )
 	{
-		if( ( *signature )->identifier != NULL )
+		if( libcdata_list_free(
+		     &( ( *signature )->identifiers_list ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_identifier_free,
+		     error ) != 1 )
 		{
-			memory_free(
-			 ( *signature )->identifier );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free identifiers list.",
+			 function );
+
+			result = -1;
 		}
 		if( ( *signature )->pattern != NULL )
 		{
@@ -139,17 +169,17 @@ int libsigscan_signature_free(
 
 		*signature = NULL;
 	}
-	return( 1 );
+	return( result );
 }
 
-/* Frees a signature clone
+/* Frees a signature reference clone
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_signature_free_clone(
+int libsigscan_signature_free_reference_clone(
      libsigscan_signature_t **signature,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_free_clone";
+	static char *function = "libsigscan_signature_free_reference_clone";
 
 	if( signature == NULL )
 	{
@@ -169,15 +199,15 @@ int libsigscan_signature_free_clone(
 	return( 1 );
 }
 
-/* Clones a signature
+/* Clones a signature by reference
  * Returns 1 if successful or -1 on error
  */
-int libsigscan_signature_clone(
+int libsigscan_signature_clone_by_reference(
      libsigscan_signature_t **destination_signature,
      libsigscan_signature_t *source_signature,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_signature_clone";
+	static char *function = "libsigscan_signature_clone_by_reference";
 
 	if( destination_signature == NULL )
 	{
@@ -206,6 +236,104 @@ int libsigscan_signature_clone(
 	*destination_signature = source_signature;
 
 	return( 1 );
+}
+
+/* Compares the patterns of two signatures
+ * Returns return LIBCDATA_COMPARE_LESS, LIBCDATA_COMPARE_EQUAL, LIBCDATA_COMPARE_GREATER if successful or -1 on error
+ */
+int libsigscan_signature_compare_by_pattern(
+     libsigscan_signature_t *first_signature,
+     libsigscan_signature_t *second_signature,
+     libcerror_error_t **error )
+{
+	static char *function        = "libsigscan_signature_compare_by_pattern";
+	size_t smallest_pattern_size = 0;
+	int result                   = 0;
+
+	if( first_signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid first signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( first_signature->pattern == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid first signature - missing pattern.",
+		 function );
+
+		return( -1 );
+	}
+	if( second_signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid second signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( second_signature->pattern == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid second signature - missing pattern.",
+		 function );
+
+		return( -1 );
+	}
+	if( first_signature->pattern_offset < second_signature->pattern_offset )
+	{
+		return( LIBCDATA_COMPARE_LESS );
+	}
+	else if( first_signature->pattern_offset > second_signature->pattern_offset )
+	{
+		return( LIBCDATA_COMPARE_GREATER );
+	}
+	if( first_signature->pattern_size <= second_signature->pattern_size )
+	{
+		smallest_pattern_size = first_signature->pattern_size;
+	}
+	else
+	{
+		smallest_pattern_size = second_signature->pattern_size;
+	}
+/* TODO compare signature_flags */
+
+	result = memory_compare(
+	          first_signature->pattern,
+	          second_signature->pattern,
+	          smallest_pattern_size );
+
+	if( result < 0 )
+	{
+		return( LIBCDATA_COMPARE_LESS );
+	}
+	else if( result > 0 )
+	{
+		return( LIBCDATA_COMPARE_GREATER );
+	}
+	if( first_signature->pattern_size < second_signature->pattern_size )
+	{
+		return( LIBCDATA_COMPARE_LESS );
+	}
+	else if( first_signature->pattern_size > second_signature->pattern_size )
+	{
+		return( LIBCDATA_COMPARE_GREATER );
+	}
+	return( LIBCDATA_COMPARE_EQUAL );
 }
 
 /* Retrieves the size of the identifier
@@ -319,6 +447,88 @@ int libsigscan_signature_get_identifier(
 	return( 1 );
 }
 
+/* Appends an identifier
+ * Returns 1 if successful or -1 on error
+ */
+int libsigscan_signature_append_identifier(
+     libsigscan_signature_t *signature,
+     const char *identifier,
+     size_t identifier_length,
+     libcerror_error_t **error )
+{
+	libsigscan_identifier_t *safe_identifier = NULL;
+	static char *function                    = "libsigscan_signature_append_identifier";
+
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsigscan_identifier_initialize(
+	     &safe_identifier,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create identifier.",
+		 function );
+
+		goto on_error;
+	}
+	if( libsigscan_identifier_set(
+	     safe_identifier,
+	     identifier,
+	     identifier_length,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set identifier.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_list_append_value(
+	     signature->identifiers_list,
+	     (intptr_t *) safe_identifier,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append identifier.",
+		 function );
+
+		goto on_error;
+	}
+	if( signature->identifier == NULL )
+	{
+		signature->identifier      = safe_identifier->string;
+		signature->identifier_size = safe_identifier->string_size;
+	}
+	return( 1 );
+
+on_error:
+	if( safe_identifier != NULL )
+	{
+		libsigscan_identifier_free(
+		 &safe_identifier,
+		 NULL );
+	}
+	return( -1 );
+}
+
 /* Sets the signature values
  * Returns 1 if successful or -1 on error
  */
@@ -346,25 +556,13 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-	if( identifier == NULL )
+	if( signature->pattern != NULL )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid identifier.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( identifier_length == 0 )
-	 || ( identifier_length > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid identifier length value out of bounds.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid signature - pattern value already set.",
 		 function );
 
 		return( -1 );
@@ -406,58 +604,6 @@ int libsigscan_signature_set(
 
 		return( -1 );
 	}
-	if( signature->identifier != NULL )
-	{
-		memory_free(
-		 signature->identifier );
-
-		signature->identifier      = NULL;
-		signature->identifier_size = 0;
-	}
-	if( signature->pattern != NULL )
-	{
-		memory_free(
-		 signature->pattern );
-
-		signature->pattern      = NULL;
-		signature->pattern_size = 0;
-	}
-	if( identifier[ identifier_length - 1 ] != 0 )
-	{
-		identifier_length += 1;
-	}
-	signature->identifier = (char *) memory_allocate(
-	                                  sizeof( char ) * identifier_length );
-
-	if( signature->identifier == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create identifier.",
-		 function );
-
-		goto on_error;
-	}
-	signature->identifier_size = identifier_length;
-
-	if( memory_copy(
-	     signature->identifier,
-	     identifier,
-	     signature->identifier_size ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy identifier.",
-		 function );
-
-		goto on_error;
-	}
-	signature->pattern_offset = pattern_offset;
-
 	signature->pattern = (uint8_t *) memory_allocate(
 	                                  sizeof( uint8_t ) * pattern_size );
 
@@ -472,8 +618,6 @@ int libsigscan_signature_set(
 
 		goto on_error;
 	}
-	signature->pattern_size = pattern_size;
-
 	if( memory_copy(
 	     signature->pattern,
 	     pattern,
@@ -488,8 +632,25 @@ int libsigscan_signature_set(
 
 		goto on_error;
 	}
+	signature->pattern_offset  = pattern_offset;
+	signature->pattern_size    = pattern_size;
 	signature->signature_flags = signature_flags;
 
+	if( libsigscan_signature_append_identifier(
+	     signature,
+	     identifier,
+	     identifier_length,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append identifier.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
@@ -501,13 +662,14 @@ on_error:
 		signature->pattern      = NULL;
 		signature->pattern_size = 0;
 	}
-	if( signature->identifier != NULL )
-	{
-		memory_free(
-		 signature->identifier );
+	libcdata_list_empty(
+	 signature->identifiers_list,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_identifier_free,
+	 NULL );
 
-		signature->identifier      = NULL;
-		signature->identifier_size = 0;
-	}
+	signature->identifier      = NULL;
+	signature->identifier_size = 0;
+
 	return( -1 );
 }
+

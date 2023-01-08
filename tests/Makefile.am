@@ -41,6 +41,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	sigscan_test_byte_value_group \
 	sigscan_test_error \
+	sigscan_test_identifier \
 	sigscan_test_notify \
 	sigscan_test_offset_group \
 	sigscan_test_offsets_list \
@@ -80,6 +81,19 @@ sigscan_test_error_SOURCES = \
 
 sigscan_test_error_LDADD = \
 	../libsigscan/libsigscan.la
+
+sigscan_test_identifier_SOURCES = \
+	sigscan_test_identifier.c \
+	sigscan_test_libcdata.h \
+	sigscan_test_libcerror.h \
+	sigscan_test_libsigscan.h \
+	sigscan_test_macros.h \
+	sigscan_test_memory.c sigscan_test_memory.h \
+	sigscan_test_unused.h
+
+sigscan_test_identifier_LDADD = \
+	../libsigscan/libsigscan.la \
+	@LIBCERROR_LIBADD@
 
 sigscan_test_notify_SOURCES = \
 	sigscan_test_libcerror.h \

@@ -23,6 +23,7 @@ libsigscan_la_SOURCES = \
 	libsigscan_definitions.h \
 	libsigscan_error.c libsigscan_error.h \
 	libsigscan_extern.h \
+	libsigscan_identifier.c libsigscan_identifier.h \
 	libsigscan_libbfio.h \
 	libsigscan_libcdata.h \
 	libsigscan_libcerror.h \

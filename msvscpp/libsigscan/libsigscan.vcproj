@@ -182,6 +182,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libsigscan\libsigscan_identifier.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libsigscan\libsigscan_notify.c"
 				>
 			</File>
@@ -273,6 +277,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libsigscan\libsigscan_extern.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libsigscan\libsigscan_identifier.h"
 				>
 			</File>
 			<File

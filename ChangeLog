@@ -1,4 +1,6 @@
 TODO:
+* support duplicate patterns with different identifiers
+  - return a result for each identifier
 * buffer scan
   - align with footer range
 * unbounded scan
@@ -8,7 +10,6 @@ TODO:
   - add range to determine size of scan buffer?
 
 * patterns support
-  - remove duplicate patterns in unbounded scan use insert pattern to find duplicates
   - is there a pratical need to support signature with patterns that contain pattern gaps?
 * make sure scan buffer is sufficient large for bounded scan
 * state add relative_from_start, relative_from_end and unbound scan trees and active nodes

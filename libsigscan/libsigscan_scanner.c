@@ -317,8 +317,10 @@ int libsigscan_scanner_add_signature(
      libcerror_error_t **error )
 {
 	libsigscan_internal_scanner_t *internal_scanner = NULL;
+	libsigscan_signature_t *existing_signature      = NULL;
 	libsigscan_signature_t *signature               = NULL;
 	static char *function                           = "libsigscan_scanner_add_signature";
+	int result                                      = 0;
 
 	if( scanner == NULL )
 	{
@@ -413,22 +415,56 @@ int libsigscan_scanner_add_signature(
 
 		goto on_error;
 	}
-	if( libcdata_list_append_value(
-	     internal_scanner->signatures_list,
-	     (intptr_t *) signature,
-	     error ) != 1 )
+	result = libcdata_list_insert_value_with_existing(
+	          internal_scanner->signatures_list,
+	          (intptr_t *) signature,
+	          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_signature_compare_by_pattern,
+	          LIBCDATA_INSERT_FLAG_UNIQUE_ENTRIES,
+	          (intptr_t **) &existing_signature,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append signature to signatures list.",
+		 "%s: unable to insert signature.",
 		 function );
 
 		goto on_error;
 	}
-	signature = NULL;
+	else if( result == 0 )
+	{
+		if( libsigscan_signature_free(
+		     &signature,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free signature.",
+			 function );
 
+			goto on_error;
+		}
+		if( libsigscan_signature_append_identifier(
+		     existing_signature,
+		     identifier,
+		     identifier_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append identifier to existing signature.",
+			 function );
+
+			goto on_error;
+		}
+	}
 	return( 1 );
 
 on_error:

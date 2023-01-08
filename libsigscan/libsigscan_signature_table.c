@@ -168,7 +168,7 @@ int libsigscan_signature_table_free(
 	{
 		if( libcdata_list_free(
 		     &( ( *signature_table )->byte_value_groups_list ),
-		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_byte_value_group_free,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_byte_value_group_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -180,11 +180,9 @@ int libsigscan_signature_table_free(
 
 			result = -1;
 		}
-		/* The signatures in the list are references and freed elsewhere
-		 */
 		if( libcdata_list_free(
 		     &( ( *signature_table )->signatures_list ),
-		     NULL,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_reference_clone,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -218,8 +216,8 @@ int libsigscan_signature_table_fill(
 	libcdata_list_element_t *list_element = NULL;
 	libsigscan_signature_t *signature     = NULL;
 	static char *function                 = "libsigscan_signature_table_fill";
-	off64_t pattern_offset                = 0;
 	size_t pattern_index                  = 0;
+	off64_t pattern_offset                = 0;
 	int add_signature                     = 0;
 	int result                            = 0;
 
@@ -259,7 +257,7 @@ int libsigscan_signature_table_fill(
 		 "%s: unable to retrieve first list element.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	while( list_element != NULL )
 	{
@@ -275,7 +273,7 @@ int libsigscan_signature_table_fill(
 			 "%s: unable to retrieve signature.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( signature == NULL )
 		{
@@ -286,7 +284,7 @@ int libsigscan_signature_table_fill(
 			 "%s: missing signature.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		switch( pattern_offsets_mode )
 		{
@@ -357,6 +355,22 @@ int libsigscan_signature_table_fill(
 			}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
+			if( libcdata_list_insert_value(
+			     signature_table->signatures_list,
+			     (intptr_t *) signature,
+			     (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_signature_compare_by_pattern,
+			     LIBCDATA_INSERT_FLAG_UNIQUE_ENTRIES,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to insert signature.",
+				 function );
+
+				goto on_error;
+			}
 			for( pattern_index = 0;
 			     pattern_index < signature->pattern_size;
 			     pattern_index++ )
@@ -376,7 +390,7 @@ int libsigscan_signature_table_fill(
 					 function,
 					 pattern_offset );
 
-					return( -1 );
+					goto on_error;
 				}
 				else if( result == 0 )
 				{
@@ -394,24 +408,10 @@ int libsigscan_signature_table_fill(
 						 "%s: unable to insert signature into signature table.",
 						 function );
 
-						return( -1 );
+						goto on_error;
 					}
 				}
 				pattern_offset++;
-			}
-			if( libcdata_list_append_value(
-			     signature_table->signatures_list,
-			     (intptr_t *) signature,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append signature.",
-				 function );
-
-				return( -1 );
 			}
 		}
 		if( libcdata_list_element_get_next_element(
@@ -426,10 +426,23 @@ int libsigscan_signature_table_fill(
 			 "%s: unable to retrieve next list element.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 	}
 	return( 1 );
+
+on_error:
+	libcdata_list_empty(
+	 signature_table->byte_value_groups_list,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_byte_value_group_free,
+	 NULL );
+
+	libcdata_list_empty(
+	 signature_table->signatures_list,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_reference_clone,
+	 NULL );
+
+	return( -1 );
 }
 
 /* Retrieves the number of byte value groups
@@ -471,7 +484,7 @@ int libsigscan_signature_table_get_number_of_byte_value_groups(
 }
 
 /* Retrieves a specific byte value group
- * Returns 1 if successful, 0 if no such value or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsigscan_signature_table_get_byte_value_group_by_index(
      libsigscan_signature_table_t *signature_table,
@@ -681,8 +694,8 @@ int libsigscan_signature_table_get_signatures_list_clone(
 	if( libcdata_list_clone(
 	     signatures_list,
 	     signature_table->signatures_list,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
-	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libsigscan_signature_clone,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_reference_clone,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libsigscan_signature_clone_by_reference,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -708,7 +721,7 @@ int libsigscan_signature_table_free_signatures_list_clone(
 
 	if( libcdata_list_free(
 	     signatures_list,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_clone,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_free_reference_clone,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -829,6 +842,11 @@ on_error:
 		 &byte_value_group,
 		 NULL );
 	}
+	libcdata_list_empty(
+	 signature_table->byte_value_groups_list,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_byte_value_group_free,
+	 NULL );
+
 	return( -1 );
 }
 

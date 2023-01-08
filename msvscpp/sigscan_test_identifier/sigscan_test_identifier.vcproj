@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="sigscan_test_byte_value_group"
-	ProjectGUID="{5DC3B882-BF36-4E05-8B95-450568A817FE}"
-	RootNamespace="sigscan_test_byte_value_group"
+	Name="sigscan_test_identifier"
+	ProjectGUID="{F73672DD-2BF5-42ED-8AE8-998955C370B2}"
+	RootNamespace="sigscan_test_identifier"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\sigscan_test_byte_value_group.c"
+				RelativePath="..\..\tests\sigscan_test_identifier.c"
 				>
 			</File>
 			<File

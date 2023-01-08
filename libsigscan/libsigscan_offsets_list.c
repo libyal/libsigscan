@@ -247,8 +247,9 @@ int libsigscan_offsets_list_insert_offset(
      off64_t pattern_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libsigscan_offsets_list_insert_offset";
 	off64_t *offset_value = NULL;
+	static char *function = "libsigscan_offsets_list_insert_offset";
+	int result            = 0;
 
 	offset_value = (off64_t *) memory_allocate(
 	                            sizeof( off64_t ) );
@@ -266,12 +267,14 @@ int libsigscan_offsets_list_insert_offset(
 	}
 	*offset_value = pattern_offset;
 
-	if( libcdata_list_insert_value(
-	     offsets_list,
-	     (intptr_t *) offset_value,
-	     (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_offsets_list_compare,
-	     LIBCDATA_INSERT_FLAG_UNIQUE_ENTRIES,
-	     error ) != 1 )
+	result = libcdata_list_insert_value(
+	          offsets_list,
+	          (intptr_t *) offset_value,
+	          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libsigscan_offsets_list_compare,
+	          LIBCDATA_INSERT_FLAG_UNIQUE_ENTRIES,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -281,6 +284,11 @@ int libsigscan_offsets_list_insert_offset(
 		 function );
 
 		goto on_error;
+	}
+	else if( result == 0 )
+	{
+		memory_free(
+		 offset_value );
 	}
 	return( 1 );
 

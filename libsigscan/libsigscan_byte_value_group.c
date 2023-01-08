@@ -148,7 +148,7 @@ int libsigscan_byte_value_group_free(
 	{
 		if( libcdata_list_free(
 		     &( ( *byte_value_group )->signature_groups_list ),
-		     (int (*)(intptr_t **,libcerror_error_t **)) &libsigscan_signature_group_free,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libsigscan_signature_group_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

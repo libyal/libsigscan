@@ -14,6 +14,7 @@ MSVSCPP_FILES = \
 	sigscan/sigscan.vcproj \
 	sigscan_test_byte_value_group/sigscan_test_byte_value_group.vcproj \
 	sigscan_test_error/sigscan_test_error.vcproj \
+	sigscan_test_identifier/sigscan_test_identifier.vcproj \
 	sigscan_test_notify/sigscan_test_notify.vcproj \
 	sigscan_test_offset_group/sigscan_test_offset_group.vcproj \
 	sigscan_test_offsets_list/sigscan_test_offsets_list.vcproj \

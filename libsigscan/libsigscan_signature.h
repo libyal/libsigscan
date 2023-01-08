@@ -25,6 +25,8 @@
 #include <common.h>
 #include <types.h>
 
+#include "libsigscan_identifier.h"
+#include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
 
 #if defined( __cplusplus )
@@ -35,14 +37,6 @@ typedef struct libsigscan_signature libsigscan_signature_t;
 
 struct libsigscan_signature
 {
-	/* The identifier
-	 */
-	char *identifier;
-
-	/* The identifier size
-	 */
-	size_t identifier_size;
-
 	/* The pattern offset
 	 */
 	off64_t pattern_offset;
@@ -58,6 +52,18 @@ struct libsigscan_signature
 	/* The signature flags
 	 */
 	uint32_t signature_flags;
+
+	/* The identifiers list
+	 */
+	libcdata_list_t *identifiers_list;
+
+	/* The identifier
+	 */
+	const char *identifier;
+
+	/* The identifier size
+	 */
+	size_t identifier_size;
 };
 
 int libsigscan_signature_initialize(
@@ -68,13 +74,18 @@ int libsigscan_signature_free(
      libsigscan_signature_t **signature,
      libcerror_error_t **error );
 
-int libsigscan_signature_free_clone(
+int libsigscan_signature_free_reference_clone(
      libsigscan_signature_t **signature,
      libcerror_error_t **error );
 
-int libsigscan_signature_clone(
+int libsigscan_signature_clone_by_reference(
      libsigscan_signature_t **destination_signature,
      libsigscan_signature_t *source_signature,
+     libcerror_error_t **error );
+
+int libsigscan_signature_compare_by_pattern(
+     libsigscan_signature_t *first_signature,
+     libsigscan_signature_t *second_signature,
      libcerror_error_t **error );
 
 int libsigscan_signature_get_identifier_size(
@@ -86,6 +97,12 @@ int libsigscan_signature_get_identifier(
      libsigscan_signature_t *signature,
      char *identifier,
      size_t identifier_size,
+     libcerror_error_t **error );
+
+int libsigscan_signature_append_identifier(
+     libsigscan_signature_t *signature,
+     const char *identifier,
+     size_t identifier_length,
      libcerror_error_t **error );
 
 int libsigscan_signature_set(
