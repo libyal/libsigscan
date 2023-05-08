@@ -45,10 +45,10 @@
 int sigscan_test_signatures_list_remove_signature(
      void )
 {
-	libcdata_list_t *signatures_list    = NULL;
-	libcerror_error_t *error            = NULL;
-	libsigscan_signature_t *signature   = NULL;
-	int result                          = 0;
+	libcdata_list_t *signatures_list  = NULL;
+	libcerror_error_t *error          = NULL;
+	libsigscan_signature_t *signature = NULL;
+	int result                        = 0;
 
 	/* Initialize test
 	 */
@@ -151,7 +151,6 @@ int sigscan_test_signatures_list_remove_signature(
 	 "error",
 	 error );
 
-
 	/* Test error cases
 	 */
 	result = libsigscan_signatures_list_remove_signature(
@@ -173,6 +172,23 @@ int sigscan_test_signatures_list_remove_signature(
 
 	/* Clean up
 	 */
+	result = libsigscan_signature_free(
+	          &signature,
+	          &error );
+
+	SIGSCAN_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "signature",
+	 signature );
+
+	SIGSCAN_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libcdata_list_free(
 	          &signatures_list,
 	          NULL,
