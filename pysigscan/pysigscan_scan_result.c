@@ -323,7 +323,6 @@ PyObject *pysigscan_scan_result_get_identifier(
 {
 	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
-	const char *errors       = NULL;
 	char *identifier         = NULL;
 	static char *function    = "pysigscan_scan_result_get_identifier";
 	size_t identifier_size   = 0;
@@ -376,7 +375,7 @@ PyObject *pysigscan_scan_result_get_identifier(
 	if( identifier == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
+		 PyExc_MemoryError,
 		 "%s: unable to create identifier.",
 		 function );
 
@@ -412,7 +411,7 @@ PyObject *pysigscan_scan_result_get_identifier(
 	string_object = PyUnicode_DecodeUTF8(
 			 identifier,
 			 (Py_ssize_t) identifier_size - 1,
-			 errors );
+			 NULL );
 
 	PyMem_Free(
 	 identifier );

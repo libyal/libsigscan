@@ -232,13 +232,13 @@ int pysigscan_file_object_io_handle_free(
 		Py_DecRef(
 		 ( *file_object_io_handle )->file_object );
 
-		PyGILState_Release(
-		 gil_state );
-
 		PyMem_Free(
 		 *file_object_io_handle );
 
 		*file_object_io_handle = NULL;
+
+		PyGILState_Release(
+		 gil_state );
 	}
 	return( 1 );
 }
@@ -578,7 +578,7 @@ ssize_t pysigscan_file_object_read_buffer(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_MEMORY,
 			 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-			 "%s: unable to data to buffer.",
+			 "%s: unable to copy data to buffer.",
 			 function );
 
 			goto on_error;
