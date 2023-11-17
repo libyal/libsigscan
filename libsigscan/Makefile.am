@@ -74,11 +74,13 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libsigscan_definitions.h
-	/bin/rm -f libsigscan.rc
-	/bin/rm -f Makefile
+	-rm -f libsigscan_definitions.h
+	-rm -f libsigscan.rc
+	-rm -f Makefile
 
-splint:
+sources-local: $(BUILT_SOURCES)
+
+splint-local:
 	@echo "Running splint on libsigscan ..."
 	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libsigscan_la_SOURCES)
 

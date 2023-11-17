@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libsigscan.h
-	/bin/rm -f libsigscan/definitions.h
-	/bin/rm -f libsigscan/features.h
-	/bin/rm -f libsigscan/types.h
-	/bin/rm -f Makefile
+	-rm -f libsigscan.h
+	-rm -f libsigscan/definitions.h
+	-rm -f libsigscan/features.h
+	-rm -f libsigscan/types.h
+	-rm -f Makefile
 
