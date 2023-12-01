@@ -16,8 +16,6 @@ SUBDIRS = \
 	libsigscan \
 	sigscantools \
 	pysigscan \
-	pysigscan-python2 \
-	pysigscan-python3 \
 	po \
 	manuals \
 	tests \

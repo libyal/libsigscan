@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libsigscan],
- [20231117],
+ [20231201],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -104,7 +104,7 @@ dnl Check if libsigscan Python bindings (pysigscan) required headers and functio
 AX_PYTHON_CHECK_ENABLE
 
 AS_IF(
-  [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno],
+  [test "x${ac_cv_enable_python}" != xno],
   [dnl Headers included in pysigscan/pysigscan_error.c
   AC_CHECK_HEADERS([stdarg.h varargs.h])
 
@@ -163,8 +163,6 @@ AC_CONFIG_FILES([libcpath/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libsigscan/Makefile])
 AC_CONFIG_FILES([pysigscan/Makefile])
-AC_CONFIG_FILES([pysigscan-python2/Makefile])
-AC_CONFIG_FILES([pysigscan-python3/Makefile])
 AC_CONFIG_FILES([sigscantools/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
