@@ -1,7 +1,7 @@
 /*
  * Signature functions
  *
- * Copyright (C) 2014-2023, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2024, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -120,6 +120,16 @@ int libsigscan_signature_set(
      const uint8_t *pattern,
      size_t pattern_size,
      uint32_t signature_flags,
+     libcerror_error_t **error );
+
+int libsigscan_signature_scan_buffer(
+     libsigscan_signature_t *signature,
+     int pattern_offsets_mode,
+     off64_t data_offset,
+     size64_t data_size,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

@@ -1,7 +1,7 @@
 /*
  * Signature functions
  *
- * Copyright (C) 2014-2023, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2024, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,6 +27,7 @@
 #include "libsigscan_identifier.h"
 #include "libsigscan_libcdata.h"
 #include "libsigscan_libcerror.h"
+#include "libsigscan_libcnotify.h"
 #include "libsigscan_signature.h"
 
 /* Creates a signature
@@ -716,5 +717,146 @@ on_error:
 	signature->identifier_size = 0;
 
 	return( -1 );
+}
+
+/* Checks if the signature matches the contents of the buffer
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libsigscan_signature_scan_buffer(
+     libsigscan_signature_t *signature,
+     int pattern_offsets_mode,
+     off64_t data_offset,
+     size64_t data_size,
+     const uint8_t *buffer,
+     size_t buffer_size,
+     size_t buffer_offset,
+     libcerror_error_t **error )
+{
+	static char *function  = "libsigscan_signature_scan_buffer";
+	off64_t pattern_offset = 0;
+	off64_t scan_offset    = 0;
+
+	if( signature == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END )
+	 && ( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported pattern offsets mode.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( data_offset < 0 )
+	 || ( (size64_t) data_offset >= data_size ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid data offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	switch( pattern_offsets_mode )
+	{
+		case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_START:
+			pattern_offset = signature->pattern_offset;
+			scan_offset = buffer_offset + ( pattern_offset - data_offset );
+			break;
+
+		case LIBSIGSCAN_PATTERN_OFFSET_MODE_BOUND_TO_END:
+			pattern_offset = data_size - signature->pattern_offset;
+			scan_offset = buffer_offset + ( pattern_offset - data_offset );
+			break;
+
+		case LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND:
+			pattern_offset = data_offset;
+			scan_offset = buffer_offset;
+			break;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: scanning for signature: %s at offset: %" PRIi64 " of size: %" PRIzd ".\n",
+		 function,
+		 signature->identifier,
+		 pattern_offset,
+		 signature->pattern_size );
+	}
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
+	if( ( (size64_t) signature->pattern_size > data_size )
+	 || ( (size64_t) pattern_offset > ( data_size - signature->pattern_size ) ) )
+	{
+		/* If the pattern size exceeds the data size were are done scanning.
+		 */
+		return( 0 );
+	}
+	if( ( signature->pattern_size > buffer_size )
+	 || ( (size64_t) scan_offset > ( buffer_size - signature->pattern_size ) ) )
+	{
+		if( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid pattern size value out of bounds.",
+			 function );
+
+			return( -1 );
+		}
+		return( 0 );
+	}
+	if( memory_compare(
+	     &( buffer[ scan_offset ] ),
+	     signature->pattern,
+	     signature->pattern_size ) != 0 )
+	{
+		return( 0 );
+	}
+	if( pattern_offsets_mode != LIBSIGSCAN_PATTERN_OFFSET_MODE_UNBOUND )
+	{
+		return( ( data_offset + scan_offset ) == pattern_offset );
+	}
+	return( 1 );
 }
 
