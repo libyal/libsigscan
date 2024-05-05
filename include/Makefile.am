@@ -15,13 +15,11 @@ EXTRA_DIST = \
 	libsigscan/features.h.in \
 	libsigscan/types.h.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libsigscan.h \
+	libsigscan/definitions.h \
+	libsigscan/features.h \
+	libsigscan/types.h \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libsigscan.h
-	-rm -f libsigscan/definitions.h
-	-rm -f libsigscan/features.h
-	-rm -f libsigscan/types.h
-	-rm -f Makefile
 

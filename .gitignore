@@ -132,6 +132,7 @@ stamp-h[1-9]
 /sigscantools/sigscan
 /tests/*.exe
 /tests/input
+/tests/notify_stream.log
 /tests/sigscan_test_byte_value_group
 /tests/sigscan_test_error
 /tests/sigscan_test_identifier

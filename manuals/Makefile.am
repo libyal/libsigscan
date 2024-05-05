@@ -6,9 +6,7 @@ EXTRA_DIST = \
 	sigscan.1 \
 	libsigscan.3
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 

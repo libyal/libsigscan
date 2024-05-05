@@ -1,6 +1,6 @@
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/common \
+	-I../include -I$(top_srcdir)/include \
+	-I../common -I$(top_srcdir)/common \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -70,13 +70,11 @@ EXTRA_DIST = \
 	libsigscan.rc \
 	libsigscan.rc.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libsigscan_definitions.h \
+	libsigscan.rc \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libsigscan_definitions.h
-	-rm -f libsigscan.rc
-	-rm -f Makefile
 
 sources-local: $(BUILT_SOURCES)
 
