@@ -22,6 +22,9 @@ jobs:
           configure_options: ''
         - architecture: 'x64'
           compiler: 'gcc'
+          configure_options: '--enable-wide-character-type'
+        - architecture: 'x64'
+          compiler: 'gcc'
           configure_options: '--enable-static-executables=yes --enable-multi-threading-support=no'
     steps:
     - uses: actions/checkout@v4
@@ -127,10 +130,10 @@ jobs:
         include:
         - architecture: 'x86'
           compiler: 'gcc'
-          configure_options: ''
+          configure_options: '--enable-wide-character-type'
         - architecture: 'x64'
           compiler: 'gcc'
-          configure_options: ''
+          configure_options: '--enable-wide-character-type'
     steps:
     - uses: actions/checkout@v4
     - name: Install build dependencies
