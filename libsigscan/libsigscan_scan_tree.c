@@ -1,7 +1,7 @@
 /*
  * Scan tree functions
  *
- * Copyright (C) 2014-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2014-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -1454,21 +1454,6 @@ int libsigscan_scan_tree_build_node(
 			goto on_error;
 		}
 	}
-	if( libsigscan_scan_tree_node_initialize(
-	     scan_tree_node,
-	     pattern_offset,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create scan tree node for pattern offset: %" PRIi64 ".",
-		 function,
-		 pattern_offset );
-
-		goto on_error;
-	}
 	/* Determine the signatures not covered by the scan node
 	 */
 	if( libsigscan_signature_table_get_signatures_list_clone(
@@ -1560,6 +1545,21 @@ int libsigscan_scan_tree_build_node(
 				goto on_error;
 			}
 		}
+	}
+	if( libsigscan_scan_tree_node_initialize(
+	     scan_tree_node,
+	     pattern_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create scan tree node for pattern offset: %" PRIi64 ".",
+		 function,
+		 pattern_offset );
+
+		goto on_error;
 	}
 	/* Determine the scan tree node byte values
 	 */
@@ -2376,7 +2376,7 @@ int libsigscan_scan_tree_fill_pattern_weights(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: invalid byte value: %d - unable to retrieve number of signature groups.",
+			 "%s: invalid byte value group: %d - unable to retrieve number of signature groups.",
 			 function,
 			 byte_value_group_index );
 
@@ -2454,6 +2454,22 @@ int libsigscan_scan_tree_fill_pattern_weights(
 
 					return( -1 );
 				}
+			}
+			if( libsigscan_signature_group_get_byte_value(
+			     signature_group,
+			     &byte_value,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: invalid byte value group: %d - invalid signature group: %d - unable to retrieve byte value.",
+				 function,
+				 byte_value_group_index,
+				 signature_group_index );
+
+				return( -1 );
 			}
 			if( libsigscan_common_byte_values[ byte_value ] == 0 )
 			{
