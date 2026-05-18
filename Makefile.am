@@ -43,10 +43,9 @@ PKGCONFIG_FILES = \
 	libsigscan.pc.in
 
 SETUP_PY_FILES = \
+	_build.py \
 	pyproject.toml \
-	setup.cfg \
-	setup.cfg.in \
-	setup.py
+	pyproject.toml.in
 
 SPEC_FILES = \
 	libsigscan.spec \
