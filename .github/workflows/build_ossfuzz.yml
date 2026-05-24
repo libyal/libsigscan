@@ -22,13 +22,16 @@ jobs:
         repository: google/oss-fuzz
         path: oss-fuzz
     - name: Build OSSFuzz fuzz targets
+      env:
+        BRANCH: ${{ github.head_ref || github.ref_name }}
+        ORGANIZATION: ${{ github.event.pull_request.head.repo.owner.login }}
       working-directory: oss-fuzz
       run: |
         mkdir -p projects/libsigscan
         cp projects/libyal/build.sh projects/libsigscan/
         cp projects/libyal/project.yaml projects/libsigscan/
         head -n 20 projects/libyal/Dockerfile > projects/libsigscan/Dockerfile
-        echo "RUN git clone --depth 1 https://github.com/libyal/libsigscan.git libsigscan" >> projects/libsigscan/Dockerfile
+        echo "RUN git clone --depth 1 https://github.com/${ORGANIZATION:-libyal}/libsigscan.git -b ${BRANCH:-main} libsigscan" >> projects/libsigscan/Dockerfile
         tail -n 3 projects/libyal/Dockerfile >> projects/libsigscan/Dockerfile
         python3 infra/helper.py build_image --pull libsigscan
         python3 infra/helper.py build_fuzzers --sanitizer address libsigscan
