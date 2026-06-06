@@ -31,14 +31,17 @@
  */
 #if defined( LIBSIGSCAN_DLL_EXPORT )
 #define LIBSIGSCAN_EXTERN __declspec(dllexport)
+#define LIBSIGSCAN_EXTERN_VARIABLE extern __declspec(dllexport)
 
 #elif defined( LIBSIGSCAN_DLL_IMPORT )
-#define LIBSIGSCAN_EXTERN extern __declspec(dllimport)
+#define LIBSIGSCAN_EXTERN __declspec(dllimport)
+#define LIBSIGSCAN_EXTERN_VARIABLE extern __declspec(dllimport)
 
 #else
 #define LIBSIGSCAN_EXTERN extern
+#define LIBSIGSCAN_EXTERN_VARIABLE extern
 
-#endif
+#endif /* defined( LIBSIGSCAN_DLL_EXPORT ) */
 
 #endif /* !defined( _LIBSIGSCAN_EXTERN_H ) */
 

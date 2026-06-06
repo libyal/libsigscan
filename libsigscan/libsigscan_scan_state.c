@@ -1184,7 +1184,9 @@ int libsigscan_internal_scan_state_scan_buffer(
 			if( range_end_offset > (off64_t) internal_scan_state->header_range_end )
 			{
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->header_range_end );
+#if defined( HAVE_DEBUG_OUTPUT )
 				range_end_offset = (off64_t) internal_scan_state->header_range_end;
+#endif
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -1253,7 +1255,9 @@ int libsigscan_internal_scan_state_scan_buffer(
 			if( range_end_offset > (off64_t) internal_scan_state->footer_range_end )
 			{
 				range_size      -= (size_t) ( range_end_offset - internal_scan_state->footer_range_end );
+#if defined( HAVE_DEBUG_OUTPUT )
 				range_end_offset = (off64_t) internal_scan_state->footer_range_end;
+#endif
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
