@@ -36,7 +36,7 @@ typedef struct libsigscan_offset_group libsigscan_offset_group_t;
 
 struct libsigscan_offset_group
 {
-	/* The weight 
+	/* The weight
 	 */
 	int weight;
 

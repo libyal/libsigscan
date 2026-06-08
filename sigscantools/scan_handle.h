@@ -2,7 +2,7 @@
  * Scan handle
  *
  * Copyright (C) 2014-2026, Joachim Metz <joachim.metz@gmail.com>
- * 
+ *
  * Refer to AUTHORS for acknowledgements.
  *
  * This program is free software: you can redistribute it and/or modify
