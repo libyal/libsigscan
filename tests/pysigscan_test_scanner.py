@@ -113,29 +113,25 @@ def main():
   expected_scan_results = ["lnk"]
   if not pysigscan_test_scan_buffer(
       scanner, lnk_pattern, expected_scan_results):
-    return False
+    return 1
 
   expected_scan_results = ["lnk"]
   if not pysigscan_test_scan_buffer(
       scanner, lnk_pattern, expected_scan_results):
-    return False
+    return 1
 
   expected_scan_results = ["regf"]
   if not pysigscan_test_scan_buffer(
       scanner, regf_pattern, expected_scan_results):
-    return False
+    return 1
 
   expected_scan_results = []
   if not pysigscan_test_scan_buffer(
       scanner, random_data, expected_scan_results):
-    return False
+    return 1
 
-  return True
+  return 0
 
 
 if __name__ == "__main__":
-  if not main():
-    sys.exit(1)
-  else:
-    sys.exit(0)
-
+  sys.exit(main())

@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20251129
+# Version: 20260604
 
 # Generic auto-generated build files
 *~
@@ -130,9 +130,15 @@ stamp-h[1-9]
 /pyproject.toml
 /sigscantools/*.exe
 /sigscantools/sigscan
+/tests/*.dir
 /tests/*.exe
+/tests/*.log
+/tests/*.tmp
+/tests/atconfig
+/tests/atlocal
 /tests/input
 /tests/notify_stream.log
+/tests/package.m4
 /tests/sigscan_test_byte_value_group
 /tests/sigscan_test_error
 /tests/sigscan_test_identifier
@@ -153,6 +159,11 @@ stamp-h[1-9]
 /tests/sigscan_test_skip_table
 /tests/sigscan_test_support
 /tests/sigscan_test_weight_group
+/tests/test_inputs_*.at
+/tests/test_library
+/tests/test_manpages
+/tests/test_python_module
+/tests/test_tools
 /tests/tmp*
 
 # Local library dependencies specific files
