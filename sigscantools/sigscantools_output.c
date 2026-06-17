@@ -99,9 +99,17 @@ void sigscanoutput_copyright_fprint(
 	}
 	fprintf(
 	 stream,
-	 "Copyright (C) 2014-2026, Joachim Metz <%s>.\n"
-	 "This is free software; see the source for copying conditions. There is NO\n"
-	 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
+	 _( "Copyright (C) 2014-2026, %s.\n" ),
+	 _( "Joachim Metz" ) );
+
+	fprintf(
+	 stream,
+	 _( "This is free software; see the source for copying conditions. There is NO\n"
+	    "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" ) );
+
+	fprintf(
+	 stream,
+	 _( "Report issues via: %s\n" ),
 	 PACKAGE_BUGREPORT );
 }
 

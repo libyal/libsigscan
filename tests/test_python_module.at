@@ -53,9 +53,8 @@ m4_define([RUN_TEST_SCRIPTS],
       [ignore],
       [ignore])
 
-    AT_CLEANUP]
-  )]
-)
+    AT_CLEANUP])
+  ])
 
 dnl Wrap m4_define to overwrite AT_TESTSUITE_NAME
 m4_define([_M4_DEFINE_HOOK], m4_defn([m4_define]))

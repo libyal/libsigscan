@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libsigscan],
-  [20260616],
+  [20260617],
   [https://github.com/libyal/libsigscan/issues])
 
 AC_CONFIG_SRCDIR(

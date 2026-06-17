@@ -1,6 +1,6 @@
 # Tests functions.
 #
-# Version: 20260615
+# Version: 20260616
 
 $ExitSuccess = 0
 $ExitFailure = 1
@@ -193,7 +193,7 @@ Function GenerateTestInputs
 			}
 			ForEach ($TestFile in ${TestFiles})
 			{
-				$TestFileName = ${TestFile}.Name
+				$TestFileName = Split-Path -Path ${TestFile} -Leaf
 
 				If (-Not ($GlobFiles) -And -Not (Test-Path -Path "${GlobFile}" -PathType Leaf))
 				{
