@@ -48,13 +48,13 @@ AT_TEST_HELPER_FN(
 
 AT_TEST_HELPER_FN(
   [run_sigscantools_binary_and_compare_stdout],
-  [tool_name test_profile options_set arguments test_file],
+  [tool_name test_profile option_set arguments test_file],
   [Runs a sigscantools binary and compares stdout against a reference],
   [SIGSCANTOOL="$[]1"
   shift
   TEST_PROFILE="$[]1"
   shift
-  OPTIONS_SET="$[]1"
+  OPTION_SET="$[]1"
   shift
   # Get the last argument.
   for TEST_FILE do :; done
@@ -63,10 +63,10 @@ AT_TEST_HELPER_FN(
   TEST_SET=`dirname "${TEST_FILE}"`
   TEST_SET=`basename "${TEST_SET}"`
 
-  if test "${OPTIONS_SET}" = "."; then
+  if test "${OPTION_SET}" = "."; then
     OUTPUT_FILE="${FILENAME}.log"
   else
-    OUTPUT_FILE="${FILENAME}-${OPTIONS_SET}.log"
+    OUTPUT_FILE="${FILENAME}-${OPTION_SET}.log"
   fi
   ath_fn_run_sigscantools_binary "${SIGSCANTOOL}" "$[]@" > "${OUTPUT_FILE}"
   STATUS=$?
