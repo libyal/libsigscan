@@ -54,28 +54,6 @@
 scan_handle_t *sigscan_scan_handle = NULL;
 int sigscan_abort                  = 0;
 
-/* Prints the executable usage information
- */
-void usage_fprint(
-      FILE *stream )
-{
-	if( stream == NULL )
-	{
-		return;
-	}
-	fprintf( stream, "Use sigscan to scan a file for binary signatures.\n\n" );
-
-	fprintf( stream, "Usage: sigscan [ -c configuration_file ] [ -hvV ] source\n\n" );
-
-	fprintf( stream, "\tsource: the source file\n\n" );
-
-	fprintf( stream, "\t-c:     specify the configuration file, defaults\n"
-	                 "\t        to: sigscan.conf\n" );
-	fprintf( stream, "\t-h:     shows this help\n" );
-	fprintf( stream, "\t-v:     verbose output to stderr\n" );
-	fprintf( stream, "\t-V:     print version\n" );
-}
-
 /* Signal handler for sigscan
  */
 void sigscan_signal_handler(
@@ -128,12 +106,25 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
+	const char *description = \
+		"Use sigscan to scan a file for binary signatures.";
+
+	sigscantools_option_t options[ ] = {
+		{ 'c', "path", "specify the configuration file, defaults to: sigscan.conf" },
+		{ 'h', NULL, "shows this help" },
+		{ 'v', NULL, "verbose output to stderr" },
+		{ 'V', NULL, "print version" },
+		{ 0, "source", "the source image" },
+	};
+	system_character_t options_string[ 32 ];
+
 	libcerror_error_t *error                      = NULL;
 	system_character_t *option_configuration_file = _SYSTEM_STRING( "sigscan.conf" );
 	system_character_t *source                    = NULL;
 	libsigscan_scan_state_t *scan_state           = NULL;
 	char *program                                 = "sigscan";
 	system_integer_t option                       = 0;
+	int number_of_options                         = (int) ( sizeof( options ) / sizeof( sigscantools_option_t ) );
 	int verbose                                   = 0;
 
 #if defined( __MINGW32__ ) && defined( HAVE_MINGW_BINMODE )
@@ -171,10 +162,22 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
+	if( sigscantools_getopt_get_options_string(
+	     options,
+	     number_of_options,
+	     options_string,
+	     32 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to determine options string.\n" );
+
+		goto on_error;
+	}
 	while( ( option = sigscantools_getopt(
 	                   argc,
 	                   argv,
-	                   _SYSTEM_STRING( "c:hvV" ) ) ) != (system_integer_t) -1 )
+	                   options_string ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -185,8 +188,12 @@ int main( int argc, char * const argv[] )
 				 "Invalid argument: %" PRIs_SYSTEM "\n",
 				 argv[ optind - 1 ] );
 
-				usage_fprint(
-				 stdout );
+				sigscantools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				return( EXIT_FAILURE );
 
@@ -196,8 +203,12 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'h':
-				usage_fprint(
-				 stdout );
+				sigscantools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				return( EXIT_SUCCESS );
 
@@ -219,8 +230,12 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Missing source file.\n" );
 
-		usage_fprint(
-		 stdout );
+		sigscantools_getopt_usage_fprint(
+		 stdout,
+		 program,
+		 description,
+		 options,
+		 number_of_options );
 
 		return( EXIT_FAILURE );
 	}

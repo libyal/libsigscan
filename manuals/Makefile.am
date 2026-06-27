@@ -1,10 +1,9 @@
 man_MANS = \
-	sigscan.1 \
-	libsigscan.3
+	libsigscan.3 \
+	sigscan.1
 
 EXTRA_DIST = \
-	sigscan.1 \
-	libsigscan.3
+	$(man_MANS)
 
 DISTCLEANFILES = \
 	Makefile \

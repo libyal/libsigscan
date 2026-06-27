@@ -1,11 +1,12 @@
-.Dd May  3, 2019
-.Dt sigscan
-.Os libsigscan
+.Dd June 27, 2026
+.Dt SIGSCAN 1
+.Os
 .Sh NAME
 .Nm sigscan
 .Nd scans a file for binary signatures
 .Sh SYNOPSIS
 .Nm sigscan
+.Op Fl c Ar path
 .Op Fl hvV
 .Ar source
 .Sh DESCRIPTION
@@ -24,6 +25,8 @@ is the source file.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
+.It Fl c Ar path
+specify the configuration file, defaults to: sigscan.conf
 .It Fl h
 shows this help
 .It Fl v
@@ -37,17 +40,28 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# sigscan ...
+# sigscan -c sigscan.conf qcow.bin
+sigscan 20260627
+.sp
+Signature scanner:
+	Number of scan results	: 1
+.sp
+Scan result: 1
+	Identifier		: qcow
 .sp
 .Ed
 .Sh DIAGNOSTICS
-Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Errors, verbose and debug output are printed to stderr when verbose output \
+\-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libsigscan/
-.Sh AUTHOR
-These man pages were written by Joachim Metz.
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libsigscan/issues
 .Sh COPYRIGHT
 Copyright (C) 2014-2026, Joachim Metz <joachim.metz@gmail.com>.
-This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.sp
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.
